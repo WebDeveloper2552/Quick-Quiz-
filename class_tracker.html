@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Class Tracker - Quick Quiz{% endblock %}
+
+{% block head %}
+<style>
+    .class-selector {
+        margin-bottom: 2rem;
+    }
+    
+    .student-card {
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    
+    .student-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .progress {
+        height: 10px;
+    }
+    
+    .chart-container {
+        height: 300px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Class Tracker</h2>
+
+<div class="class-selector">
+    <select class="form-select" id="class-select">
+        <option selected>Select a class</option>
+        <option value="1">Class 10A - Mathematics</option>
+        <option value="2">Class 10B - Mathematics</option>
+        <option value="3">Class 11A - Advanced Math</option>
+    </select>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Class Performance</h5>
+                <div class="chart-container">
+                    <!-- Chart will be rendered here -->
+                    <canvas id="classChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Quiz Completion</h5>
+                <div class="progress mb-3">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 85%"></div>
+                </div>
+                <p>85% of students have completed the latest quiz</p>
+                
+                <h5 class="card-title mt-4">Average Score</h5>
+                <div class="progress mb-3">
+                    <div class="progress-bar bg-info" role="progressbar" style="width: 72%"></div>
+                </div>
+                <p>72% average score across all quizzes</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4 class="mb-3">Students</h4>
+<div class="row" id="students-list">
+    <!-- Student cards will be loaded here -->
+    <div class="col-md-4 mb-3">
+        <div class="card student-card" onclick="viewStudent(1)">
+            <div class="card-body">
+                <h5 class="card-title">John Smith</h5>
+                <p class="card-text">Average Score: 85%</p>
+                <p class="card-text">Quizzes Completed: 12/15</p>
+            </div>
+        </div>
+    </div>
+    <!-- More student cards... -->
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Initialize class chart
+    const ctx = document.getElementById('classChart').getContext('2d');
+    const classChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Quiz 1', 'Quiz 2', 'Quiz 3', 'Quiz 4'],
+            datasets: [{
+                label: 'Average Score',
+                data: [65, 72, 68, 75],
+                backgroundColor: 'rgba(44, 130, 201, 0.7)',
+                borderColor: 'rgba(44, 130, 201, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+
+    function viewStudent(studentId) {
+        window.location.href = `/student-results/${studentId}/`;
+    }
+</script>
+{% endblock %}
