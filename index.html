@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickQuiz Classroom</title>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary-blue: #2c82c9;
+            --secondary-blue: #1a5f8e;
+            --accent-green: #483cb3;
+            --light-green: #006780;
+            --dark-green: #00818A;
+            --light-color: #f5f5f5;
+            --dark-color: #333;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html, body {
+    height: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+/* Update the footer style */
+footer {
+    position: relative; /* Remove absolute */
+    left: unset;
+    bottom: unset;
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--dark-green), var(--primary-blue));
+    color: white;
+    z-index: 10;
+}
+
+        body {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-green));
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-container h1 {
+            font-size: 1.5rem;
+        }
+
+        #institution-logo {
+            height: 50px;
+        }
+
+        .auth-buttons button {
+            background-color: white;
+            color: var(--primary-blue);
+            border: none;
+            padding: 0.5rem 1rem;
+            margin-left: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        #navbar-logo {
+    height: 60px; 
+}
+
+        .auth-buttons button:hover {
+            background-color: var(--light-green);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .dashboard-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-controls button {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-controls button:hover {
+            background-color: var(--secondary-blue);
+        }
+
+        #quiz-editor {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 1rem;
+        }
+
+        #quiz-title {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid var(--primary-blue);
+            border-radius: 4px;
+        }
+
+        .question-card {
+            background-color: rgba(44, 130, 201, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            position: relative;
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .question-text {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .answer-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .answer-option input[type="text"] {
+            flex-grow: 1;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+        }
+
+        .answer-option input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+
+        .remove-answer, .remove-question {
+            background-color: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .remove-question {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+        }
+
+        #add-question, #save-quiz {
+            background-color: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+            margin-right: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        #add-question:hover, #save-quiz:hover {
+            background-color: var(--dark-green);
+        }
+
+        #quiz-share {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #ddd;
+        }
+
+        #qrcode {
+            margin: 1rem 0;
+        }
+
+        #quiz-link {
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        #student-interface {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        #quiz-code {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            margin: 1rem 0;
+            border: 2px solid var(--primary-blue);
+            border-radius: 4px;
+        }
+
+        #start-quiz, #submit-quiz {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        #start-quiz:hover, #submit-quiz:hover {
+            background-color: var(--secondary-blue);
+        }
+
+        .quiz-question {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .quiz-question:last-child {
+            border-bottom: none;
+        }
+
+        .quiz-question h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-blue);
+        }
+
+        .quiz-answer {
+            margin-bottom: 0.5rem;
+        }
+
+        .quiz-answer label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .quiz-answer input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+
+        #quiz-results {
+            margin-top: 2rem;
+        }
+
+        #score {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--success-color);
+        }
+
+        .answer-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+        }
+
+        .correct {
+            background-color: rgba(76, 175, 80, 0.2);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .incorrect {
+            background-color: rgba(255, 152, 0, 0.2);
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .upload-section {
+            margin: 1rem 0;
+            padding: 1rem;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .upload-section h3 {
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .file-input {
+            margin: 0.5rem 0;
+        }
+
+        .preview-area {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 4px;
+            border: 1px dashed var(--primary-blue);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        body {
+    background-color: var(--light-color);
+    background-image: url('images/background2.jpg'); /* Local image in a subdirectory */
+    background-size: cover;
+    background-position: top center;
+    color: var(--dark-color);
+    line-height: 1.6;
+}
+
+#about {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 2rem;
+}
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .dashboard-controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+    <div class="logo-container">
+        <img id="navbar-logo" src="images/logo.png" alt="Logo"> <!-- Update path here -->
+        <h1>Maths Starter Activity</h1>
+    </div>
+    <div class="auth-buttons">
+        <button id="teacher-login">Teacher Login</button>
+        <button id="student-login">Student Access</button>
+    </div>
+</header>
+
+<main>
+    <h2>Welcome to QuickQuiz Classroom</h2>
+    <p>Your platform for quick math quizzes and activities.</p>
+    
+    <!-- New Information Section -->
+    <section id="about">
+        <h3>About Maths Starter Activity</h3>
+        <p>The Maths Starter Activity is designed to engage students in a fun and interactive way. It provides a variety of quizzes and activities that help reinforce math concepts and skills.</p>
+        <p>Whether you are a teacher looking to assess student understanding or a student wanting to practice math skills, this platform offers a user-friendly interface to create, share, and participate in quizzes.</p>
+        <p>Join us to enhance your learning experience and make math enjoyable!</p>
+    </section>
+</main>
+
+    <main>
+        <!-- Teacher Dashboard (hidden by default) -->
+        <div id="teacher-dashboard" class="hidden">
+            <h2>Teacher Dashboard</h2>
+            <div class="dashboard-controls">
+                <button id="new-quiz">Create New Quiz</button>
+                <button id="manage-quizzes">Manage Quizzes</button>
+                <button id="view-results">View Results</button>
+                <button id="upload-questions">Upload Questions</button>
+            </div>
+
+            <!-- Upload Questions Section -->
+            <div id="upload-section" class="upload-section hidden">
+                <h3>Upload Questions and Mark Scheme</h3>
+                <div>
+                    <label for="questions-file">Questions File (CSV/JSON):</label>
+                    <input type="file" id="questions-file" class="file-input" accept=".csv,.json">
+                </div>
+                <div>
+                    <label for="markscheme-file">Mark Scheme File (CSV/JSON):</label>
+                    <input type="file" id="markscheme-file" class="file-input" accept=".csv,.json">
+                </div>
+                <button id="process-upload">Process Upload</button>
+                <div class="preview-area" id="upload-preview"></div>
+            </div>
+
+            <div id="quiz-editor" class="hidden">
+                <h3>Quiz Editor</h3>
+                <input type="text" id="quiz-title" placeholder="Quiz Title">
+                <div id="questions-container">
+                    <!-- Questions will be added here -->
+                </div>
+                <button id="add-question">Add Question</button>
+                <button id="save-quiz">Save Quiz</button>
+                <div id="quiz-share" class="hidden">
+                    <h4>Share this quiz:</h4>
+                    <div id="qrcode"></div>
+                    <p>Or share this link: <span id="quiz-link"></span></p>
+                    <label>Activation Time: <input type="datetime-local" id="quiz-time"></label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Quiz Interface (hidden by default) -->
+        <div id="student-interface" class="hidden">
+            <div id="quiz-access">
+                <h2>Enter Quiz Code</h2>
+                <input type="text" id="quiz-code" placeholder="Enter code provided by teacher">
+                <button id="start-quiz">Start Quiz</button>
+                <p>Or scan QR code provided by teacher</p>
+            </div>
+
+            <div id="quiz-container" class="hidden">
+                <h2 id="quiz-student-title"></h2>
+                <div id="quiz-questions">
+                    <!-- Quiz questions will appear here -->
+                </div>
+                <button id="submit-quiz">Submit Quiz</button>
+            </div>
+
+            <div id="quiz-results" class="hidden">
+                <h2>Your Results</h2>
+                <p>Score: <span id="score"></span>/<span id="total-questions"></span></p>
+                <div id="answers-review">
+                    <!-- Answers review will appear here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Maths Starter Activities&copy; 2025</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const teacherLoginBtn = document.getElementById('teacher-login');
+            const studentLoginBtn = document.getElementById('student-login');
+            const teacherDashboard = document.getElementById('teacher-dashboard');
+            const studentInterface = document.getElementById('student-interface');
+            const newQuizBtn = document.getElementById('new-quiz');
+            const uploadQuestionsBtn = document.getElementById('upload-questions');
+            const uploadSection = document.getElementById('upload-section');
+            const questionsFileInput = document.getElementById('questions-file');
+            const markschemeFileInput = document.getElementById('markscheme-file');
+            const processUploadBtn = document.getElementById('process-upload');
+            const uploadPreview = document.getElementById('upload-preview');
+            const quizEditor = document.getElementById('quiz-editor');
+            const questionsContainer = document.getElementById('questions-container');
+            const addQuestionBtn = document.getElementById('add-question');
+            const saveQuizBtn = document.getElementById('save-quiz');
+            const quizShare = document.getElementById('quiz-share');
+            const quizLink = document.getElementById('quiz-link');
+            const qrcodeDiv = document.getElementById('qrcode');
+            const quizAccess = document.getElementById('quiz-access');
+            const quizContainer = document.getElementById('quiz-container');
+            const startQuizBtn = document.getElementById('start-quiz');
+            const submitQuizBtn = document.getElementById('submit-quiz');
+            const quizResults = document.getElementById('quiz-results');
+            
+            // State
+            let currentQuiz = {
+                title: '',
+                questions: [],
+                markscheme: {}
+            };
+            
+            let quizzes = JSON.parse(localStorage.getItem('quizzes')) || [];
+            let studentAnswers = [];
+            
+            // Event Listeners
+            teacherLoginBtn.addEventListener('click', function() {
+                teacherDashboard.classList.remove('hidden');
+                studentInterface.classList.add('hidden');
+                uploadSection.classList.add('hidden');
+                quizEditor.classList.add('hidden');
+            });
+            
+            studentLoginBtn.addEventListener('click', function() {
+                studentInterface.classList.remove('hidden');
+                teacherDashboard.classList.add('hidden');
+            });
+            
+            newQuizBtn.addEventListener('click', function() {
+                quizEditor.classList.remove('hidden');
+                uploadSection.classList.add('hidden');
+                currentQuiz = {
+                    title: '',
+                    questions: [],
+                    markscheme: {}
+                };
+                document.getElementById('quiz-title').value = '';
+                questionsContainer.innerHTML = '';
+                quizShare.classList.add('hidden');
+            });
+            
+            uploadQuestionsBtn.addEventListener('click', function() {
+                uploadSection.classList.remove('hidden');
+                quizEditor.classList.add('hidden');
+            });
+            
+            processUploadBtn.addEventListener('click', processUpload);
+            addQuestionBtn.addEventListener('click', addQuestion);
+            saveQuizBtn.addEventListener('click', saveQuiz);
+            startQuizBtn.addEventListener('click', startQuiz);
+            submitQuizBtn.addEventListener('click', submitQuiz);
+            
+            // Functions
+            function addQuestion() {
+                const questionId = Date.now();
+                const questionHTML = `
+                    <div class="question-card" data-id="${questionId}">
+                        <button class="remove-question" onclick="removeQuestion(${questionId})">×</button>
+                        <textarea class="question-text" placeholder="Enter question text"></textarea>
+                        <div class="answers-container">
+                            <div class="answer-option">
+                                <input type="radio" name="correct-${questionId}" value="0" checked>
+                                <input type="text" class="answer-text" placeholder="Answer option 1">
+                                <button class="remove-answer" onclick="removeAnswer(this)">Remove</button>
+                            </div>
+                            <div class="answer-option">
+                                <input type="radio" name="correct-${questionId}" value="1">
+                                <input type="text" class="answer-text" placeholder="Answer option 2">
+                                <button class="remove-answer" onclick="removeAnswer(this)">Remove</button>
+                            </div>
+                        </div>
+                        <button class="add-answer" onclick="addAnswer(${questionId})">Add Answer</button>
+                    </div>
+                `;
+                questionsContainer.insertAdjacentHTML('beforeend', questionHTML);
+            }
+            
+            function processUpload() {
+                const questionsFile = questionsFileInput.files[0];
+                const markschemeFile = markschemeFileInput.files[0];
+                
+                if (!questionsFile && !markschemeFile) {
+                    alert('Please upload at least one file');
+                    return;
+                }
+                
+                uploadPreview.innerHTML = '<p>Processing files...</p>';
+                
+                const promises = [];
+                
+                if (questionsFile) {
+                    promises.push(readFile(questionsFile).then(data => {
+                        return { type: 'questions', data: parseFileData(data, questionsFile.name) };
+                    }));
+                }
+                
+                if (markschemeFile) {
+                    promises.push(readFile(markschemeFile).then(data => {
+                        return { type: 'markscheme', data: parseFileData(data, markschemeFile.name) };
+                    }));
+                }
+                
+                Promise.all(promises).then(results => {
+                    results.forEach(result => {
+                        if (result.type === 'questions') {
+                            currentQuiz.questions = result.data;
+                            uploadPreview.innerHTML += `<h4>Loaded ${result.data.length} questions</h4>`;
+                        } else if (result.type === 'markscheme') {
+                            currentQuiz.markscheme = result.data;
+                            uploadPreview.innerHTML += `<h4>Loaded mark scheme with ${Object.keys(result.data).length} items</h4>`;
+                        }
+                    });
+                    
+                    // Auto-populate the quiz editor if questions were uploaded
+                    if (currentQuiz.questions.length > 0) {
+                        quizEditor.classList.remove('hidden');
+                        document.getElementById('quiz-title').value = 'Uploaded Quiz';
+                        questionsContainer.innerHTML = '';
+                        
+                        currentQuiz.questions.forEach((question, index) => {
+                            const questionId = Date.now() + index;
+                            let answersHTML = '';
+                            
+                            if (question.answers && question.answers.length > 0) {
+                                question.answers.forEach((answer, aIndex) => {
+                                    answersHTML += `
+                                        <div class="answer-option">
+                                            <input type="radio" name="correct-${questionId}" value="${aIndex}" ${aIndex === 0 ? 'checked' : ''}>
+                                            <input type="text" class="answer-text" placeholder="Answer option ${aIndex + 1}" value="${answer.text || ''}">
+                                            <button class="remove-answer" onclick="removeAnswer(this)">Remove</button>
+                                        </div>
+                                    `;
+                                });
+                            } else {
+                                // Default empty answers if none provided
+                                answersHTML = `
+                                    <div class="answer-option">
+                                        <input type="radio" name="correct-${questionId}" value="0" checked>
+                                        <input type="text" class="answer-text" placeholder="Answer option 1">
+                                        <button class="remove-answer" onclick="removeAnswer(this)">Remove</button>
+                                    </div>
+                                    <div class="answer-option">
+                                        <input type="radio" name="correct-${questionId}" value="1">
+                                        <input type="text" class="answer-text" placeholder="Answer option 2">
+                                        <button class="remove-answer" onclick="removeAnswer(this)">Remove</button>
+                                    </div>
+                                `;
+                            }
+                            
+                            const questionHTML = `
+                                <div class="question-card" data-id="${questionId}">
+                                    <button class="remove-question" onclick="removeQuestion(${questionId})">×</button>
+                                    <textarea class="question-text" placeholder="Enter question text">${question.text || ''}</textarea>
+                                    <div class="answers-container">
+                                        ${answersHTML}
+                                    </div>
+                                    <button class="add-answer" onclick="addAnswer(${questionId})">Add Answer</button>
+                                </div>
+                            `;
+                            questionsContainer.insertAdjacentHTML('beforeend', questionHTML);
+                        });
+                    }
+                }).catch(error => {
+                    uploadPreview.innerHTML = `<p class="error">Error processing files: ${error.message}</p>`;
+                    console.error('Error processing files:', error);
+                });
+            }
+            
+            function readFile(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = event => resolve(event.target.result);
+                    reader.onerror = error => reject(error);
+                    
+                    if (file.name.endsWith('.csv')) {
+                        reader.readAsText(file);
+                    } else if (file.name.endsWith('.json')) {
+                        reader.readAsText(file);
+                    } else {
+                        reject(new Error('Unsupported file type'));
+                    }
+                });
+            }
+            
+        function parseFileData(data, filename) {
+            if (filename.endsWith('.csv')) {
+                return parseCSV(data);
+            } 
+            else if (filename.endsWith('.json')) {
+                return JSON.parse(data);
+            } 
+            else if (filename.endsWith('.docx')) {
+                return parseDOCX(data);
+            } 
+            else if (filename.endsWith('.pdf')) {
+                return parsePDF(data);
+            }
+            return data;
+        }
+
+            
+            function parseCSV(csvData) {
+                const lines = csvData.split('\n');
+                const headers = lines[0].split(',').map(h => h.trim());
+                const result = [];
+                
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i].trim()) continue;
+                    
+                    const obj = {};
+                    const currentline = lines[i].split(',');
+                    
+                    for (let j = 0; j < headers.length; j++) {
+                        obj[headers[j]] = currentline[j] ? currentline[j].trim() : '';
+                    }
+                    
+                    result.push(obj);
+                }
+                
+                return result;
+            }
+            
+            function saveQuiz() {
+                const quizTitle = document.getElementById('quiz-title').value.trim();
+                if (!quizTitle) {
+                    alert('Please enter a quiz title');
+                    return;
+                }
+                
+                const questionCards = questionsContainer.querySelectorAll('.question-card');
+                if (questionCards.length === 0) {
+                    alert('Please add at least one question');
+                    return;
+                }
+                
+                currentQuiz.title = quizTitle;
+                currentQuiz.questions = [];
+                currentQuiz.id = Date.now();
+                
+                questionCards.forEach(card => {
+                    const questionId = card.dataset.id;
+                    const questionText = card.querySelector('.question-text').value.trim();
+                    const answerOptions = card.querySelectorAll('.answer-text');
+                    const correctAnswer = card.querySelector(`input[name="correct-${questionId}"]:checked`).value;
+                    
+                    if (!questionText) return;
+                    
+                    const answers = [];
+                    answerOptions.forEach((option, index) => {
+                        const answerText = option.value.trim();
+                        if (answerText) {
+                            answers.push({
+                                text: answerText,
+                                correct: index === parseInt(correctAnswer)
+                            });
+                        }
+                    });
+                    
+                    if (answers.length > 0) {
+                        currentQuiz.questions.push({
+                            id: questionId,
+                            text: questionText,
+                            answers: answers
+                        });
+                    }
+                });
+                
+                if (currentQuiz.questions.length === 0) {
+                    alert('Please add valid questions with answers');
+                    return;
+                }
+                
+                // Save to local storage (in a real app, you'd use a database)
+                const existingIndex = quizzes.findIndex(q => q.id === currentQuiz.id);
+                if (existingIndex >= 0) {
+                    quizzes[existingIndex] = currentQuiz;
+                } else {
+                    quizzes.push(currentQuiz);
+                }
+                localStorage.setItem('quizzes', JSON.stringify(quizzes));
+                
+                // Generate shareable link and QR code
+                const quizUrl = `${window.location.origin}${window.location.pathname}?quiz=${currentQuiz.id}`;
+                quizLink.textContent = quizUrl;
+                
+                // Clear any existing QR code
+                qrcodeDiv.innerHTML = '';
+                new QRCode(qrcodeDiv, {
+                    text: quizUrl,
+                    width: 128,
+                    height: 128
+                });
+                
+                quizShare.classList.remove('hidden');
+            }
+            
+            function startQuiz() {
+                const quizCode = document.getElementById('quiz-code').value.trim();
+                if (!quizCode) {
+                    alert('Please enter a quiz code');
+                    return;
+                }
+                
+                // In a real app, you'd validate the code and check activation time
+                const quizId = parseInt(quizCode);
+                const quiz = quizzes.find(q => q.id === quizId);
+                
+                if (!quiz) {
+                    alert('Quiz not found. Please check the code and try again.');
+                    return;
+                }
+                
+                // Display the quiz
+                document.getElementById('quiz-student-title').textContent = quiz.title;
+                const quizQuestionsDiv = document.getElementById('quiz-questions');
+                quizQuestionsDiv.innerHTML = '';
+                
+                quiz.questions.forEach((question, qIndex) => {
+                    const questionHTML = `
+                        <div class="quiz-question" data-id="${question.id}">
+                            <h3>${qIndex + 1}. ${question.text}</h3>
+                            <div class="quiz-answers">
+                    `;
+                    
+                    question.answers.forEach((answer, aIndex) => {
+                        questionHTML += `
+                            <div class="quiz-answer">
+                                <label>
+                                    <input type="radio" name="question-${question.id}" value="${aIndex}">
+                                    ${answer.text}
+                                </label>
+                            </div>
+                        `;
+                    });
+                    
+                    questionHTML += `</div></div>`;
+                    quizQuestionsDiv.insertAdjacentHTML('beforeend', questionHTML);
+                });
+                
+                quizAccess.classList.add('hidden');
+                quizContainer.classList.remove('hidden');
+            }
+            
+            function submitQuiz() {
+                const quizId = parseInt(document.getElementById('quiz-code').value.trim());
+                const quiz = quizzes.find(q => q.id === quizId);
+                
+                if (!quiz) {
+                    alert('Error: Quiz not found');
+                    return;
+                }
+                
+                studentAnswers = [];
+                let score = 0;
+                
+                quiz.questions.forEach(question => {
+                    const selectedAnswer = document.querySelector(`input[name="question-${question.id}"]:checked`);
+                    const answerIndex = selectedAnswer ? parseInt(selectedAnswer.value) : -1;
+                    
+                    // Check against mark scheme if available, otherwise use the correct flag in answers
+                    let isCorrect = false;
+                    if (quiz.markscheme && quiz.markscheme[question.id]) {
+                        // Using mark scheme for grading
+                        const correctAnswerKey = quiz.markscheme[question.id];
+                        isCorrect = answerIndex !== -1 && 
+                                   question.answers[answerIndex].text === correctAnswerKey;
+                    } else {
+                        // Fallback to manual correct/incorrect flags
+                        isCorrect = answerIndex !== -1 && question.answers[answerIndex].correct;
+                    }
+                    
+                    if (isCorrect) score++;
+                    
+                    studentAnswers.push({
+                        questionId: question.id,
+                        answerIndex: answerIndex,
+                        isCorrect: isCorrect,
+                        questionText: question.text,
+                        correctAnswer: quiz.markscheme && quiz.markscheme[question.id] ? 
+                            quiz.markscheme[question.id] : 
+                            question.answers.find(a => a.correct)?.text || 'No correct answer marked'
+                    });
+                });
+                
+                // Display results
+                document.getElementById('score').textContent = score;
+                document.getElementById('total-questions').textContent = quiz.questions.length;
+                
+                const answersReview = document.getElementById('answers-review');
+                answersReview.innerHTML = '';
+                
+                studentAnswers.forEach((studentAnswer, index) => {
+                    const question = quiz.questions.find(q => q.id === studentAnswer.questionId);
+                    const givenAnswer = studentAnswer.answerIndex !== -1 ? 
+                        question.answers[studentAnswer.answerIndex].text : 'No answer';
+                    
+                    const answerHTML = `
+                        <div class="answer-feedback ${studentAnswer.isCorrect ? 'correct' : 'incorrect'}">
+                            <p><strong>Question ${index + 1}:</strong> ${studentAnswer.questionText}</p>
+                            <p>Your answer: ${givenAnswer}</p>
+                            <p>${studentAnswer.isCorrect ? '✓ Correct' : '✗ Incorrect'}</p>
+                            ${!studentAnswer.isCorrect ? `<p>Correct answer: ${studentAnswer.correctAnswer}</p>` : ''}
+                        </div>
+                    `;
+                    answersReview.insertAdjacentHTML('beforeend', answerHTML);
+                });
+                
+                quizContainer.classList.add('hidden');
+                quizResults.classList.remove('hidden');
+                
+                // In a real app, you'd save the results to track progress
+            }
+            
+            // Make these functions available globally for button onclick handlers
+            window.addAnswer = function(questionId) {
+                const questionCard = document.querySelector(`.question-card[data-id="${questionId}"]`);
+                const answersContainer = questionCard.querySelector('.answers-container');
+                const answerCount = answersContainer.querySelectorAll('.answer-option').length;
+                
+                const answerHTML = `
+                    <div class="answer-option">
+                        <input type="radio" name="correct-${questionId}" value="${answerCount}">
+                        <input type="text" class="answer-text" placeholder="Answer option ${answerCount + 1}">
+                        <button class="remove-answer" onclick="removeAnswer(this)">Remove</button>
+                    </div>
+                `;
+                answersContainer.insertAdjacentHTML('beforeend', answerHTML);
+            };
+            
+            window.removeAnswer = function(button) {
+                const answerOption = button.closest('.answer-option');
+                if (answerOption) {
+                    answerOption.remove();
+                }
+            };
+            
+            window.removeQuestion = function(questionId) {
+                const questionCard = document.querySelector(`.question-card[data-id="${questionId}"]`);
+                if (questionCard) {
+                    questionCard.remove();
+                }
+            };
+            
+            // Check for quiz parameter in URL (for direct access via QR code)
+            const urlParams = new URLSearchParams(window.location.search);
+            const quizParam = urlParams.get('quiz');
+            
+            if (quizParam) {
+                studentLoginBtn.click();
+                document.getElementById('quiz-code').value = quizParam;
+                startQuizBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
