@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Quick Quiz{% endblock %}
+
+{% block head %}
+<style>
+    .login-container {
+        max-width: 500px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .login-tabs {
+        display: flex;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .login-tab {
+        padding: 0.75rem 1.5rem;
+        cursor: pointer;
+        font-weight: 500;
+        color: var(--dark-color);
+        border: none;
+        background: none;
+        transition: all 0.3s;
+    }
+
+    .login-tab.active {
+        color: var(--primary-blue);
+        border-bottom: 2px solid var(--primary-blue);
+    }
+
+    .login-form {
+        display: none;
+    }
+
+    .login-form.active {
+        display: block;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        transition: border-color 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-blue);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(44, 130, 201, 0.1);
+    }
+
+    .btn-login {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: var(--primary-blue);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-login:hover {
+        background-color: var(--secondary-blue);
+    }
+
+    .switch-text {
+        text-align: center;
+        margin-top: 1rem;
+        color: var(--dark-color);
+    }
+
+    .switch-link {
+        color: var(--primary-blue);
+        cursor: pointer;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-tabs">
+        <button class="login-tab active" id="student-tab">Student Login</button>
+        <button class="login-tab" id="teacher-tab">Teacher Login</button>
+    </div>
+
+    <form id="student-login-form" class="login-form active">
+        <div class="form-group">
+            <label for="student-email">Student Email</label>
+            <input type="email" id="student-email" class="form-control" placeholder="e.g. 1234567@students.school.ac.uk" required>
+        </div>
+        <div class="form-group">
+            <label for="student-password">Password</label>
+            <input type="password" id="student-password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn-login">Login</button>
+        <p class="switch-text">Teacher? <span class="switch-link" id="switch-to-teacher">Click here to login</span></p>
+    </form>
+
+    <form id="teacher-login-form" class="login-form">
+        <div class="form-group">
+            <label for="teacher-email">Teacher Email</label>
+            <input type="email" id="teacher-email" class="form-control" placeholder="e.g. john.smith@school.ac.uk" required>
+        </div>
+        <div class="form-group">
+            <label for="teacher-password">Password</label>
+            <input type="password" id="teacher-password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn-login">Login</button>
+        <p class="switch-text">Student? <span class="switch-link" id="switch-to-student">Click here to login</span></p>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Tab switching
+    document.getElementById('student-tab').addEventListener('click', function() {
+        this.classList.add('active');
+        document.getElementById('teacher-tab').classList.remove('active');
+        document.getElementById('student-login-form').classList.add('active');
+        document.getElementById('teacher-login-form').classList.remove('active');
+    });
+
+    document.getElementById('teacher-tab').addEventListener('click', function() {
+        this.classList.add('active');
+        document.getElementById('student-tab').classList.remove('active');
+        document.getElementById('teacher-login-form').classList.add('active');
+        document.getElementById('student-login-form').classList.remove('active');
+    });
+
+    // Switch link functionality
+    document.getElementById('switch-to-teacher').addEventListener('click', function() {
+        document.getElementById('teacher-tab').click();
+    });
+
+    document.getElementById('switch-to-student').addEventListener('click', function() {
+        document.getElementById('student-tab').click();
+    });
+
+    // Form validation
+    document.getElementById('student-login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('student-email').value;
+        const password = document.getElementById('student-password').value;
+        const studentRegex = /^\d{7}@students\.[a-z]\.ac\.uk$/;
+
+        if (studentRegex.test(email)) {
+            // Redirect to student dashboard
+            window.location.href = "{% url 'student_dashboard' %}";
+        } else {
+            alert('Please enter a valid student email address');
+        }
+    });
+
+    document.getElementById('teacher-login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('teacher-email').value;
+        const password = document.getElementById('teacher-password').value;
+        const teacherRegex = /^[a-z]+\.[a-z]+@[a-z]\.ac\.uk$/;
+
+        if (teacherRegex.test(email)) {
+            // Redirect to teacher dashboard
+            window.location.href = "{% url 'teacher_dashboard' %}";
+        } else {
+            alert('Please enter a valid teacher email address');
+        }
+    });
+</script>
+{% endblock %}
