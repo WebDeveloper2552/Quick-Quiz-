@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard - Quick Quiz{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Join Quiz</h5>
+                <p class="card-text">Enter a quiz code to join a live quiz</p>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Quiz Code">
+                    <button class="btn btn-primary" type="button">Join</button>
+                </div>
+                <a href="{% url 'join_quiz' %}" class="btn btn-outline-primary">More options</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">My Progress</h5>
+                <p class="card-text">View your quiz results and progress</p>
+                <a href="{% url 'student_results' %}" class="btn btn-primary">View Progress</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="card-title">Recent Quizzes</h5>
+        <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">Algebra Basics</h6>
+                    <small class="text-success">Completed</small>
+                </div>
+                <p class="mb-1">Score: 85%</p>
+                <small>Completed 2 days ago</small>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">Geometry Quiz</h6>
+                    <small class="text-warning">Pending</small>
+                </div>
+                <p class="mb-1">Due: Tomorrow</p>
+                <small>Not started</small>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
