@@ -1,0 +1,12 @@
+AUTH_USER_MODEL = 'your_app.User'
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'dashboard'  # Will be overridden in views
+LOGOUT_REDIRECT_URL = 'index'
+
+# Add to middleware:
+MIDDLEWARE = [
+    # ...
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # ...
+]
