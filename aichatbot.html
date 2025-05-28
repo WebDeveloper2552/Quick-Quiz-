@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI PDF Chatbot</title>
+    <style>
+        body { margin: 0; }
+        #chatbot-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #0078d7;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 2em;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            z-index: 1000;
+        }
+        #chatbot-popup {
+            display: none;
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 350px;
+            max-height: 500px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            border: 2px solid #0078d7;
+            z-index: 1001;
+            overflow: hidden;
+            flex-direction: column;
+        }
+        #chatbot-header {
+            background: #0078d7;
+            color: #fff;
+            padding: 16px;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            position: relative;
+        }
+        #chatbot-close {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+        #pdf-upload-area {
+            padding: 12px 16px;
+            background: #eaf3fb;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: center;
+        }
+        #pdf-file {
+            display: none;
+        }
+        #pdf-label {
+            display: inline-block;
+            background: #0078d7;
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95em;
+        }
+        #pdf-name {
+            margin-left: 10px;
+            color: #0078d7;
+            font-size: 0.95em;
+        }
+        #pdf-actions {
+            margin-top: 8px;
+        }
+        #pdf-edit-btn {
+            background: #fff;
+            color: #0078d7;
+            border: 1px solid #0078d7;
+            border-radius: 4px;
+            padding: 4px 12px;
+            cursor: pointer;
+            font-size: 0.95em;
+        }
+        #chatbot-messages {
+            padding: 16px;
+            background: #f4f8fb;
+            height: 220px;
+            overflow-y: auto;
+            font-size: 1em;
+            color: #222;
+        }
+        .chatbot-message {
+            margin-bottom: 12px;
+        }
+        .chatbot-message.user {
+            text-align: right;
+            color: #0078d7;
+        }
+        .chatbot-message.bot {
+            text-align: left;
+            color: #222;
+        }
+        #chatbot-input-area {
+            display: flex;
+            border-top: 1px solid #e0e0e0;
+            background: #fff;
+        }
+        #chatbot-input {
+            flex: 1;
+            border: none;
+            padding: 12px;
+            font-size: 1em;
+            outline: none;
+            background: #f4f8fb;
+        }
+        #chatbot-send {
+            background: #0078d7;
+            color: #fff;
+            border: none;
+            padding: 0 18px;
+            font-size: 1.1em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button id="chatbot-btn" title="Open Chatbot">💬</button>
+    <div id="chatbot-popup">
+        <div id="chatbot-header">
+            AI PDF Chatbot
+            <button id="chatbot-close" title="Close">&times;</button>
+        </div>
+        <div id="pdf-upload-area">
+            <label id="pdf-label" for="pdf-file">Upload PDF</label>
+            <input type="file" id="pdf-file" accept="application/pdf">
+            <span id="pdf-name"></span>
+            <div id="pdf-actions" style="display:none;">
+                <button id="pdf-edit-btn">Edit PDF</button>
+            </div>
+        </div>
+        <div id="chatbot-messages"></div>
+        <form id="chatbot-input-area" autocomplete="off">
+            <input type="text" id="chatbot-input" placeholder="Type your message..." required>
+            <button type="submit" id="chatbot-send">Send</button>
+        </form>
+    </div>
+    <script>
+        // Popup logic
+        const chatbotBtn = document.getElementById('chatbot-btn');
+        const chatbotPopup = document.getElementById('chatbot-popup');
+        const chatbotClose = document.getElementById('chatbot-close');
+        chatbotBtn.onclick = () => chatbotPopup.style.display = 'flex';
+        chatbotClose.onclick = () => chatbotPopup.style.display = 'none';
+
+        // PDF upload logic
+        const pdfFileInput = document.getElementById('pdf-file');
+        const pdfName = document.getElementById('pdf-name');
+        const pdfActions = document.getElementById('pdf-actions');
+        let pdfFile = null;
+
+        document.getElementById('pdf-label').onclick = () => pdfFileInput.click();
+
+        pdfFileInput.onchange = function() {
+            if (this.files && this.files[0]) {
+                pdfFile = this.files[0];
+                pdfName.textContent = pdfFile.name;
+                pdfActions.style.display = 'block';
+                addBotMessage("PDF uploaded: " + pdfFile.name + ". You can now ask me to read or edit it.");
+            }
+        };
+
+        document.getElementById('pdf-edit-btn').onclick = function() {
+            if (!pdfFile) {
+                addBotMessage("Please upload a PDF first.");
+                return;
+            }
+            addBotMessage("PDF editing is a simulated feature in this demo. (In a real app, you would now be able to edit the PDF.)");
+        };
+
+        // Chat logic
+        const chatbotMessages = document.getElementById('chatbot-messages');
+        function addUserMessage(msg) {
+            const div = document.createElement('div');
+            div.className = 'chatbot-message user';
+            div.textContent = msg;
+            chatbotMessages.appendChild(div);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+        function addBotMessage(msg) {
+            const div = document.createElement('div');
+            div.className = 'chatbot-message bot';
+            div.textContent = msg;
+            chatbotMessages.appendChild(div);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+
+        // Math answer logic (basic, for demo)
+        function answerMathQuestion(question) {
+            // Try to evaluate simple math expressions
+            try {
+                // Only allow numbers and math operators for safety
+                if (/^[\d\s\+\-\*\/\.\(\)%]+$/.test(question.replace(/ /g,''))) {
+                    // eslint-disable-next-line no-eval
+                    let result = eval(question);
+                    if (typeof result === "number" && isFinite(result)) {
+                        return "The answer is: " + result;
+                    }
+                }
+            } catch {}
+            // Some hardcoded math Q&A for demo
+            const lower = question.toLowerCase();
+  
+            if (lower.includes("pythagoras")) {
+                return "The Pythagorean theorem states that a² + b² = c², where c is the hypotenuse of a right triangle.";
+            }
+            if (lower.includes("area of a circle")) {
+                return "The area of a circle is π × r², where r is the radius.";
+            }
+            if (lower.includes("quadratic formula")) {
+                return "The quadratic formula is: x = [-b ± √(b²-4ac)] / (2a)";
+            }
+            if (lower.includes("derivative of x^2")) {
+                return "The derivative of x² with respect to x is 2x.";
+            }
+            if (lower.includes("integral of x")) {
+                return "The integral of x with respect to x is (1/2)x² + C.";
+            }
+            if (lower.includes("pi")) {
+                return "π (pi) is approximately 3.14159.";
+            }
+            if (lower.includes("prime number")) {
+                return "A prime number is a number greater than 1 that has no positive divisors other than 1 and itself.";
+            }
+            // Teacher-specific responses
+            if (lower.includes("teacher") || lower.includes("class") || lower.includes("lesson") || lower.includes("students")) {
+                return "Hello teacher! If you need help preparing math materials, quizzes, or explanations for your students, just let me know. I can also help you generate practice problems or explain concepts in a classroom-friendly way.";
+            }
+            if (lower.includes("worksheet") || lower.includes("quiz")) {
+                return "If you want to create a worksheet or quiz for your class, just tell me the topic or type of questions you need. I can suggest some sample questions or ideas!";
+            }
+            if (lower.includes("explain") && lower.includes("to students")) {
+                return "If you want me to explain a math concept in a way that's easy for students to understand, just tell me the topic!";
+            }
+            return null;
+        }
+
+        // Rephrase logic (simple for demo)
+        function rephraseQuestion(question) {
+            return "You are asking: \"" + question.replace(/([?.!])$/, '') + "\". Let me help you with that.";
+        }
+
+        document.getElementById('chatbot-input-area').onsubmit = function(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatbot-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+            addUserMessage(msg);
+            input.value = '';
+            setTimeout(() => {
+                // Rephrase the user's question
+                addBotMessage(rephraseQuestion(msg));
+
+                // Math Q&A and teacher support
+                const mathAnswer = answerMathQuestion(msg);
+                if (mathAnswer) {
+                    addBotMessage(mathAnswer);
+                    return;
+                }
+                // PDF logic
+                if (pdfFile && /edit|change|modify|update/i.test(msg)) {
+                    addBotMessage("Sure! (Simulated) What would you like to change in the PDF?");
+                } else if (pdfFile && /read|extract|show|content/i.test(msg)) {
+                    addBotMessage("Here's a simulated preview of your PDF. (In a real app, I'd extract and show the content.)");
+                } else if (!pdfFile && /pdf/i.test(msg)) {
+                    addBotMessage("Please upload a PDF file first.");
+                } else {
+                    addBotMessage("I'm your AI PDF assistant! You can ask me any math question, get help with teaching materials, or upload a PDF and ask me to read or edit it.");
+                }
+            }, 700);
+        };
+    </script>
+</body>
+</html>
