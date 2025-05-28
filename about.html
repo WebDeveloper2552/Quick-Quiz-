@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About QuickQuiz Classroom</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --primary-blue-dark: #1e40af;
+            --accent-blue: #2196f3;
+            --light-green: #006780;
+            --dark-green: #00818A;
+            --light-color: #f5f5f5;
+            --dark-color: #333;
+            --success-color: #16a34a;
+            --warning-color: #ff9800;
+            --error-red: #dc2626;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f8f9fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-green));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0.8rem 1rem;
+        }
+        .navbar-custom .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: white !important;
+            display: flex;
+            align-items: center;
+        }
+        .navbar-custom .navbar-brand img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        .navbar-custom .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            margin: 0 0.2rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .navbar-custom .nav-link:hover,
+        .navbar-custom .nav-link.active {
+            background-color: rgba(255,255,255,0.15);
+            color: white !important;
+        }
+        .navbar-custom .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .navbar-custom .dropdown-item {
+            padding: 0.5rem 1.5rem;
+        }
+        .navbar-custom .dropdown-item:hover {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+        .about-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 3rem;
+            margin: 3rem auto;
+            max-width: 1000px;
+        }
+        .about-section h1 {
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 700;
+        }
+        .about-section p {
+            margin-bottom: 1.2rem;
+            line-height: 1.8;
+        }
+         footer {
+        background: linear-gradient(135deg, var(--dark-green), var(--primary-blue));
+        color: white;
+        text-align: center;
+        padding: 0.7rem 0 0.5rem 0; /* Skinnier footer */
+        margin-top: auto;
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        z-index: 100;
+    }
+
+     .about-section {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        padding: 3rem;
+        margin: 3rem auto;
+        max-width: 1000px;
+        position: relative; /* Ensure stacking context */
+        z-index: 1;         /* Place above background */
+    }
+    body {
+        background: url('images/background1.jpg') ;
+    }
+    
+    .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 0.3rem;
+        flex-wrap: wrap;
+    }
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+        .footer-links a:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .social-icons a {
+            color: white;
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+        .social-icons a:hover {
+            transform: translateY(-3px);
+        }
+        @media (max-width: 768px) {
+            .about-section {
+                padding: 2rem 1.5rem;
+            }
+            .navbar-custom .navbar-brand {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <img src="images/logo.png" alt="QuickQuiz Logo">
+                QuickQuiz
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            For Teachers
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="create_quizes.html">Create Quizzes</a></li>
+                            <li><a class="dropdown-item" href="manage_quizes.html">Manage Quizzes</a></li>
+                            <li><a class="dropdown-item" href="teacher_student_result_tracker.html">Results Tracker</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            For Students
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="student_dashboard.html">Student Dashboard</a></li>
+                            <li><a class="dropdown-item" href="quiz_generator.html">Practice Quizzes</a></li>
+                            <li><a class="dropdown-item" href="class_tracker_tracker.html">Progress Tracker</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="ai_chatbot.html">AI Quiz Generator</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="signup.html">Sign Up</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    
+    <div class="about-section">
+    <h1>About QuickQuiz Classroom</h1>
+    <p>
+        QuickQuiz Classroom was born from a simple idea: math learning should be engaging, interactive, and accessible to everyone. Our platform bridges the gap between traditional teaching methods and modern technology, creating an environment where students thrive and teachers can focus on what matters most - teaching.
+    </p>
+    <p>
+        With features designed by educators for educators, QuickQuiz helps you create meaningful assessments, track student progress, and identify learning gaps in real-time. Students benefit from immediate feedback, interactive problem-solving, and a gamified learning experience that keeps them motivated.
+    </p>
+    <p>
+        Whether you're teaching basic arithmetic or advanced calculus, QuickQuiz adapts to your curriculum and teaching style, making it the perfect companion for math educators at all levels.
+    </p>
+
+    <!-- Recommended Resources Section -->
+    <div style="margin-top:2.5rem;">
+        <h2 style="color:var(--primary-blue);font-size:1.5rem;margin-bottom:1rem;">Recommended Resources for Engaging Math Learning with QuickQuiz</h2>
+        <p>Here are five useful links that align with the goals of QuickQuiz Classroom:</p>
+        <ol>
+            <li>
+                <strong>Quizizz</strong> - 
+                <a href="https://quizizz.com" target="_blank" rel="noopener">Quizizz: Engaging Learning with Interactive Quizzes</a>
+                <br>
+                <span style="font-size:0.97em;color:var(--dark-color);">
+                    A platform for creating fun and interactive quizzes that enhance student engagement.
+                </span>
+            </li>
+            <li>
+                <strong>Common Sense Education</strong> - 
+                <a href="https://www.commonsense.org/education/" target="_blank" rel="noopener">Common Sense Education Reviews</a>
+                <br>
+                <span style="font-size:0.97em;color:var(--dark-color);">
+                    Reviews of various educational tools, including those that promote interactive learning.
+                </span>
+            </li>
+            <li>
+                <strong>Prodigy Math</strong> - 
+                <a href="https://www.prodigygame.com" target="_blank" rel="noopener">Prodigy: Math Game for Kids</a>
+                <br>
+                <span style="font-size:0.97em;color:var(--dark-color);">
+                    A gamified math learning platform that combines fun with educational content.
+                </span>
+            </li>
+            <li>
+                <strong>EdTech Magazine</strong> - 
+                <a href="https://edtechmagazine.com/k12/article/2020/01/adaptive-learning-education-what-teachers-need-know" target="_blank" rel="noopener">Adaptive Learning in Education</a>
+                <br>
+                <span style="font-size:0.97em;color:var(--dark-color);">
+                    Insights on how adaptive learning technologies can enhance the educational experience.
+                </span>
+            </li>
+            <li>
+                <strong>Education Corner</strong> - 
+                <a href="https://www.educationcorner.com/assessment-strategies.html" target="_blank" rel="noopener">Effective Assessment Strategies</a>
+                <br>
+                <span style="font-size:0.97em;color:var(--dark-color);">
+                    Discusses the importance of meaningful assessments in education, emphasizing teacher-centric designs.
+                </span>
+            </li>
+        </ol>
+        <p>These resources will help you explore effective strategies and tools for enhancing math learning.</p>
+        <p>Find out more about the creators</p>
+    </div>
+</div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <a href="about.html">About Us</a>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+        </div>
+        </div>
+        <p>&copy; 2025 QuickQuiz Classroom. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
