@@ -546,9 +546,129 @@
                 padding: 15px 20px;
             }
         }
+
+        /* Footer */
+        .ai-footer {
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            color: #fff;
+            padding: 30px 0 15px 0;
+            margin-top: 40px;
+            box-shadow: 0 -2px 16px rgba(67, 97, 238, 0.08);
+            font-family: 'Poppins', sans-serif;
+        }
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .footer-logo {
+            width: 38px;
+            height: 38px;
+            margin-right: 12px;
+            border-radius: 8px;
+            background: #fff;
+            object-fit: contain;
+            box-shadow: 0 2px 8px rgba(67, 97, 238, 0.10);
+        }
+        .footer-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-bottom: 14px;
+        }
+        .footer-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            opacity: 0.92;
+        }
+        .footer-links a:hover {
+            color: #f72585;
+            text-decoration: underline;
+            opacity: 1;
+        }
+        .footer-copy {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            margin-top: 6px;
+            text-align: center;
+        }
+        @media (max-width: 700px) {
+            .footer-container {
+                padding: 0 10px;
+            }
+            .footer-links {
+                gap: 10px;
+                font-size: 0.95rem;
+            }
+            .footer-title {
+                font-size: 1.05rem;
+            }
+        }
     </style>
 </head>
 <body>
+     <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <img src="logo.png" alt="QuickQuiz Logo">
+                QuickQuiz
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            For Teachers
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="create_quizes.html">Create Quizzes</a></li>
+                            <li><a class="dropdown-item" href="manage_quizes.html">Manage Quizzes</a></li>
+                            <li><a class="dropdown-item" href="teacher_student_result_tracker.html">Results Tracker</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            For Students
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="student_dashboard.html">Student Dashboard</a></li>
+                            <li><a class="dropdown-item" href="quiz_generator.html">Practice Quizzes</a></li>
+                            <li><a class="dropdown-item" href="class_tracker.html">Progress Tracker</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="aichatbot.html">AI Quiz Generator</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="signup.html">Sign Up</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
     <div class="ai-container">
         <div class="ai-header">
             <div class="ai-title">
@@ -1642,156 +1762,98 @@
 
     <!-- Add this just before the closing </body> tag -->
 
-<!-- Math Keyboard Modal -->
-<div id="math-keyboard-modal" style="display:none; position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:2px solid #4361ee; box-shadow:0 -4px 24px rgba(67,97,238,0.10); z-index:9999; padding:18px 10px 10px 10px;">
-    <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;">
-        <button class="latex-btn" data-insert="\\frac{}{}">a⁄b</button>
-        <button class="latex-btn" data-insert="^{}">x<sup>y</sup></button>
-        <button class="latex-btn" data-insert="\\sqrt{}">√</button>
-        <button class="latex-btn" data-insert="\\pi">π</button>
-        <button class="latex-btn" data-insert="\\theta">θ</button>
-        <button class="latex-btn" data-insert="\\int_{}^{}">∫</button>
-        <button class="latex-btn" data-insert="\\sum_{}^{}">∑</button>
-        <button class="latex-btn" data-insert="\\sin">sin</button>
-        <button class="latex-btn" data-insert="\\cos">cos</button>
-        <button class="latex-btn" data-insert="\\tan">tan</button>
-        <button class="latex-btn" data-insert="\\log">log</button>
-        <button class="latex-btn" data-insert="\\ln">ln</button>
-        <button class="latex-btn" data-insert="\\leq">≤</button>
-        <button class="latex-btn" data-insert="\\geq">≥</button>
-        <button class="latex-btn" data-insert="\\neq">≠</button>
-        <button class="latex-btn" data-insert="\\approx">≈</button>
-        <button class="latex-btn" data-insert="\\pm">±</button>
-        <button class="latex-btn" data-insert="\\cdot">·</button>
-        <button class="latex-btn" data-insert="\\left(\\right)">()</button>
-        <button class="latex-btn" data-insert="\\left[\\right]">[]</button>
-        <button class="latex-btn" data-insert="\\left\\{\\right\\}">{}</button>
-        <button class="latex-btn" data-insert="\\infty">∞</button>
-        <button class="latex-btn" data-insert="\\rightarrow">→</button>
-        <button class="latex-btn" data-insert="\\degree">°</button>
-        <button class="latex-btn" data-insert="\\frac{\\partial}{\\partial x}">∂/∂x</button>
-        <button class="latex-btn" id="close-math-keyboard" style="background:#f72585;color:#fff;">Close</button>
+<footer class="ai-footer">
+    <div class="footer-container">
+        <div class="footer-brand">
+            <img src="logo.png" alt="QuickQuiz Logo" class="footer-logo">
+            <span class="footer-title">QuickQuiz</span>
+        </div>
+        <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="create_quizes.html">Create Quizzes</a>
+            <a href="quiz_generator.html">Practice Quizzes</a>
+            <a href="aichatbot.html">AI Quiz Generator</a>
+            <a href="login.html">Login</a>
+            <a href="signup.html">Sign Up</a>
+        </div>
+        <div class="footer-copy">
+            &copy; 2025 QuickQuiz. All rights reserved.
+        </div>
     </div>
-</div>
+</footer>
 
-<!-- Calculator Modal -->
-<div id="calculator-modal" style="display:none; position:fixed; right:20px; bottom:20px; width:320px; background:#fff; border:2px solid #4361ee; border-radius:14px; box-shadow:0 8px 32px rgba(67,97,238,0.13); z-index:9999; padding:18px;">
-    <div style="font-weight:600; color:#4361ee; margin-bottom:10px;">Calculator</div>
-    <input id="calc-display" type="text" readonly style="width:100%; font-size:1.3rem; padding:10px; border-radius:8px; border:1px solid #e0e0e0; margin-bottom:10px; text-align:right;">
-    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">
-        <button class="calc-btn">7</button>
-        <button class="calc-btn">8</button>
-        <button class="calc-btn">9</button>
-        <button class="calc-btn" data-op="/">÷</button>
-        <button class="calc-btn">4</button>
-        <button class="calc-btn">5</button>
-        <button class="calc-btn">6</button>
-        <button class="calc-btn" data-op="*">×</button>
-        <button class="calc-btn">1</button>
-        <button class="calc-btn">2</button>
-        <button class="calc-btn">3</button>
-        <button class="calc-btn" data-op="-">−</button>
-        <button class="calc-btn">0</button>
-        <button class="calc-btn">.</button>
-        <button class="calc-btn" id="calc-equals">=</button>
-        <button class="calc-btn" data-op="+">+</button>
-        <button class="calc-btn" id="calc-clear" style="grid-column:span 2; background:#f72585; color:#fff;">C</button>
-        <button class="calc-btn" id="calc-insert" style="grid-column:span 2; background:#4895ef; color:#fff;">Insert</button>
-    </div>
-</div>
-
-<script>
-// Math Keyboard logic
-let mathKeyboardTarget = null;
-function showMathKeyboard(target) {
-    mathKeyboardTarget = target;
-    document.getElementById('math-keyboard-modal').style.display = 'block';
+<style>
+.ai-footer {
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+    color: #fff;
+    padding: 30px 0 15px 0;
+    margin-top: 40px;
+    box-shadow: 0 -2px 16px rgba(67, 97, 238, 0.08);
+    font-family: 'Poppins', sans-serif;
 }
-function hideMathKeyboard() {
-    document.getElementById('math-keyboard-modal').style.display = 'none';
-    mathKeyboardTarget = null;
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
-document.querySelectorAll('input[type="text"], textarea').forEach(el => {
-    el.addEventListener('focus', function() {
-        showMathKeyboard(this);
-    });
-});
-document.getElementById('close-math-keyboard').onclick = hideMathKeyboard;
-document.querySelectorAll('#math-keyboard-modal .latex-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        if (!mathKeyboardTarget || this.id === 'close-math-keyboard') return;
-        const latexCode = this.getAttribute('data-insert');
-        const start = mathKeyboardTarget.selectionStart;
-        const end = mathKeyboardTarget.selectionEnd;
-        const before = mathKeyboardTarget.value.substring(0, start);
-        const after = mathKeyboardTarget.value.substring(end);
-        mathKeyboardTarget.value = before + latexCode + after;
-        mathKeyboardTarget.focus();
-        mathKeyboardTarget.selectionStart = mathKeyboardTarget.selectionEnd = start + latexCode.length;
-        if (mathKeyboardTarget.id === 'math-problem') updateSolutionPreview();
-    });
-});
-
-// Calculator logic
-let calcValue = '';
-let calcResult = '';
-const calcModal = document.getElementById('calculator-modal');
-
-
-
-const calcDisplay = document.getElementById('calc-display');
-function showCalculator() {
-    calcModal.style.display = 'block';
-    calcDisplay.value = calcValue;
+.footer-brand {
+    display: flex;
+    align-items: center;
+    margin-bottom: 18px;
 }
-function hideCalculator() {
-    calcModal.style.display = 'none';
-    calcValue = '';
-    calcResult = '';
-    calcDisplay.value = '';
+.footer-logo {
+    width: 38px;
+    height: 38px;
+    margin-right: 12px;
+    border-radius: 8px;
+    background: #fff;
+    object-fit: contain;
+    box-shadow: 0 2px 8px rgba(67, 97, 238, 0.10);
 }
-document.addEventListener('keydown', function(e) {
-    // Ctrl+Alt+C to open calculator
-    if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'c') {
-        showCalculator();
+.footer-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-bottom: 14px;
+}
+.footer-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+    opacity: 0.92;
+}
+.footer-links a:hover {
+    color: #f72585;
+    text-decoration: underline;
+    opacity: 1;
+}
+.footer-copy {
+    font-size: 0.95rem;
+    opacity: 0.8;
+    margin-top: 6px;
+    text-align: center;
+}
+@media (max-width: 700px) {
+    .footer-container {
+        padding: 0 10px;
     }
-});
-document.getElementById('calc-clear').onclick = function() {
-    calcValue = '';
-    calcResult = '';
-    calcDisplay.value = '';
-};
-document.querySelectorAll('.calc-btn').forEach(btn => {
-    if (btn.id === 'calc-clear' || btn.id === 'calc-insert' || btn.id === 'calc-equals') return;
-    btn.addEventListener('click', function() {
-        const val = btn.getAttribute('data-op') || btn.textContent;
-        calcValue += val;
-        calcDisplay.value = calcValue;
-    });
-});
-document.getElementById('calc-equals').onclick = function() {
-    try {
-        // eslint-disable-next-line no-eval
-        calcResult = eval(calcValue.replace(/÷/g, '/').replace(/×/g, '*'));
-        calcDisplay.value = calcResult;
-    } catch {
-        calcDisplay.value = 'Error';
+    .footer-links {
+        gap: 10px;
+        font-size: 0.95rem;
     }
-};
-document.getElementById('calc-insert').onclick = function() {
-    if (mathKeyboardTarget) {
-        mathKeyboardTarget.value += calcDisplay.value;
-        mathKeyboardTarget.focus();
-        if (mathKeyboardTarget.id === 'math-problem') updateSolutionPreview();
+    .footer-title {
+        font-size: 1.05rem;
     }
-    hideCalculator();
-};
-// Optional: Close calculator when clicking outside
-window.addEventListener('mousedown', function(e) {
-    if (calcModal.style.display === 'block' && !calcModal.contains(e.target) && e.target.id !== 'calculator-modal') {
-        hideCalculator();
-    }
-});
-</script>
+}
+</style>
 </body>
 </html>
