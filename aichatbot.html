@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Math Genius AI Assistant</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Add Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #4361ee;
@@ -32,10 +34,57 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 20px;
             color: var(--text-dark);
+        }
+        
+        /* Navbar Customization */
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-color) 100%);
+            width: 100%;
+            box-shadow: var(--shadow);
+        }
+        
+        .navbar-brand {
+            color: white !important;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-brand img {
+            height: 30px;
+            margin-right: 10px;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+        
+        .dropdown-menu {
+            border: none;
+            border-radius: 10px;
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .dropdown-item {
+            padding: 8px 15px;
+            transition: var(--transition);
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--primary-color);
+            color: white !important;
         }
         
         /* Main Container */
@@ -49,6 +98,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            margin-top: 20px;
         }
         
         /* Header */
@@ -555,6 +605,7 @@
             margin-top: 40px;
             box-shadow: 0 -2px 16px rgba(67, 97, 238, 0.08);
             font-family: 'Poppins', sans-serif;
+            width: 100%;
         }
         .footer-container {
             max-width: 1200px;
@@ -620,6 +671,327 @@
             }
         }
     </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <img src="logo.png" alt="QuickQuiz Logo">
+                QuickQuiz
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            For Teachers
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="create_quizes.html">Create Quizzes</a></li>
+                            <li><a class="dropdown-item" href="manage_quizes.html">Manage Quizzes</a></li>
+                            <li><a class="dropdown-item" href="teacher_student_result_tracker.html">Results Tracker</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            For Students
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="student_dashboard.html">Student Dashboard</a></li>
+                            <li><a class="dropdown-item" href="quiz_generator.html">Practice Quizzes</a></li>
+                            <li><a class="dropdown-item" href="class_tracker.html">Progress Tracker</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="aichatbot.html">AI Quiz Generator</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="signup.html">Sign Up</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="ai-container">
+        <div class="ai-header">
+            <div class="ai-title">
+                <div class="ai-icon"></div>
+                Math Genius AI Assistant
+                <span class="badge">Premium</span>
+            </div>
+        </div>
+        
+        <div class="ai-content">
+            <div class="ai-sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Topics</div>
+                    <ul class="topic-list" id="topic-list">
+                        <!-- Topics will be populated from repository -->
+                    </ul>
+                </div>
+                
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Recent Queries</div>
+                    <ul class="topic-list" id="recent-queries">
+                        <!-- Recent queries will be populated dynamically -->
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="ai-chat">
+                <div class="ai-tabs">
+                    <button class="tab-btn active" data-tab="solve">Solve Problems</button>
+                    <button class="tab-btn" data-tab="generate">Generate Questions</button>
+                    <button class="tab-btn" data-tab="pdf">PDF Import</button>
+                    <button class="tab-btn" data-tab="repository">Question Bank</button>
+                </div>
+                
+                <!-- Solve Problems Tab -->
+                <div class="tab-content active" id="solve-tab">
+                    <div class="repository-connection">
+                        <div class="connection-status">
+                            <div class="status-indicator status-connected"></div>
+                            <span>Connected to Math Repository</span>
+                        </div>
+                        <button class="btn btn-secondary" id="refresh-repo">Refresh</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="math-problem">Enter Math Problem:</label>
+                        <textarea id="math-problem" rows="4" placeholder="Type or paste your math problem here, using LaTeX for equations (e.g., Solve $\int x^2\,dx$)"></textarea>
+                    </div>
+                    
+                    <div class="latex-toolbar">
+                        <button class="latex-btn" data-insert="\frac{}{}">Fraction</button>
+                        <button class="latex-btn" data-insert="^{}">Exponent</button>
+                        <button class="latex-btn" data-insert="\sqrt{}">Square Root</button>
+                        <button class="latex-btn" data-insert="\int_{}^{}">Integral</button>
+                        <button class="latex-btn" data-insert="\sum_{}^{}">Summation</button>
+                        <button class="latex-btn" data-insert="\lim_{x \to }">Limit</button>
+                        <button class="latex-btn" data-insert="\begin{pmatrix} \end{pmatrix}">Matrix</button>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn" id="solve-problem">Solve Problem</button>
+                        <button class="btn btn-secondary" id="clear-problem">Clear</button>
+                        <button class="btn btn-secondary" id="similar-problems">Find Similar Problems</button>
+                    </div>
+                    
+                    <div class="processing" id="solve-processing">
+                        <div class="spinner"></div>
+                        <p>Analyzing problem and searching repository...</p>
+                    </div>
+                    
+                    <div class="response-area" id="solution-preview">
+                        <div class="preview-title">Solution</div>
+                        <div id="solution-output"></div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn" id="create-quiz-question">Create Quiz Question</button>
+                            <button class="btn btn-secondary" id="save-solution">Save to Repository</button>
+                            <button class="btn btn-secondary" id="show-steps">Show Detailed Steps</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Generate Questions Tab -->
+                <div class="tab-content" id="generate-tab">
+                    <div class="form-group">
+                        <label for="question-topic">Topic:</label>
+                        <input type="text" id="question-topic" placeholder="E.g. Quadratic Equations, Trigonometry, Calculus">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="generate-difficulty">Difficulty:</label>
+                        <select id="generate-difficulty">
+                            <option value="basic">Basic</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="question-count">Number of Questions:</label>
+                        <input type="number" id="question-count" min="1" max="20" value="5">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="question-style">Question Style:</label>
+                        <select id="question-style">
+                            <option value="mixed">Mixed</option>
+                            <option value="multiple-choice">Multiple Choice</option>
+                            <option value="short-answer">Short Answer</option>
+                            <option value="word-problem">Word Problem</option>
+                            <option value="proof">Proof</option>
+                        </select>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn" id="generate-questions">Generate Questions</button>
+                        <button class="btn btn-secondary" id="generate-from-repo">From Repository Topics</button>
+                    </div>
+                    
+                    <div class="processing" id="generate-processing">
+                        <div class="spinner"></div>
+                        <p>Generating questions from repository...</p>
+                    </div>
+                    
+                    <div class="response-area" id="generated-questions">
+                        <div class="preview-title">Generated Questions</div>
+                        <div id="questions-output"></div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn" id="add-to-quiz">Add to Quiz</button>
+                            <button class="btn btn-secondary" id="regenerate-questions">Regenerate</button>
+                            <button class="btn btn-secondary" id="save-to-repo">Save to Repository</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- PDF Import Tab -->
+                <div class="tab-content" id="pdf-tab">
+                    <div class="form-group">
+                        <label>Curriculum Focus:
+                            <select id="curriculum-focus">
+                                <option value="number">Number Theory</option>
+                                <option value="algebra">Algebra</option>
+                                <option value="geometry">Geometry</option>
+                                <option value="calculus">Calculus</option>
+                                <option value="statistics">Probability & Statistics</option>
+                            </select>
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Upload PDF Worksheet:
+                            <input type="file" id="pdf-upload" accept=".pdf">
+                        </label>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn" id="process-pdf">Process PDF</button>
+                        <button class="btn btn-secondary" id="connect-repo-pdf">Link to Repository</button>
+                    </div>
+                    
+                    <div class="processing" id="pdf-processing">
+                        <div class="spinner"></div>
+                        <p>Extracting questions from PDF...</p>
+                    </div>
+                    
+                    <div class="response-area" id="pdf-preview">
+                        <div class="preview-title">Extracted Questions</div>
+                        <div class="question-list" id="question-list"></div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn" id="rewrite-questions">Rewrite Selected</button>
+                            <button class="btn btn-secondary" id="categorize-questions">Categorize</button>
+                            <button class="btn btn-secondary" id="import-to-repo">Import to Repository</button>
+                        </div>
+                        
+                        <div class="preview-box" id="rewrite-options" style="display: none;">
+                            <div class="preview-title">Rewrite Options</div>
+                            <div class="form-group">
+                                <label>Difficulty:
+                                    <select id="question-difficulty">
+                                        <option value="basic">Basic</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>Question Type:
+                                    <select id="question-type">
+                                        <option value="multiple-choice">Multiple Choice</option>
+                                        <option value="short-answer">Short Answer</option>
+                                        <option value="word-problem">Word Problem</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <button class="btn" id="apply-rewrite">Apply Changes</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Question Bank Tab -->
+                <div class="tab-content" id="repository-tab">
+                    <div class="repository-connection">
+                        <div class="connection-status">
+                            <div class="status-indicator status-connected"></div>
+                            <span>Connected to Math Question Repository</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn" id="refresh-repo2">Refresh</button>
+                            <button class="btn btn-secondary" id="export-repo">Export</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="repo-search">Search Repository:</label>
+                        <input type="text" id="repo-search" placeholder="Search by topic, difficulty, or keywords">
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn" id="search-repo">Search</button>
+                        <button class="btn btn-secondary" id="clear-search">Clear</button>
+                        <button class="btn btn-secondary" id="filter-repo">Filter</button>
+                    </div>
+                    
+                    <div class="processing" id="repo-processing">
+                        <div class="spinner"></div>
+                        <p>Searching repository...</p>
+                    </div>
+                    
+                    <div class="response-area" id="repo-results">
+                        <div class="preview-title">Repository Questions</div>
+                        <div class="question-list" id="repo-questions"></div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn" id="create-quiz-from-repo">Create Quiz</button>
+                            <button class="btn btn-secondary" id="edit-repo-item">Edit</button>
+                            <button class="btn btn-warning" id="delete-repo-item">Delete</button>
+                            <button class="btn btn-secondary" id="download-questions">Download</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="ai-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <img src="logo.png" alt="QuickQuiz Logo" class="footer-logo">
+                <span class="footer-title">QuickQuiz</span>
+            </div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="create_quizes.html">Create Quizzes</a>
+                <a href="quiz_generator.html">Practice Quizzes</a>
+                <a href="aichatbot.html">AI Quiz Generator</a>
+                <a href="login.html">Login</a>
+                <a href="signup.html">Sign Up</a>
+            </div>
+            <div class="footer-copy">
+                &copy; 2025 QuickQuiz. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Add Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
      <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
@@ -1760,100 +2132,4 @@
     });
     </script>
 
-    <!-- Add this just before the closing </body> tag -->
-
-<footer class="ai-footer">
-    <div class="footer-container">
-        <div class="footer-brand">
-            <img src="logo.png" alt="QuickQuiz Logo" class="footer-logo">
-            <span class="footer-title">QuickQuiz</span>
-        </div>
-        <div class="footer-links">
-            <a href="index.html">Home</a>
-            <a href="create_quizes.html">Create Quizzes</a>
-            <a href="quiz_generator.html">Practice Quizzes</a>
-            <a href="aichatbot.html">AI Quiz Generator</a>
-            <a href="login.html">Login</a>
-            <a href="signup.html">Sign Up</a>
-        </div>
-        <div class="footer-copy">
-            &copy; 2025 QuickQuiz. All rights reserved.
-        </div>
-    </div>
-</footer>
-
-<style>
-.ai-footer {
-    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
-    color: #fff;
-    padding: 30px 0 15px 0;
-    margin-top: 40px;
-    box-shadow: 0 -2px 16px rgba(67, 97, 238, 0.08);
-    font-family: 'Poppins', sans-serif;
-}
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.footer-brand {
-    display: flex;
-    align-items: center;
-    margin-bottom: 18px;
-}
-.footer-logo {
-    width: 38px;
-    height: 38px;
-    margin-right: 12px;
-    border-radius: 8px;
-    background: #fff;
-    object-fit: contain;
-    box-shadow: 0 2px 8px rgba(67, 97, 238, 0.10);
-}
-.footer-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    letter-spacing: 1px;
-}
-.footer-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 18px;
-    margin-bottom: 14px;
-}
-.footer-links a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
-    opacity: 0.92;
-}
-.footer-links a:hover {
-    color: #f72585;
-    text-decoration: underline;
-    opacity: 1;
-}
-.footer-copy {
-    font-size: 0.95rem;
-    opacity: 0.8;
-    margin-top: 6px;
-    text-align: center;
-}
-@media (max-width: 700px) {
-    .footer-container {
-        padding: 0 10px;
-    }
-    .footer-links {
-        gap: 10px;
-        font-size: 0.95rem;
-    }
-    .footer-title {
-        font-size: 1.05rem;
-    }
-}
-</style>
-</body>
 </html>
