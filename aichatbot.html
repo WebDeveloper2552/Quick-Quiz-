@@ -787,6 +787,7 @@
                             <button class="btn" id="create-quiz-from-repo">Create Quiz</button>
                             <button class="btn btn-secondary" id="edit-repo-item">Edit</button>
                             <button class="btn btn-warning" id="delete-repo-item">Delete</button>
+                            <button class="btn btn-info" id="download-questions">Download</button>
                         </div>
                     </div>
                 </div>
@@ -864,10 +865,747 @@
             ]
         };
 
-        // Initialize the UI with repository data
-        function initRepositoryUI() {
-            // Populate topics sidebar
+        // --- Add/replace in your <script> block after mathRepository definition ---
+
+        // Store user-submitted and AI-generated questions in the repository
+        if (!mathRepository.userQuestions) mathRepository.userQuestions = [];
+        if (!mathRepository.aiQuestions) mathRepository.aiQuestions = [];
+
+        // When a user saves a question (e.g., from "Save to Repository" or "Create Quiz Question"), add it to userQuestions
+        function saveUserQuestion(question, answer, topic, subtopic, difficulty, source = "user") {
+            mathRepository.userQuestions.push({
+                id: Date.now() + Math.floor(Math.random()*1000),
+                question,
+                answer,
+                topic,
+                subtopic,
+                difficulty,
+                source
+            });
+        }
+
+        // When AI generates questions, store them in aiQuestions with topic/category
+        function saveAIQuestions(questions, topic, difficulty, style) {
+            questions.forEach(q => {
+                mathRepository.aiQuestions.push({
+                    id: Date.now() + Math.floor(Math.random()*1000),
+                    question: q,
+                    answer: "AI-generated answer (not provided)", // You can enhance this
+                    topic,
+                    difficulty,
+                    style,
+                    source: "ai"
+                });
+            });
+        }
+
+        // Update repository tab to show all user and AI questions, grouped by category
+        function loadAllRepositoryQuestions(filterTopic = null) {
+            const repoQuestions = document.getElementById('repo-questions');
+            repoQuestions.innerHTML = '';
+
+            // Combine all questions
+            let allQuestions = [
+                ...mathRepository.questions.map(q => ({...q, source: "default"})),
+                ...mathRepository.userQuestions,
+                ...mathRepository.aiQuestions
+            ];
+
+            // Filter by topic if needed
+            if (filterTopic) {
+                allQuestions = allQuestions.filter(q => (q.topic && q.topic.toLowerCase() === filterTopic.toLowerCase()));
+            }
+
+            // Group by topic/category
+            const grouped = {};
+            allQuestions.forEach(q => {
+                const cat = q.topic || "Uncategorized";
+                if (!grouped[cat]) grouped[cat] = [];
+                grouped[cat].push(q);
+            });
+
+            // Render grouped questions
+            Object.keys(grouped).forEach(cat => {
+                const catHeader = document.createElement('div');
+                catHeader.innerHTML = `<div class="preview-title" style="margin-top:20px;">${cat}</div>`;
+                repoQuestions.appendChild(catHeader);
+
+                grouped[cat].forEach(question => {
+                    const questionItem = document.createElement('div');
+                    questionItem.className = 'question-item';
+                    questionItem.innerHTML = `
+                        <input type="checkbox" class="question-checkbox" id="repo-q${question.id}">
+                        <label for="repo-q${question.id}">${question.question}</label>
+                        <div>
+                            <span class="topic-tag">${question.subtopic || question.style || ''}</span>
+                            <span class="topic-tag">${question.difficulty || ''}</span>
+                            <span class="topic-tag" style="background:#e0e0e0;color:#333;">${question.source === "ai" ? "AI" : question.source === "user" ? "User" : "Default"}</span>
+                        </div>
+                    `;
+                    repoQuestions.appendChild(questionItem);
+                });
+            });
+
+            MathJax.typesetPromise();
+        }
+
+        // When user clicks "Save to Repository" from generated questions, save them as AI questions
+        document.getElementById('save-to-repo').addEventListener('click', function() {
+            const topic = document.getElementById('question-topic').value.trim();
+            const difficulty = document.getElementById('generate-difficulty').value;
+            const style = document.getElementById('question-style').value;
+            const output = document.getElementById('questions-output');
+            const questions = Array.from(output.querySelectorAll('.question-item')).map(div => div.textContent.replace(/^Q\d+:\s*/, ''));
+            saveAIQuestions(questions, topic, difficulty, style);
+            showMessage('generated-questions', 'Questions saved to repository!');
+            loadAllRepositoryQuestions();
+        });
+
+        // When user creates a quiz question from a solution, save as user question
+        document.getElementById('create-quiz-question').addEventListener('click', function() {
+            const problem = document.getElementById('math-problem').value.trim();
+            const answer = document.getElementById('solution-output').textContent.trim();
+            const topic = "User Submission";
+            saveUserQuestion(problem, answer, topic, "", "", "user");
+            showMessage('solution-preview', 'Quiz question created from this solution!');
+            loadAllRepositoryQuestions();
+        });
+
+        // When repository tab is loaded or refreshed, show all questions
+        document.querySelector('.tab-btn[data-tab="repository"]').addEventListener('click', function() {
+            loadAllRepositoryQuestions();
+        });
+        document.getElementById('refresh-repo2').addEventListener('click', function() {
+            loadAllRepositoryQuestions();
+        });
+
+        // Allow filtering by topic from sidebar
+        document.querySelectorAll('#topic-list .topic-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const topic = this.textContent.trim();
+                loadAllRepositoryQuestions(topic);
+            });
+        });
+
+        // Download selected or all repository questions and mark schemes as a text file
+        document.getElementById('download-questions').addEventListener('click', function() {
+            // Get all question items in the repository tab
+            const repoQuestions = document.querySelectorAll('#repo-questions .question-item');
+            let selected = [];
+            repoQuestions.forEach(item => {
+                const checkbox = item.querySelector('.question-checkbox');
+                if (checkbox && checkbox.checked) {
+                    const label = item.querySelector('label');
+                    const qText = label ? label.textContent : '';
+                    // Find the answer from all sources
+                    let repoQ = (
+                        mathRepository.questions.find(q => q.question === qText) ||
+                        mathRepository.userQuestions.find(q => q.question === qText) ||
+                        mathRepository.aiQuestions.find(q => q.question === qText)
+                    );
+                    selected.push({
+                        question: qText,
+                        answer: repoQ ? repoQ.answer : 'No answer available'
+                    });
+                }
+            });
+
+            // If none selected, download all
+            if (selected.length === 0) {
+                let allQuestions = [
+                    ...mathRepository.questions,
+                    ...mathRepository.userQuestions,
+                    ...mathRepository.aiQuestions
+                ];
+                selected = allQuestions.map(q => ({
+                    question: q.question,
+                    answer: q.answer
+                }));
+            }
+
+            // Format as text
+            let content = 'Math Quiz\n\n';
+            selected.forEach((q, i) => {
+                content += `Q${i+1}: ${q.question}\n`;
+            });
+            content += '\nMark Scheme:\n';
+            selected.forEach((q, i) => {
+                content += `Q${i+1}: ${q.answer}\n`;
+            });
+
+            // Download as .txt file
+            const blob = new Blob([content], {type: 'text/plain'});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'math-quiz.txt';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+        
+        // --- Tab Switching ---
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                btn.classList.add('active');
+                const tabId = btn.getAttribute('data-tab');
+                document.getElementById(tabId + '-tab').classList.add('active');
+            });
+        });
+        
+        // --- Solve Problem ---
+        function updateSolutionPreview() {
+            const problem = document.getElementById('math-problem').value.trim();
+            const solutionPreview = document.getElementById('solution-preview');
+            const solutionOutput = document.getElementById('solution-output');
+            if (!problem) {
+                solutionPreview.style.display = 'block';
+                solutionOutput.innerHTML = "<span style='color:#f72585'>Please enter a math problem.</span>";
+                return;
+            }
+            solutionPreview.style.display = 'block';
+            solutionOutput.innerHTML = `<b>Problem:</b> <span>\\(${problem}\\)</span>`;
+            MathJax.typesetPromise();
+        }
+        document.getElementById('math-problem').addEventListener('input', updateSolutionPreview);
+
+        document.getElementById('solve-problem').addEventListener('click', function() {
+            const problem = document.getElementById('math-problem').value.trim();
+            const solutionPreview = document.getElementById('solution-preview');
+            const solutionOutput = document.getElementById('solution-output');
+            if (!problem) {
+                solutionPreview.style.display = 'block';
+                solutionOutput.innerHTML = "<span style='color:#f72585'>Please enter a math problem.</span>";
+                return;
+            }
+            document.getElementById('solve-processing').style.display = 'block';
+            solutionPreview.style.display = 'none';
+            setTimeout(() => {
+                document.getElementById('solve-processing').style.display = 'none';
+                solutionPreview.style.display = 'block';
+                // Simulate a solution
+                let steps = [
+                    `Analyze: $${problem}$`,
+                    "Apply relevant formulas.",
+                    "Simplify and solve.",
+                    "Write the final answer."
+                ];
+                // Try calculator for simple math
+                let calcResult = null;
+                try {
+                    let expr = problem.replace(/\\times|×/g, '*').replace(/\\div|÷/g, '/')
+                        .replace(/\\frac{([^}]*)}{([^}]*)}/g, '($1)/($2)')
+                        .replace(/\^/g, '**').replace(/\\sqrt{([^}]*)}/g, 'Math.sqrt($1)')
+                        .replace(/\\pi|π/g, 'Math.PI')
+                        .replace(/sin\(?([^)]+)\)?/gi, (m, x) => `Math.sin(${x}*Math.PI/180)`)
+                        .replace(/cos\(?([^)]+)\)?/gi, (m, x) => `Math.cos(${x}*Math.PI/180)`)
+                        .replace(/tan\(?([^)]+)\)?/gi, (m, x) => `Math.tan(${x}*Math.PI/180)`)
+                        .replace(/ /g, '');
+                    if (/^[\d+\-*/().,MathPIqrt]+$/.test(expr)) {
+                        // eslint-disable-next-line no-eval
+                        calcResult = eval(expr);
+                    }
+                } catch {}
+                let html = `<b>Problem:</b> <span>\\(${problem}\\)</span><br><br>`;
+                html += "<b>Step-by-step Solution:</b><ol>";
+                steps.forEach(step => {
+                    html += `<li>\\(${step}\\)</li>`;
+                });
+                html += "</ol>";
+                if (calcResult !== null && !isNaN(calcResult)) {
+                    html += `<b>Final Answer:</b> <span style='color:var(--primary-color)'>\\(${calcResult}\\)</span>`;
+                }
+                solutionOutput.innerHTML = html;
+                MathJax.typesetPromise();
+            }, 1000);
+        });
+        document.getElementById('clear-problem').addEventListener('click', function() {
+            document.getElementById('math-problem').value = '';
+            document.getElementById('solution-output').innerHTML = '';
+            document.getElementById('solution-preview').style.display = 'none';
+        });
+        document.getElementById('similar-problems').addEventListener('click', function() {
+            // Find similar problems by keyword match in repository
+            const problem = document.getElementById('math-problem').value.trim();
+            if (!problem) {
+                showMessage('solution-preview', 'Please enter a math problem first.');
+                return;
+            }
+            const keywords = problem.toLowerCase().split(/\W+/).filter(w => w.length > 2);
+            let matches = [];
+            [...mathRepository.questions, ...mathRepository.userQuestions, ...mathRepository.aiQuestions].forEach(q => {
+                if (keywords.some(k => q.question.toLowerCase().includes(k))) matches.push(q.question);
+            });
+            if (matches.length === 0) {
+                showMessage('solution-preview', 'No similar problems found in the repository.');
+            } else {
+                showMessage('solution-preview', 'Similar problems:<br>' + matches.slice(0, 5).map(q => `<div style="margin:4px 0;">${q}</div>`).join(''));
+            }
+        });
+        document.getElementById('create-quiz-question').addEventListener('click', function() {
+            const problem = document.getElementById('math-problem').value.trim();
+            const answer = document.getElementById('solution-output').textContent.trim();
+            saveUserQuestion(problem, answer, "User Submission", "", "", "user");
+            alert('Quiz question created from this solution!');
+            loadAllRepositoryQuestions();
+        });
+        document.getElementById('save-solution').addEventListener('click', function() {
+            const problem = document.getElementById('math-problem').value.trim();
+            const answer = document.getElementById('solution-output').textContent.trim();
+            if (!problem || !answer) {
+                showMessage('solution-preview', 'Please solve a problem first.');
+                return;
+            }
+            saveUserQuestion(problem, answer, "User Submission", "", "", "user");
+            showMessage('solution-preview', 'Solution saved to repository!');
+            loadAllRepositoryQuestions();
+        });
+        document.getElementById('show-steps').addEventListener('click', function() {
+            const solutionOutput = document.getElementById('solution-output');
+            if (!solutionOutput.innerHTML) {
+                showMessage('solution-preview', 'Please solve a problem first.');
+                return;
+            }
+            solutionOutput.innerHTML += "<br><b>Detailed Steps:</b><br>1. Identify the type of problem.<br>2. Apply the appropriate method.<br>3. Simplify and solve.<br>4. Check your answer.";
+            MathJax.typesetPromise();
+        });
+        
+        // --- Generate Questions ---
+        document.getElementById('generate-questions').addEventListener('click', function() {
+            const topic = document.getElementById('question-topic').value.trim().toLowerCase();
+            const difficulty = document.getElementById('generate-difficulty').value;
+            const count = parseInt(document.getElementById('question-count').value, 10) || 5;
+            const style = document.getElementById('question-style').value;
+            const output = document.getElementById('questions-output');
+            const area = document.getElementById('generated-questions');
+            if (!topic) {
+                output.innerHTML = "<span style='color:#f72585'>Please enter a topic.</span>";
+                area.style.display = 'block';
+                return;
+            }
+            document.getElementById('generate-processing').style.display = 'block';
+            area.style.display = 'none';
+
+            // Realistic question templates for common topics
+            const templates = {
+                algebra: [
+                    () => {
+                        const a = Math.floor(Math.random() * 5) + 2;
+                        const b = Math.floor(Math.random() * 10) + 1;
+                        const x = Math.floor(Math.random() * 10) + 1;
+                        const c = a * x + b;
+                        return `Solve for $x$: $${a}x + ${b} = ${c}$`;
+                    },
+                    () => {
+                        const a = Math.floor(Math.random() * 10) - 5;
+                        const b = Math.floor(Math.random() * 10) - 5;
+                        return `Expand and simplify: $(x ${a >= 0 ? '+' : '-'} ${Math.abs(a)})(x ${b >= 0 ? '+' : '-'} ${Math.abs(b)})$`;
+                    },
+                    () => {
+                        const r1 = Math.floor(Math.random() * 8) - 4;
+                        let r2;
+                        do { r2 = Math.floor(Math.random() * 8) - 4; } while (r2 === r1);
+                        const b = -(r1 + r2);
+                        const c = r1 * r2;
+                        return `Factorise: $x^2 ${b >= 0 ? '+' : '-'} ${Math.abs(b)}x ${c >= 0 ? '+' : '-'} ${Math.abs(c)}$`;
+                    },
+                    () => {
+                        const a = Math.floor(Math.random() * 8) + 2;
+                        const b = Math.floor(Math.random() * 8) + 2;
+                        return `Simplify: $\\frac{${a}x}{${b}} + \\frac{${b}x}{${a}}$`;
+                    },
+                    () => {
+                        const a = Math.floor(Math.random() * 10) + 1;
+                        const b = Math.floor(Math.random() * 10) + 1;
+                        return `If $x + y = ${a}$ and $x - y = ${b}$, find $x$ and $y$.`;
+                    }
+                ],
+                geometry: [
+                    () => {
+                        const base = Math.floor(Math.random() * 15) + 5;
+                        const height = Math.floor(Math.random() * 10) + 3;
+                        return `Calculate the area of a triangle with base ${base}cm and height ${height}cm.`;
+                    },
+                    () => {
+                        const radius = Math.floor(Math.random() * 10) + 2;
+                        return `Find the circumference of a circle with radius ${radius}cm.`;
+                    },
+                    () => {
+                        const a = Math.floor(Math.random() * 10) + 3;
+                        const b = Math.floor(Math.random() * 10) + 3;
+                        return `A right-angled triangle has sides ${a}cm and ${b}cm. Find the hypotenuse.`;
+                    },
+                    () => {
+                        const side = Math.floor(Math.random() * 10) + 2;
+                        return `What is the area of a square with side length ${side}cm?`;
+                    },
+                    () => {
+                        const l = Math.floor(Math.random() * 10) + 2;
+                        const w = Math.floor(Math.random() * 10) + 2;
+                        return `Find the perimeter of a rectangle with length ${l}cm and width ${w}cm.`;
+                    }
+                ],
+                calculus: [
+                    () => {
+                        const a = Math.floor(Math.random() * 5) + 1;
+                        const n = Math.floor(Math.random() * 3) + 2;
+                        const b = Math.floor(Math.random() * 10) + 1;
+                        return `Differentiate $f(x) = ${a}x^{${n}} + ${b}x$ with respect to $x$.`;
+                    },
+                    () => {
+                        const a = Math.floor(Math.random() * 8) + 2;
+                        return `Integrate $\\int ${a}x \\, dx$.`;
+                    },
+                    () => {
+                        const k = Math.floor(Math.random() * 5) + 1;
+                        return `Evaluate $\\lim_{x \\to 0} \\frac{\\sin(${k}x)}{x}$.`;
+                    },
+                    () => {
+                        const a = Math.floor(Math.random() * 5) + 1;
+                        const n = Math.floor(Math.random() * 3) + 2;
+                        return `Find the second derivative of $f(x) = ${a}x^{${n}}$.`;
+                    },
+                    () => {
+                        const a = Math.floor(Math.random() * 10) + 1;
+                        return `Find the area under $y = ${a}x$ between $x = 0$ and $x = 3$.`;
+                    }
+                ],
+                "number theory": [
+                    () => {
+                        const n1 = Math.floor(Math.random() * 30) + 10;
+                        const n2 = Math.floor(Math.random() * 30) + 10;
+                        return `Find the highest common factor (HCF) of ${n1} and ${n2}.`;
+                    },
+                    () => {
+                        const num = Math.floor(Math.random() * 90) + 10;
+                        const denom = Math.floor(Math.random() * 90) + 10;
+                        return `Express $${(num/denom).toFixed(2)}$ as a fraction in its simplest form.`;
+                    },
+                    () => {
+                        const a = Math.floor(Math.random() * 20) + 5;
+                        const b = Math.floor(Math.random() * 20) + 5;
+                        return `Simplify the ratio ${a}:${b}.`;
+                    },
+                    () => {
+                        const n = Math.floor(Math.random() * 100) + 50;
+                        return `List all prime numbers less than ${n}.`;
+                    },
+                    () => {
+                        const n = Math.floor(Math.random() * 1000) + 100;
+                        return `Write ${n} as a product of its prime factors.`;
+                    }
+                ],
+                statistics: [
+                    () => {
+                        const nums = Array.from({length: 4}, () => Math.floor(Math.random() * 20) + 1);
+                        return `Find the mean of the numbers ${nums.join(', ')}.`;
+                    },
+                    () => {
+                        const faces = Math.floor(Math.random() * 8) + 4;
+                        const target = Math.floor(Math.random() * faces) + 1;
+                        return `A die with ${faces} faces is rolled. What is the probability of getting a ${target}?`;
+                    },
+                    () => {
+                        const nums = Array.from({length: 5}, () => Math.floor(Math.random() * 20) + 1).sort((a,b)=>a-b);
+                        return `What is the median of the data set: ${nums.join(', ')}?`;
+                    },
+                    () => {
+                        const apples = Math.floor(Math.random()*10)+5;
+                        const oranges = Math.floor(Math.random()*10)+5;
+                        return `A basket contains ${apples} apples and ${oranges} oranges. What is the probability of picking an apple at random?`;
+                    },
+                    () => {
+                        const n = Math.floor(Math.random()*10)+5;
+                        return `A class has ${n} students. Each student scores between 1 and 10 marks. What is the range of possible total marks?`;
+                    }
+                ],
+                trigonometry: [
+                    () => {
+                        const fn = ['sin','cos','tan'][Math.floor(Math.random()*3)];
+                        const angle = [30, 45, 60, 90][Math.floor(Math.random()*4)];
+                        return `Calculate $${fn}(${angle}^\\circ)$`;
+                    },
+                    () => {
+                        const angle = [30, 45, 60][Math.floor(Math.random()*3)];
+                        const adj = Math.floor(Math.random()*10)+5;
+                        return `A ladder leans against a wall making an angle of $${angle}^\\circ$ with the ground. If the foot of the ladder is ${adj}m from the wall, how long is the ladder?`;
+                    },
+                    () => {
+                        const opp = Math.floor(Math.random()*10)+3;
+                        const hyp = Math.floor(Math.random()*10)+5;
+                        return `In a right triangle, the side opposite angle $\\theta$ is ${opp}cm and the hypotenuse is ${hyp}cm. Find $\\sin\\theta$.`;
+                    },
+                    () => {
+                        const a = Math.floor(Math.random()*10)+3;
+                        const b = Math.floor(Math.random()*10)+3;
+                        return `A triangle has sides of length ${a}cm and ${b}cm enclosing an angle of $60^\\circ$. Find the area of the triangle.`;
+                    }
+                ],
+                "word problem": [
+                    () => {
+                        const apples = Math.floor(Math.random()*10)+5;
+                        const eaten = Math.floor(Math.random()*apples);
+                        return `Sarah has ${apples} apples. She eats ${eaten} of them. How many apples does she have left?`;
+                    },
+                    () => {
+                        const cars = Math.floor(Math.random()*10)+2;
+                        const people = Math.floor(Math.random()*20)+10;
+                        return `There are ${cars} cars and ${people} people. If each car holds the same number of people, how many people can fit in each car?`;
+                    },
+                    () => {
+                        const pens = Math.floor(Math.random()*20)+10;
+                        const students = Math.floor(Math.random()*10)+5;
+                        return `A teacher has ${pens} pens to distribute equally among ${students} students. How many pens does each student get?`;
+                    },
+                    () => {
+                        const price = Math.floor(Math.random()*20)+5;
+                        const quantity = Math.floor(Math.random()*10)+2;
+                        return `A shop sells ${quantity} books at £${price} each. What is the total cost?`;
+                    },
+                    () => {
+                        const distance = Math.floor(Math.random()*100)+50;
+                        const speed = Math.floor(Math.random()*40)+20;
+                        return `A car travels ${distance} km at a speed of ${speed} km/h. How long does the journey take?`;
+                    }
+                ],
+                fractions: [
+                    () => {
+                        const a = Math.floor(Math.random()*8)+2;
+                        const b = Math.floor(Math.random()*8)+2;
+                        return `Add the fractions $\\frac{1}{${a}} + \\frac{1}{${b}}$.`;
+                    },
+                    () => {
+                        const a = Math.floor(Math.random()*8)+2;
+                        const b = Math.floor(Math.random()*8)+2;
+                        return `Subtract $\\frac{${a}}{${b}}$ from 1.`;
+                    },
+                    () => {
+                        const a = Math.floor(Math.random()*8)+2;
+                        const b = Math.floor(Math.random()*8)+2;
+                        return `Multiply $\\frac{1}{${a}} \\times \\frac{1}{${b}}$.`;
+                    }
+                ],
+                percentages: [
+                    () => {
+                        const percent = Math.floor(Math.random()*90)+10;
+                        const num = Math.floor(Math.random()*900)+100;
+                        return `What is ${percent}% of ${num}?`;
+                    },
+                    () => {
+                        const price = Math.floor(Math.random()*90)+10;
+                        const discount = Math.floor(Math.random()*40)+10;
+                        return `A £${price} item is discounted by ${discount}%. What is the sale price?`;
+                    }
+                ],
+                sequences: [
+                    () => {
+                        const a = Math.floor(Math.random()*10)+2;
+                        const d = Math.floor(Math.random()*5)+1;
+                        return `Find the 10th term of the sequence: ${a}, ${a+d}, ${a+2*d}, ...`;
+                    },
+                    () => {
+                        const a = Math.floor(Math.random()*10)+2;
+                        const r = Math.floor(Math.random()*3)+2;
+                        return `Find the sum of the first 5 terms of the geometric sequence: ${a}, ${a*r}, ${a*r*r}, ...`;
+                    }
+                ],
+                inequalities: [
+                    () => {
+                        const a = Math.floor(Math.random()*5)+2;
+                        const b = Math.floor(Math.random()*10)+1;
+                        return `Solve the inequality: $${a}x + ${b} > 0$`;
+                    },
+                    () => {
+                        const a = Math.floor(Math.random()*5)+2;
+                        const b = Math.floor(Math.random()*10)+1;
+                        return `Solve: $${a}x - ${b} \\leq 3$`;
+                    }
+                ]
+            };
+
+            // Try to match topic to a template set
+            let topicKey = Object.keys(templates).find(key => topic.includes(key));
+            let questions = [];
+            if (topicKey) {
+                for (let i = 0; i < count; i++) {
+                    const templateFns = templates[topicKey];
+                    const fn = templateFns[Math.floor(Math.random() * templateFns.length)];
+                    questions.push(fn());
+                }
+            } else {
+                // Fallback: try to match by partial topic name
+                if (topic.includes('algebra')) topicKey = 'algebra';
+                else if (topic.includes('geometry')) topicKey = 'geometry';
+                else if (topic.includes('calculus')) topicKey = 'calculus';
+                else if (topic.includes('number')) topicKey = 'number theory';
+                else if (topic.includes('stat')) topicKey = 'statistics';
+                else if (topic.includes('trig')) topicKey = 'trigonometry';
+                else if (topic.includes('word')) topicKey = 'word problem';
+
+                if (topicKey && templates[topicKey]) {
+                    for (let i = 0; i < count; i++) {
+                        const templateFns = templates[topicKey];
+                        const fn = templateFns[Math.floor(Math.random() * templateFns.length)];
+                        questions.push(fn());
+                    }
+                } else {
+                    // Fallback: generic but plausible questions
+                    for (let i = 0; i < count; i++) {
+                        questions.push(
+                            `Write a ${difficulty} ${style.replace('-', ' ')} question about ${topic.charAt(0).toUpperCase() + topic.slice(1)}.`
+                        );
+                    }
+                }
+            }
+
+            setTimeout(() => {
+                document.getElementById('generate-processing').style.display = 'none';
+                area.style.display = 'block';
+                let html = '';
+                questions.forEach((q, i) => {
+                    html += `<div class="question-item"><b>Q${i+1}:</b> ${q}</div>`;
+                });
+                output.innerHTML = html;
+                MathJax.typesetPromise();
+            }, 1000);
+        });
+        document.getElementById('generate-from-repo').addEventListener('click', function() {
+            // Generate questions from repository topics
+            const topics = mathRepository.topics.map(t => t.name);
+            const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+            document.getElementById('question-topic').value = randomTopic;
+            document.getElementById('generate-questions').click();
+            showMessage('generated-questions', `Generated questions from topic: <b>${randomTopic}</b>`);
+        });
+        document.getElementById('add-to-quiz').addEventListener('click', function() {
+            // Add generated questions to a quiz (simulate)
+            showMessage('generated-questions', 'Questions added to quiz! (Feature coming soon)');
+        });
+        document.getElementById('regenerate-questions').addEventListener('click', function() {
+            document.getElementById('generate-questions').click();
+        });
+        
+        // --- PDF Import ---
+        document.getElementById('process-pdf').addEventListener('click', function() {
+            document.getElementById('pdf-processing').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('pdf-processing').style.display = 'none';
+                document.getElementById('pdf-preview').style.display = 'block';
+                const questionList = document.getElementById('question-list');
+                questionList.innerHTML = '';
+                for (let i = 1; i <= 5; i++) {
+                    questionList.innerHTML += `<div class="question-item"><input type="checkbox" class="question-checkbox" id="pdf-q${i}"><label for="pdf-q${i}">Sample extracted question ${i} from PDF</label></div>`;
+                }
+            }, 1200);
+        });
+        document.getElementById('connect-repo-pdf').addEventListener('click', function() {
+            showMessage('pdf-preview', 'PDF linked to repository!');
+        });
+        document.getElementById('rewrite-questions').addEventListener('click', function() {
+            document.getElementById('rewrite-options').style.display = 'block';
+        });
+        document.getElementById('apply-rewrite').addEventListener('click', function() {
+            document.getElementById('rewrite-options').style.display = 'none';
+            showMessage('pdf-preview', 'Selected questions rewritten!');
+        });
+        document.getElementById('categorize-questions').addEventListener('click', function() {
+            showMessage('pdf-preview', 'Questions categorized!');
+        });
+        document.getElementById('import-to-repo').addEventListener('click', function() {
+            showMessage('pdf-preview', 'Questions imported to repository!');
+        });
+        
+        // --- Repository Tab ---
+        document.getElementById('refresh-repo2').addEventListener('click', function() {
+            loadAllRepositoryQuestions();
+        });
+        document.getElementById('export-repo').addEventListener('click', function() {
+            showMessage('repo-results', 'Repository exported! (Feature coming soon)');
+        });
+        document.getElementById('search-repo').addEventListener('click', function() {
+            const query = document.getElementById('repo-search').value.trim().toLowerCase();
+            if (!query) {
+                showMessage('repo-results', 'Please enter a search term.');
+                return;
+            }
+            document.getElementById('repo-processing').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('repo-processing').style.display = 'none';
+                // Filter questions by query
+                loadAllRepositoryQuestions();
+                const repoQuestions = document.getElementById('repo-questions');
+                Array.from(repoQuestions.querySelectorAll('.question-item')).forEach(item => {
+                    const label = item.querySelector('label');
+                    if (label && !label.textContent.toLowerCase().includes(query)) {
+                        item.style.display = 'none';
+                    } else {
+                        item.style.display = '';
+                    }
+                });
+                showMessage('repo-results', 'Repository search complete!');
+            }, 800);
+        });
+        document.getElementById('clear-search').addEventListener('click', function() {
+            document.getElementById('repo-search').value = '';
+            loadAllRepositoryQuestions();
+            showMessage('repo-results', 'Search cleared!');
+        });
+        document.getElementById('filter-repo').addEventListener('click', function() {
+            showMessage('repo-results', 'Repository filtered! (Feature coming soon)');
+        });
+        document.getElementById('create-quiz-from-repo').addEventListener('click', function() {
+            // Collect selected questions
+            const repoQuestions = document.querySelectorAll('#repo-questions .question-item');
+            let selected = [];
+            repoQuestions.forEach(item => {
+                const checkbox = item.querySelector('.question-checkbox');
+                if (checkbox && checkbox.checked) {
+                    const label = item.querySelector('label');
+                    const qText = label ? label.textContent : '';
+                    selected.push(qText);
+                }
+            });
+            if (selected.length === 0) {
+                showMessage('repo-results', 'Please select questions to create a quiz.');
+            } else {
+                showMessage('repo-results', `Quiz created from ${selected.length} selected questions!`);
+            }
+        });
+        document.getElementById('edit-repo-item').addEventListener('click', function() {
+            showMessage('repo-results', 'Edit mode enabled for selected question. (Feature coming soon)');
+        });
+        document.getElementById('delete-repo-item').addEventListener('click', function() {
+            // Remove selected questions from repository
+            const repoQuestions = document.querySelectorAll('#repo-questions .question-item');
+            let removed = 0;
+            repoQuestions.forEach(item => {
+                const checkbox = item.querySelector('.question-checkbox');
+                if (checkbox && checkbox.checked) {
+                    const label = item.querySelector('label');
+                    const qText = label ? label.textContent : '';
+                    // Remove from all sources
+                    ['questions', 'userQuestions', 'aiQuestions'].forEach(arr => {
+                        const idx = mathRepository[arr].findIndex(q => q.question === qText);
+                        if (idx !== -1) {
+                            mathRepository[arr].splice(idx, 1);
+                            removed++;
+                        }
+                    });
+                }
+            });
+            loadAllRepositoryQuestions();
+            if (removed > 0) {
+                showMessage('repo-results', `Deleted ${removed} question(s) from repository.`);
+            } else {
+                showMessage('repo-results', 'No questions selected for deletion.');
+            }
+        });
+        
+        // --- Sidebar Topics and Recent Queries ---
+        function populateSidebarTopics() {
             const topicList = document.getElementById('topic-list');
+            topicList.innerHTML = '';
             mathRepository.topics.forEach(topic => {
                 const topicItem = document.createElement('li');
                 topicItem.className = 'topic-item';
@@ -875,12 +1613,16 @@
                     <span class="topic-icon">${topic.icon}</span>
                     ${topic.name}
                 `;
-                topicItem.addEventListener('click', () => loadTopicQuestions(topic.id));
+                topicItem.addEventListener('click', () => {
+                    document.getElementById('question-topic').value = topic.name;
+                    document.querySelector('.tab-btn[data-tab="generate"]').click();
+                });
                 topicList.appendChild(topicItem);
             });
-
-            // Populate recent queries
+        }
+        function populateRecentQueries() {
             const recentQueries = document.getElementById('recent-queries');
+            recentQueries.innerHTML = '';
             mathRepository.recentQueries.forEach(query => {
                 const queryItem = document.createElement('li');
                 queryItem.className = 'topic-item';
@@ -888,144 +1630,168 @@
                 queryItem.addEventListener('click', () => {
                     document.getElementById('math-problem').value = query;
                     document.querySelector('.tab-btn[data-tab="solve"]').click();
+                    updateSolutionPreview();
                 });
                 recentQueries.appendChild(queryItem);
             });
-
-            // Load first topic by default
-            if (mathRepository.topics.length > 0) {
-                loadTopicQuestions(mathRepository.topics[0].id);
-            }
         }
+        populateSidebarTopics();
+        populateRecentQueries();
+    });
+    </script>
 
-        // Load questions for a specific topic
-        function loadTopicQuestions(topicId) {
-            // Highlight selected topic
-            document.querySelectorAll('.topic-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.target.classList.add('active');
+    <!-- Add this just before the closing </body> tag -->
 
-            // Filter questions by topic
-            const topicQuestions = mathRepository.questions.filter(q => q.topic === topicId);
-            
-            // Display questions (for repository tab)
-            const repoQuestions = document.getElementById('repo-questions');
-            repoQuestions.innerHTML = '';
-            
-            topicQuestions.forEach(question => {
-                const questionItem = document.createElement('div');
-                questionItem.className = 'question-item';
-                questionItem.innerHTML = `
-                    <input type="checkbox" class="question-checkbox" id="repo-q${question.id}">
-                    <label for="repo-q${question.id}">${question.question}</label>
-                    <div>
-                        <span class="topic-tag ${question.topic}">${question.subtopic}</span>
-                        <span class="topic-tag">${question.difficulty}</span>
-                    </div>
-                `;
-                repoQuestions.appendChild(questionItem);
-            });
+<!-- Math Keyboard Modal -->
+<div id="math-keyboard-modal" style="display:none; position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:2px solid #4361ee; box-shadow:0 -4px 24px rgba(67,97,238,0.10); z-index:9999; padding:18px 10px 10px 10px;">
+    <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;">
+        <button class="latex-btn" data-insert="\\frac{}{}">a⁄b</button>
+        <button class="latex-btn" data-insert="^{}">x<sup>y</sup></button>
+        <button class="latex-btn" data-insert="\\sqrt{}">√</button>
+        <button class="latex-btn" data-insert="\\pi">π</button>
+        <button class="latex-btn" data-insert="\\theta">θ</button>
+        <button class="latex-btn" data-insert="\\int_{}^{}">∫</button>
+        <button class="latex-btn" data-insert="\\sum_{}^{}">∑</button>
+        <button class="latex-btn" data-insert="\\sin">sin</button>
+        <button class="latex-btn" data-insert="\\cos">cos</button>
+        <button class="latex-btn" data-insert="\\tan">tan</button>
+        <button class="latex-btn" data-insert="\\log">log</button>
+        <button class="latex-btn" data-insert="\\ln">ln</button>
+        <button class="latex-btn" data-insert="\\leq">≤</button>
+        <button class="latex-btn" data-insert="\\geq">≥</button>
+        <button class="latex-btn" data-insert="\\neq">≠</button>
+        <button class="latex-btn" data-insert="\\approx">≈</button>
+        <button class="latex-btn" data-insert="\\pm">±</button>
+        <button class="latex-btn" data-insert="\\cdot">·</button>
+        <button class="latex-btn" data-insert="\\left(\\right)">()</button>
+        <button class="latex-btn" data-insert="\\left[\\right]">[]</button>
+        <button class="latex-btn" data-insert="\\left\\{\\right\\}">{}</button>
+        <button class="latex-btn" data-insert="\\infty">∞</button>
+        <button class="latex-btn" data-insert="\\rightarrow">→</button>
+        <button class="latex-btn" data-insert="\\degree">°</button>
+        <button class="latex-btn" data-insert="\\frac{\\partial}{\\partial x}">∂/∂x</button>
+        <button class="latex-btn" id="close-math-keyboard" style="background:#f72585;color:#fff;">Close</button>
+    </div>
+</div>
 
-            MathJax.typesetPromise();
-        }
+<!-- Calculator Modal -->
+<div id="calculator-modal" style="display:none; position:fixed; right:20px; bottom:20px; width:320px; background:#fff; border:2px solid #4361ee; border-radius:14px; box-shadow:0 8px 32px rgba(67,97,238,0.13); z-index:9999; padding:18px;">
+    <div style="font-weight:600; color:#4361ee; margin-bottom:10px;">Calculator</div>
+    <input id="calc-display" type="text" readonly style="width:100%; font-size:1.3rem; padding:10px; border-radius:8px; border:1px solid #e0e0e0; margin-bottom:10px; text-align:right;">
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">
+        <button class="calc-btn">7</button>
+        <button class="calc-btn">8</button>
+        <button class="calc-btn">9</button>
+        <button class="calc-btn" data-op="/">÷</button>
+        <button class="calc-btn">4</button>
+        <button class="calc-btn">5</button>
+        <button class="calc-btn">6</button>
+        <button class="calc-btn" data-op="*">×</button>
+        <button class="calc-btn">1</button>
+        <button class="calc-btn">2</button>
+        <button class="calc-btn">3</button>
+        <button class="calc-btn" data-op="-">−</button>
+        <button class="calc-btn">0</button>
+        <button class="calc-btn">.</button>
+        <button class="calc-btn" id="calc-equals">=</button>
+        <button class="calc-btn" data-op="+">+</button>
+        <button class="calc-btn" id="calc-clear" style="grid-column:span 2; background:#f72585; color:#fff;">C</button>
+        <button class="calc-btn" id="calc-insert" style="grid-column:span 2; background:#4895ef; color:#fff;">Insert</button>
+    </div>
+</div>
 
-        // Tab switching functionality
-        const tabButtons = document.querySelectorAll('.tab-btn');
-        const tabContents = document.querySelectorAll('.tab-content');
-        
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                // Remove active class from all buttons and contents
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                tabContents.forEach(content => content.classList.remove('active'));
-                
-                // Add active class to clicked button and corresponding content
-                button.classList.add('active');
-                const tabId = button.getAttribute('data-tab');
-                document.getElementById(tabId + '-tab').classList.add('active');
-            });
-        });
-        
-        // LaTeX toolbar functionality
-        document.querySelectorAll('.latex-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const latexCode = this.getAttribute('data-insert');
-                const activeElement = document.activeElement;
-                if (activeElement && (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT')) {
-                    const startPos = activeElement.selectionStart;
-                    const endPos = activeElement.selectionEnd;
-                    const textBefore = activeElement.value.substring(0, startPos);
-                    const textAfter = activeElement.value.substring(endPos);
-                    
-                    activeElement.value = textBefore + latexCode + textAfter;
-                    activeElement.focus();
-                    
-                    // Position cursor between braces if they exist
-                    const cursorPos = latexCode.indexOf('{}');
-                    if (cursorPos >= 0) {
-                        activeElement.selectionStart = startPos + cursorPos + 1;
-                        activeElement.selectionEnd = activeElement.selectionStart;
-                    } else {
-                        activeElement.selectionStart = startPos + latexCode.length;
-                        activeElement.selectionEnd = activeElement.selectionStart;
-                    }
-                    
-                    // Trigger update for preview
-                    if (activeElement.id === 'math-problem') {
-                        updateSolutionPreview();
-                    }
-                }
-            });
-        });
-        
-        // PDF Processing
-        const pdfUpload = document.getElementById('pdf-upload');
-        const processPdfBtn = document.getElementById('process-pdf');
-        
-        pdfUpload.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                processPdfBtn.style.display = 'inline-block';
-            } else {
-                processPdfBtn.style.display = 'none';
-            }
-        });
-        
-        processPdfBtn.addEventListener('click', function() {
-            const file = pdfUpload.files[0];
-            if (!file) return;
-            
-            document.getElementById('pdf-processing').style.display = 'block';
-            processPdfBtn.style.display = 'none';
-            
-            // Simulate PDF processing (in a real app, you would upload to server)
-            setTimeout(() => {
-                document.getElementById('pdf-processing').style.display = 'none';
-                document.getElementById('pdf-preview').style.display = 'block';
-                
-                // Simulate extracted questions
-                const questionList = document.getElementById('question-list');
-                questionList.innerHTML = '';
-                
-                const curriculum = document.getElementById('curriculum-focus').value;
-                let sampleQuestions = [];
-                
-                if (curriculum === 'number') {
-                    sampleQuestions = [
-                        "Calculate $3\\frac{1}{4} + 2\\frac{1}{2}$",
-                        "What is 15% of 200?",
-                        "Simplify the ratio 18:24"
-                    ];
-                } else if (curriculum === 'algebra') {
-                    sampleQuestions = [
-                        "Solve for $x$: $2x + 5 = 15$",
-                        "Expand $(x + 3)(x - 2)$",
-                        "Factorize $x^2 - 5x + 6$"
-                    ];
-                } else if (curriculum === 'geometry') {
-                    sampleQuestions = [
-                        "Calculate the area of a circle with radius 5cm",
-                        "Find the volume of a cuboid with sides 3cm, 4cm, and 5cm",
-                        "Calculate the missing angle in a triangle with angles 35° and 75°"
-                    ];
-                } else if (curriculum ===
+<script>
+// Math Keyboard logic
+let mathKeyboardTarget = null;
+function showMathKeyboard(target) {
+    mathKeyboardTarget = target;
+    document.getElementById('math-keyboard-modal').style.display = 'block';
+}
+function hideMathKeyboard() {
+    document.getElementById('math-keyboard-modal').style.display = 'none';
+    mathKeyboardTarget = null;
+}
+document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+    el.addEventListener('focus', function() {
+        showMathKeyboard(this);
+    });
+});
+document.getElementById('close-math-keyboard').onclick = hideMathKeyboard;
+document.querySelectorAll('#math-keyboard-modal .latex-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        if (!mathKeyboardTarget || this.id === 'close-math-keyboard') return;
+        const latexCode = this.getAttribute('data-insert');
+        const start = mathKeyboardTarget.selectionStart;
+        const end = mathKeyboardTarget.selectionEnd;
+        const before = mathKeyboardTarget.value.substring(0, start);
+        const after = mathKeyboardTarget.value.substring(end);
+        mathKeyboardTarget.value = before + latexCode + after;
+        mathKeyboardTarget.focus();
+        mathKeyboardTarget.selectionStart = mathKeyboardTarget.selectionEnd = start + latexCode.length;
+        if (mathKeyboardTarget.id === 'math-problem') updateSolutionPreview();
+    });
+});
+
+// Calculator logic
+let calcValue = '';
+let calcResult = '';
+const calcModal = document.getElementById('calculator-modal');
+
+
+
+const calcDisplay = document.getElementById('calc-display');
+function showCalculator() {
+    calcModal.style.display = 'block';
+    calcDisplay.value = calcValue;
+}
+function hideCalculator() {
+    calcModal.style.display = 'none';
+    calcValue = '';
+    calcResult = '';
+    calcDisplay.value = '';
+}
+document.addEventListener('keydown', function(e) {
+    // Ctrl+Alt+C to open calculator
+    if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'c') {
+        showCalculator();
+    }
+});
+document.getElementById('calc-clear').onclick = function() {
+    calcValue = '';
+    calcResult = '';
+    calcDisplay.value = '';
+};
+document.querySelectorAll('.calc-btn').forEach(btn => {
+    if (btn.id === 'calc-clear' || btn.id === 'calc-insert' || btn.id === 'calc-equals') return;
+    btn.addEventListener('click', function() {
+        const val = btn.getAttribute('data-op') || btn.textContent;
+        calcValue += val;
+        calcDisplay.value = calcValue;
+    });
+});
+document.getElementById('calc-equals').onclick = function() {
+    try {
+        // eslint-disable-next-line no-eval
+        calcResult = eval(calcValue.replace(/÷/g, '/').replace(/×/g, '*'));
+        calcDisplay.value = calcResult;
+    } catch {
+        calcDisplay.value = 'Error';
+    }
+};
+document.getElementById('calc-insert').onclick = function() {
+    if (mathKeyboardTarget) {
+        mathKeyboardTarget.value += calcDisplay.value;
+        mathKeyboardTarget.focus();
+        if (mathKeyboardTarget.id === 'math-problem') updateSolutionPreview();
+    }
+    hideCalculator();
+};
+// Optional: Close calculator when clicking outside
+window.addEventListener('mousedown', function(e) {
+    if (calcModal.style.display === 'block' && !calcModal.contains(e.target) && e.target.id !== 'calculator-modal') {
+        hideCalculator();
+    }
+});
+</script>
+</body>
+</html>
