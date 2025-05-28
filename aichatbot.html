@@ -2,290 +2,731 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AI PDF Chatbot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Quiz AI Assistant</title>
     <style>
-        body { margin: 0; }
-        #chatbot-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #0078d7;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 2em;
-            cursor: pointer;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-            z-index: 1000;
-        }
-        #chatbot-popup {
-            display: none;
-            position: fixed;
-            bottom: 100px;
-            right: 30px;
-            width: 350px;
-            max-height: 500px;
-            background: #fff;
+        /* Main Popup Container */
+        .ai-math-popup {
+            width: 650px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
             border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-            border: 2px solid #0078d7;
-            z-index: 1001;
             overflow: hidden;
-            flex-direction: column;
+            background: white;
+            border: 1px solid #e0e0e0;
         }
-        #chatbot-header {
-            background: #0078d7;
-            color: #fff;
-            padding: 16px;
-            font-size: 1.2em;
-            font-weight: bold;
-            text-align: center;
-            position: relative;
+        
+        /* Header with Icon - Blue Theme */
+        .ai-header {
+            background: linear-gradient(135deg, #1565C0 0%, #1976D2 100%);
+            color: white;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-        #chatbot-close {
-            position: absolute;
-            top: 8px;
-            right: 12px;
+        
+        .ai-title {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+        
+        .ai-icon {
+            width: 36px;
+            height: 36px;
+            margin-right: 15px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm2 4v2h2V7H7zm4 0v2h2V7h-2zm4 0v2h2V7h-2zm-8 4v2h2v-2H7zm4 0v2h2v-2h-2zm4 0v2h2v-2h-2zm-8 4v2h2v-2H7zm4 0v2h2v-2h-2zm4 0v2h2v-2h-2z"/></svg>');
+            background-size: contain;
+        }
+        
+        .close-btn {
             background: none;
             border: none;
-            color: #fff;
-            font-size: 1.2em;
+            color: white;
+            font-size: 1.8rem;
             cursor: pointer;
+            padding: 0 10px;
         }
-        #pdf-upload-area {
-            padding: 12px 16px;
-            background: #eaf3fb;
+        
+        /* Tabs */
+        .ai-tabs {
+            display: flex;
+            background: #f5f5f5;
             border-bottom: 1px solid #e0e0e0;
-            text-align: center;
         }
-        #pdf-file {
+        
+        .tab-btn {
+            flex: 1;
+            padding: 14px 0;
+            border: none;
+            background: none;
+            font-weight: 500;
+            color: #616161;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab-btn.active {
+            color: #1565C0;
+            border-bottom: 3px solid #1976D2;
+            background: rgba(25, 118, 210, 0.05);
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            padding: 25px;
             display: none;
         }
-        #pdf-label {
-            display: inline-block;
-            background: #0078d7;
-            color: #fff;
-            padding: 6px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.95em;
+        
+        .tab-content.active {
+            display: block;
         }
-        #pdf-name {
-            margin-left: 10px;
-            color: #0078d7;
-            font-size: 0.95em;
+        
+        /* Form Elements */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #424242;
         }
-        #pdf-actions {
-            margin-top: 8px;
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border 0.3s;
         }
-        #pdf-edit-btn {
-            background: #fff;
-            color: #0078d7;
-            border: 1px solid #0078d7;
-            border-radius: 4px;
-            padding: 4px 12px;
-            cursor: pointer;
-            font-size: 0.95em;
-        }
-        #chatbot-messages {
-            padding: 16px;
-            background: #f4f8fb;
-            height: 220px;
-            overflow-y: auto;
-            font-size: 1em;
-            color: #222;
-        }
-        .chatbot-message {
-            margin-bottom: 12px;
-        }
-        .chatbot-message.user {
-            text-align: right;
-            color: #0078d7;
-        }
-        .chatbot-message.bot {
-            text-align: left;
-            color: #222;
-        }
-        #chatbot-input-area {
-            display: flex;
-            border-top: 1px solid #e0e0e0;
-            background: #fff;
-        }
-        #chatbot-input {
-            flex: 1;
-            border: none;
-            padding: 12px;
-            font-size: 1em;
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #1976D2;
             outline: none;
-            background: #f4f8fb;
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
         }
-        #chatbot-send {
-            background: #0078d7;
-            color: #fff;
+        
+        /* Buttons - Blue Theme */
+        .btn {
+            background-color: #1976D2;
+            color: white;
             border: none;
-            padding: 0 18px;
-            font-size: 1.1em;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: 500;
             cursor: pointer;
+            transition: background 0.3s;
+            font-size: 1rem;
+            margin-right: 10px;
+        }
+        
+        .btn:hover {
+            background-color: #1565C0;
+        }
+        
+        .btn-secondary {
+            background-color: #e0e0e0;
+            color: #424242;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #bdbdbd;
+        }
+        
+        /* LaTeX Toolbar */
+        .latex-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 10px 0;
+        }
+        
+        .latex-btn {
+            background-color: #E3F2FD;
+            color: #1565C0;
+            border: 1px solid #90CAF9;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .latex-btn:hover {
+            background-color: #BBDEFB;
+        }
+        
+        /* LaTeX Preview */
+        .latex-preview {
+            background-color: #E1F5FE;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            min-height: 50px;
+            border: 1px solid #B3E5FC;
+        }
+        
+        /* Question Preview with LaTeX */
+        .question-preview {
+            background-color: #FAFAFA;
+            border: 1px dashed #BDBDBD;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .question-preview .math {
+            font-style: italic;
+        }
+        
+        /* Processing State */
+        .processing {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .processing .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1976D2;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 10px;
+            background-color: #303F9F;
+            color: white;
+        }
+        
+        /* Question List */
+        .question-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 15px 0;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 10px;
+        }
+        
+        .question-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .question-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Rewrite Options */
+        .rewrite-options {
+            background-color: #E8F5E9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: none;
+        }
+        
+        /* Download Button */
+        .btn-download {
+            background-color: #4CAF50;
+        }
+        
+        .btn-download:hover {
+            background-color: #388E3C;
+        }
+        
+        /* Button Group */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
-    <button id="chatbot-btn" title="Open Chatbot">💬</button>
-    <div id="chatbot-popup">
-        <div id="chatbot-header">
-            AI PDF Chatbot
-            <button id="chatbot-close" title="Close">&times;</button>
+    <div class="ai-math-popup">
+        <div class="ai-header">
+            <div class="ai-title">
+                <div class="ai-icon"></div>
+                Math Quiz AI Assistant
+                <span class="badge">LaTeX Enabled</span>
+            </div>
+            <button class="close-btn" id="close-popup">&times;</button>
         </div>
-        <div id="pdf-upload-area">
-            <label id="pdf-label" for="pdf-file">Upload PDF</label>
-            <input type="file" id="pdf-file" accept="application/pdf">
-            <span id="pdf-name"></span>
-            <div id="pdf-actions" style="display:none;">
-                <button id="pdf-edit-btn">Edit PDF</button>
+        
+        <div class="ai-tabs">
+            <button class="tab-btn active" data-tab="pdf">PDF Import</button>
+            <button class="tab-btn" data-tab="generate">Generate Questions</button>
+            <button class="tab-btn" data-tab="solve">Solve Problems</button>
+        </div>
+        
+        <!-- PDF Import Tab -->
+        <div class="tab-content active" id="pdf-tab">
+            <div class="curriculum-selector">
+                <label>GCSE Curriculum Focus:
+                    <select id="curriculum-focus">
+                        <option value="number">Number - Basic Operations</option>
+                        <option value="algebra">Algebra - Equations</option>
+                        <option value="geometry">Geometry - Shapes</option>
+                        <option value="statistics">Statistics</option>
+                    </select>
+                </label>
+            </div>
+            
+            <label>Upload PDF Worksheet:
+                <input type="file" id="pdf-upload" accept=".pdf">
+            </label>
+            
+            <div class="latex-toolbar">
+                <button class="latex-btn" data-insert="\frac{}{}">Fraction</button>
+                <button class="latex-btn" data-insert="\sqrt{}">Square Root</button>
+                <button class="latex-btn" data-insert="^{}">Exponent</button>
+                <button class="latex-btn" data-insert="\int_{}^{}">Integral</button>
+                <button class="latex-btn" data-insert="\sum_{}^{}">Summation</button>
+            </div>
+            
+            <div class="processing" id="pdf-processing">
+                <div class="spinner"></div>
+                <p>Processing PDF and extracting questions...</p>
+            </div>
+            
+            <div class="question-preview" id="pdf-preview" style="display: none;">
+                <h4>Extracted Questions:</h4>
+                <div class="question-list" id="question-list"></div>
+                <button class="btn" id="rewrite-questions">Rewrite Selected Questions</button>
+                
+                <div class="rewrite-options" id="rewrite-options">
+                    <label>Difficulty:
+                        <select id="question-difficulty">
+                            <option value="basic">Basic</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </label>
+                    <label>Question Type:
+                        <select id="question-type">
+                            <option value="multiple-choice">Multiple Choice</option>
+                            <option value="short-answer">Short Answer</option>
+                            <option value="word-problem">Word Problem</option>
+                        </select>
+                    </label>
+                    <button class="btn" id="apply-rewrite">Apply Changes</button>
+                </div>
+            </div>
+            
+            <button class="btn" id="process-pdf" style="display: none;">Process PDF</button>
+        </div>
+        
+        <!-- Generate Questions Tab -->
+        <div class="tab-content" id="generate-tab">
+            <label>Topic:
+                <input type="text" id="question-topic" placeholder="E.g. Quadratic Equations">
+            </label>
+            
+            <label>Difficulty:
+                <select id="generate-difficulty">
+                    <option value="foundation">Foundation</option>
+                    <option value="higher">Higher</option>
+                </select>
+            </label>
+            
+            <label>Number of Questions:
+                <input type="number" id="question-count" min="1" max="10" value="5">
+            </label>
+            
+            <div class="latex-toolbar">
+                <button class="latex-btn" data-insert="\frac{}{}">Fraction</button>
+                <button class="latex-btn" data-insert="x^{}">Exponent</button>
+                <button class="latex-btn" data-insert="\sqrt{}">Root</button>
+                <button class="latex-btn" data-insert="\pi">Pi</button>
+            </div>
+            
+            <div class="processing" id="generate-processing">
+                <div class="spinner"></div>
+                <p>Generating questions...</p>
+            </div>
+            
+            <div class="latex-preview" id="generated-questions" style="display: none;">
+                <label>Generated Questions:</label>
+                <div id="questions-output"></div>
+                <div class="button-group">
+                    <button class="btn" id="add-to-quiz">Add to Quiz</button>
+                    <button class="btn btn-secondary" id="regenerate-questions">Regenerate</button>
+                    <button class="btn btn-download" id="download-questions">Download</button>
+                </div>
+            </div>
+            
+            <button class="btn" id="generate-questions">Generate Questions</button>
+        </div>
+        
+        <!-- Solve Problems Tab -->
+        <div class="tab-content" id="solve-tab">
+            <label>Enter Math Problem:
+                <textarea id="math-problem" rows="3" placeholder="Type or paste your math problem here, using LaTeX for equations (e.g., Solve $\int x^2\,dx$)"></textarea>
+            </label>
+            
+            <div class="latex-toolbar">
+                <button class="latex-btn" data-insert="\frac{}{}">Fraction</button>
+                <button class="latex-btn" data-insert="\int_{}^{}">Integral</button>
+                <button class="latex-btn" data-insert="\sum_{}^{}">Sum</button>
+                <button class="latex-btn" data-insert="\lim_{x \to }">Limit</button>
+            </div>
+            
+            <div class="processing" id="solve-processing">
+                <div class="spinner"></div>
+                <p>Solving problem...</p>
+            </div>
+            
+            <button class="btn" id="solve-problem">Solve Problem</button>
+            
+            <div class="latex-preview" id="solution-preview" style="display: none;">
+                <label>Solution:</label>
+                <div id="solution-output"></div>
+                <button class="btn" id="create-quiz-question">Create Quiz Question</button>
             </div>
         </div>
-        <div id="chatbot-messages"></div>
-        <form id="chatbot-input-area" autocomplete="off">
-            <input type="text" id="chatbot-input" placeholder="Type your message..." required>
-            <button type="submit" id="chatbot-send">Send</button>
-        </form>
     </div>
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
     <script>
-        // Popup logic
-        const chatbotBtn = document.getElementById('chatbot-btn');
-        const chatbotPopup = document.getElementById('chatbot-popup');
-        const chatbotClose = document.getElementById('chatbot-close');
-        chatbotBtn.onclick = () => chatbotPopup.style.display = 'flex';
-        chatbotClose.onclick = () => chatbotPopup.style.display = 'none';
-
-        // PDF upload logic
-        const pdfFileInput = document.getElementById('pdf-file');
-        const pdfName = document.getElementById('pdf-name');
-        const pdfActions = document.getElementById('pdf-actions');
-        let pdfFile = null;
-
-        document.getElementById('pdf-label').onclick = () => pdfFileInput.click();
-
-        pdfFileInput.onchange = function() {
-            if (this.files && this.files[0]) {
-                pdfFile = this.files[0];
-                pdfName.textContent = pdfFile.name;
-                pdfActions.style.display = 'block';
-                addBotMessage("PDF uploaded: " + pdfFile.name + ". You can now ask me to read or edit it.");
-            }
-        };
-
-        document.getElementById('pdf-edit-btn').onclick = function() {
-            if (!pdfFile) {
-                addBotMessage("Please upload a PDF first.");
-                return;
-            }
-            addBotMessage("PDF editing is a simulated feature in this demo. (In a real app, you would now be able to edit the PDF.)");
-        };
-
-        // Chat logic
-        const chatbotMessages = document.getElementById('chatbot-messages');
-        function addUserMessage(msg) {
-            const div = document.createElement('div');
-            div.className = 'chatbot-message user';
-            div.textContent = msg;
-            chatbotMessages.appendChild(div);
-            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-        }
-        function addBotMessage(msg) {
-            const div = document.createElement('div');
-            div.className = 'chatbot-message bot';
-            div.textContent = msg;
-            chatbotMessages.appendChild(div);
-            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-        }
-
-        // Math answer logic (basic, for demo)
-        function answerMathQuestion(question) {
-            // Try to evaluate simple math expressions
-            try {
-                // Only allow numbers and math operators for safety
-                if (/^[\d\s\+\-\*\/\.\(\)%]+$/.test(question.replace(/ /g,''))) {
-                    // eslint-disable-next-line no-eval
-                    let result = eval(question);
-                    if (typeof result === "number" && isFinite(result)) {
-                        return "The answer is: " + result;
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab switching functionality
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                // Add active class to clicked button and corresponding content
+                button.classList.add('active');
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId + '-tab').classList.add('active');
+            });
+        });
+        
+        // Close popup button
+        document.getElementById('close-popup').addEventListener('click', () => {
+            document.querySelector('.ai-math-popup').style.display = 'none';
+        });
+        
+        // LaTeX toolbar functionality
+        document.querySelectorAll('.latex-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const latexCode = this.getAttribute('data-insert');
+                const activeElement = document.activeElement;
+                if (activeElement && (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT')) {
+                    const startPos = activeElement.selectionStart;
+                    const endPos = activeElement.selectionEnd;
+                    const textBefore = activeElement.value.substring(0, startPos);
+                    const textAfter = activeElement.value.substring(endPos);
+                    
+                    activeElement.value = textBefore + latexCode + textAfter;
+                    activeElement.focus();
+                    
+                    // Position cursor between braces if they exist
+                    const cursorPos = latexCode.indexOf('{}');
+                    if (cursorPos >= 0) {
+                        activeElement.selectionStart = startPos + cursorPos + 1;
+                        activeElement.selectionEnd = activeElement.selectionStart;
+                    } else {
+                        activeElement.selectionStart = startPos + latexCode.length;
+                        activeElement.selectionEnd = activeElement.selectionStart;
+                    }
+                    
+                    // Trigger update for preview
+                    if (activeElement.id === 'math-problem') {
+                        updateSolutionPreview();
                     }
                 }
-            } catch {}
-            // Some hardcoded math Q&A for demo
-            const lower = question.toLowerCase();
-  
-            if (lower.includes("pythagoras")) {
-                return "The Pythagorean theorem states that a² + b² = c², where c is the hypotenuse of a right triangle.";
+            });
+        });
+        
+        // PDF Processing
+        const pdfUpload = document.getElementById('pdf-upload');
+        const processPdfBtn = document.getElementById('process-pdf');
+        
+        pdfUpload.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                processPdfBtn.style.display = 'inline-block';
+            } else {
+                processPdfBtn.style.display = 'none';
             }
-            if (lower.includes("area of a circle")) {
-                return "The area of a circle is π × r², where r is the radius.";
-            }
-            if (lower.includes("quadratic formula")) {
-                return "The quadratic formula is: x = [-b ± √(b²-4ac)] / (2a)";
-            }
-            if (lower.includes("derivative of x^2")) {
-                return "The derivative of x² with respect to x is 2x.";
-            }
-            if (lower.includes("integral of x")) {
-                return "The integral of x with respect to x is (1/2)x² + C.";
-            }
-            if (lower.includes("pi")) {
-                return "π (pi) is approximately 3.14159.";
-            }
-            if (lower.includes("prime number")) {
-                return "A prime number is a number greater than 1 that has no positive divisors other than 1 and itself.";
-            }
-            // Teacher-specific responses
-            if (lower.includes("teacher") || lower.includes("class") || lower.includes("lesson") || lower.includes("students")) {
-                return "Hello teacher! If you need help preparing math materials, quizzes, or explanations for your students, just let me know. I can also help you generate practice problems or explain concepts in a classroom-friendly way.";
-            }
-            if (lower.includes("worksheet") || lower.includes("quiz")) {
-                return "If you want to create a worksheet or quiz for your class, just tell me the topic or type of questions you need. I can suggest some sample questions or ideas!";
-            }
-            if (lower.includes("explain") && lower.includes("to students")) {
-                return "If you want me to explain a math concept in a way that's easy for students to understand, just tell me the topic!";
-            }
-            return null;
-        }
-
-        // Rephrase logic (simple for demo)
-        function rephraseQuestion(question) {
-            return "You are asking: \"" + question.replace(/([?.!])$/, '') + "\". Let me help you with that.";
-        }
-
-        document.getElementById('chatbot-input-area').onsubmit = function(e) {
-            e.preventDefault();
-            const input = document.getElementById('chatbot-input');
-            const msg = input.value.trim();
-            if (!msg) return;
-            addUserMessage(msg);
-            input.value = '';
+        });
+        
+        processPdfBtn.addEventListener('click', function() {
+            const file = pdfUpload.files[0];
+            if (!file) return;
+            
+            document.getElementById('pdf-processing').style.display = 'block';
+            processPdfBtn.style.display = 'none';
+            
+            // Simulate PDF processing (in a real app, you would upload to server)
             setTimeout(() => {
-                // Rephrase the user's question
-                addBotMessage(rephraseQuestion(msg));
-
-                // Math Q&A and teacher support
-                const mathAnswer = answerMathQuestion(msg);
-                if (mathAnswer) {
-                    addBotMessage(mathAnswer);
-                    return;
-                }
-                // PDF logic
-                if (pdfFile && /edit|change|modify|update/i.test(msg)) {
-                    addBotMessage("Sure! (Simulated) What would you like to change in the PDF?");
-                } else if (pdfFile && /read|extract|show|content/i.test(msg)) {
-                    addBotMessage("Here's a simulated preview of your PDF. (In a real app, I'd extract and show the content.)");
-                } else if (!pdfFile && /pdf/i.test(msg)) {
-                    addBotMessage("Please upload a PDF file first.");
+                document.getElementById('pdf-processing').style.display = 'none';
+                document.getElementById('pdf-preview').style.display = 'block';
+                
+                // Simulate extracted questions
+                const questionList = document.getElementById('question-list');
+                questionList.innerHTML = '';
+                
+                const curriculum = document.getElementById('curriculum-focus').value;
+                let sampleQuestions = [];
+                
+                if (curriculum === 'number') {
+                    sampleQuestions = [
+                        "Calculate $3\\frac{1}{4} + 2\\frac{1}{2}$",
+                        "What is 15% of 200?",
+                        "Simplify the ratio 18:24"
+                    ];
+                } else if (curriculum === 'algebra') {
+                    sampleQuestions = [
+                        "Solve for $x$: $2x + 5 = 15$",
+                        "Expand $(x + 3)(x - 2)$",
+                        "Factorize $x^2 - 5x + 6$"
+                    ];
+                } else if (curriculum === 'geometry') {
+                    sampleQuestions = [
+                        "Calculate the area of a circle with radius 5cm",
+                        "Find the volume of a cuboid with sides 3cm, 4cm, and 5cm",
+                        "Calculate the missing angle in a triangle with angles 35° and 75°"
+                    ];
                 } else {
-                    addBotMessage("I'm your AI PDF assistant! You can ask me any math question, get help with teaching materials, or upload a PDF and ask me to read or edit it.");
+                    sampleQuestions = [
+                        "Calculate the mean of 5, 7, 9, 11",
+                        "What is the probability of rolling a 3 on a fair 6-sided die?",
+                        "Interpret the bar chart showing favorite subjects of students"
+                    ];
                 }
-            }, 700);
-        };
+                
+                sampleQuestions.forEach((question, index) => {
+                    const questionItem = document.createElement('div');
+                    questionItem.className = 'question-item';
+                    questionItem.innerHTML = `
+                        <input type="checkbox" id="q${index}" checked>
+                        <label for="q${index}">${question}</label>
+                    `;
+                    questionList.appendChild(questionItem);
+                });
+                
+                MathJax.typesetPromise();
+            }, 2000);
+        });
+        
+        // Rewrite questions
+        document.getElementById('rewrite-questions').addEventListener('click', function() {
+            document.getElementById('rewrite-options').style.display = 'block';
+        });
+        
+        document.getElementById('apply-rewrite').addEventListener('click', function() {
+            const difficulty = document.getElementById('question-difficulty').value;
+            const type = document.getElementById('question-type').value;
+            
+            // Simulate rewriting questions
+            document.getElementById('rewrite-options').style.display = 'none';
+            alert(`Questions will be rewritten as ${difficulty} level ${type} questions. In a real app, this would call your AI backend.`);
+        });
+        
+        // Generate Questions
+        document.getElementById('generate-questions').addEventListener('click', function() {
+            const topic = document.getElementById('question-topic').value;
+            const difficulty = document.getElementById('generate-difficulty').value;
+            const count = document.getElementById('question-count').value;
+            
+            if (!topic) {
+                alert('Please enter a topic');
+                return;
+            }
+            
+            document.getElementById('generate-processing').style.display = 'block';
+            document.getElementById('generate-questions').style.display = 'none';
+            
+            // Simulate AI generation
+            setTimeout(() => {
+                document.getElementById('generate-processing').style.display = 'none';
+                document.getElementById('generate-questions').style.display = 'inline-block';
+                document.getElementById('generated-questions').style.display = 'block';
+                
+                const questionsOutput = document.getElementById('questions-output');
+                questionsOutput.innerHTML = '';
+                
+                // Generate sample questions based on topic
+                let questions = [];
+                if (topic.toLowerCase().includes('quadratic')) {
+                    questions = [
+                        `Solve for $x$: $x^2 - 5x + 6 = 0$`,
+                        `Find the roots of $2x^2 + 3x - 2 = 0$ using the quadratic formula`,
+                        `A quadratic function has vertex at $(3, -4)$. Write its equation in vertex form`
+                    ];
+                } else if (topic.toLowerCase().includes('fraction')) {
+                    questions = [
+                        `Simplify $\\frac{12}{18}$ to its lowest terms`,
+                        `Calculate $\\frac{2}{3} + \\frac{1}{4}$`,
+                        `Multiply $\\frac{3}{5} \\times \\frac{10}{9}$ and simplify`
+                    ];
+                } else {
+                    questions = [
+                        `Solve for $x$: $3x + 7 = 22$`,
+                        `Calculate the area of a rectangle with length $5$cm and width $3.5$cm`,
+                        `Find the mean of $12, 15, 18, 21, 24$`
+                    ];
+                }
+                
+                // Limit to requested count
+                questions = questions.slice(0, count);
+                
+                questions.forEach((q, i) => {
+                    const questionElement = document.createElement('p');
+                    questionElement.innerHTML = `${i+1}. ${q}`;
+                    questionsOutput.appendChild(questionElement);
+                });
+                
+                MathJax.typesetPromise();
+            }, 1500);
+        });
+        
+        // Regenerate questions
+        document.getElementById('regenerate-questions').addEventListener('click', function() {
+            document.getElementById('generate-questions').click();
+        });
+        
+        // Add to quiz (simulated)
+        document.getElementById('add-to-quiz').addEventListener('click', function() {
+            alert('Questions added to quiz! In a real app, this would save to your database.');
+        });
+        
+        // Download questions
+        document.getElementById('download-questions').addEventListener('click', function() {
+            const questionsOutput = document.getElementById('questions-output');
+            if (!questionsOutput.textContent.trim()) {
+                alert('No questions to download. Please generate questions first.');
+                return;
+            }
+            
+            // Get the topic and current date for filename
+            const topic = document.getElementById('question-topic').value || 'math_questions';
+            const date = new Date().toISOString().split('T')[0];
+            const filename = `${topic.replace(/\s+/g, '_')}_${date}.txt`;
+            
+            // Create the content for download
+            let content = `Math Questions - ${topic}\nGenerated on ${date}\n\n`;
+            
+            // Add each question
+            const questions = questionsOutput.querySelectorAll('p');
+            questions.forEach((q, i) => {
+                // Remove MathJax processing spans and keep LaTeX
+                let questionText = q.innerHTML
+                    .replace(/<span class="mjx-chtml.*?<\/span>/g, '') // Remove MathJax spans
+                    .replace(/<.*?>/g, '') // Remove any remaining HTML tags
+                    .replace(/&nbsp;/g, ' ') // Replace non-breaking spaces
+                    .trim();
+                
+                content += `${i+1}. ${questionText}\n\n`;
+            });
+            
+            // Create download link
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+        
+        // Solve Problem
+        const mathProblemInput = document.getElementById('math-problem');
+        mathProblemInput.addEventListener('input', updateSolutionPreview);
+        
+        document.getElementById('solve-problem').addEventListener('click', function() {
+            const problem = mathProblemInput.value.trim();
+            if (!problem) {
+                alert('Please enter a math problem');
+                return;
+            }
+            
+            document.getElementById('solve-processing').style.display = 'block';
+            this.style.display = 'none';
+            
+            // Simulate problem solving
+            setTimeout(() => {
+                document.getElementById('solve-processing').style.display = 'none';
+                document.getElementById('solve-problem').style.display = 'inline-block';
+                
+                let solution = '';
+                if (problem.includes('x^2')) {
+                    solution = `
+                        <p><strong>Quadratic Equation Solution:</strong></p>
+                        <p>1. Problem: $${problem.replace('Solve', '').trim()}$</p>
+                        <p>2. Use quadratic formula: $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$</p>
+                        <p>3. Solution: $x = 2$ or $x = 3$</p>
+                    `;
+                } else if (problem.includes('int') || problem.includes('∫')) {
+                    solution = `
+                        <p><strong>Integration Solution:</strong></p>
+                        <p>1. Problem: $${problem.replace('Solve', '').trim()}$</p>
+                        <p>2. Apply power rule: $\\int x^n dx = \\frac{x^{n+1}}{n+1} + C$</p>
+                        <p>3. Solution: $\\frac{x^3}{3} + C$</p>
+                    `;
+                } else {
+                    solution = `
+                        <p><strong>Solution:</strong></p>
+                        <p>1. Problem: $${problem}$</p>
+                        <p>2. Working steps would appear here</p>
+                        <p>3. Final answer: $42$ (example)</p>
+                    `;
+                }
+                
+                document.getElementById('solution-output').innerHTML = solution;
+                document.getElementById('solution-preview').style.display = 'block';
+                MathJax.typesetPromise();
+            }, 1500);
+        });
+        
+        // Create quiz question from solution
+        document.getElementById('create-quiz-question').addEventListener('click', function() {
+            const problem = mathProblemInput.value.trim();
+            alert(`Quiz question created from: "${problem}". In a real app, this would format the solution as a question.`);
+        });
+        
+        function updateSolutionPreview() {
+            const problemText = mathProblemInput.value;
+            document.getElementById('solution-output').innerHTML = problemText;
+            document.getElementById('solution-preview').style.display = problemText ? 'block' : 'none';
+            MathJax.typesetPromise();
+        }
+    });
     </script>
 </body>
 </html>
