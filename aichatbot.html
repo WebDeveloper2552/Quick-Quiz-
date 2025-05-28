@@ -3,94 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Quiz AI Assistant</title>
+    <title>Math Genius AI Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Main Popup Container */
-        .ai-math-popup {
-            width: 650px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
-            border-radius: 12px;
-            overflow: hidden;
-            background: white;
-            border: 1px solid #e0e0e0;
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --dark-color: #3a0ca3;
+            --light-color: #f8f9fa;
+            --success-color: #4cc9f0;
+            --warning-color: #f72585;
+            --text-dark: #212529;
+            --text-light: #f8f9fa;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.2);
+            --transition: all 0.3s ease;
         }
         
-        /* Header with Icon - Blue Theme */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+        
+        /* Main Container */
+        .ai-container {
+            width: 100%;
+            max-width: 1200px;
+            height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
         .ai-header {
-            background: linear-gradient(135deg, #1565C0 0%, #1976D2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-color) 100%);
             color: white;
-            padding: 18px 25px;
+            padding: 20px 30px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            position: relative;
+            z-index: 10;
+            box-shadow: var(--shadow);
         }
         
         .ai-title {
             display: flex;
             align-items: center;
             font-weight: 600;
-            font-size: 1.4rem;
+            font-size: 1.6rem;
         }
         
         .ai-icon {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             margin-right: 15px;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm2 4v2h2V7H7zm4 0v2h2V7h-2zm4 0v2h2V7h-2zm-8 4v2h2v-2H7zm4 0v2h2v-2h-2zm4 0v2h2v-2h-2zm-8 4v2h2v-2H7zm4 0v2h2v-2h-2zm4 0v2h2v-2h-2z"/></svg>');
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>');
             background-size: contain;
         }
         
-        .close-btn {
-            background: none;
-            border: none;
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 15px;
+            background-color: var(--success-color);
             color: white;
-            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: var(--shadow);
+        }
+        
+        /* Main Content Area */
+        .ai-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* Sidebar */
+        .ai-sidebar {
+            width: 250px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            padding: 20px;
+            overflow-y: auto;
+            transition: var(--transition);
+        }
+        
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+        
+        .sidebar-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: #6c757d;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .topic-list {
+            list-style: none;
+        }
+        
+        .topic-item {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 5px;
             cursor: pointer;
-            padding: 0 10px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+        
+        .topic-item:hover {
+            background-color: #f1f3f9;
+        }
+        
+        .topic-item.active {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+        
+        .topic-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            opacity: 0.7;
+        }
+        
+        .topic-item.active .topic-icon {
+            opacity: 1;
+            filter: brightness(0) invert(1);
+        }
+        
+        /* Main Chat Area */
+        .ai-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
         
         /* Tabs */
         .ai-tabs {
             display: flex;
-            background: #f5f5f5;
+            background: white;
             border-bottom: 1px solid #e0e0e0;
+            padding: 0 20px;
         }
         
         .tab-btn {
-            flex: 1;
-            padding: 14px 0;
+            padding: 15px 25px;
             border: none;
             background: none;
             font-weight: 500;
-            color: #616161;
+            color: #6c757d;
             cursor: pointer;
-            transition: all 0.3s;
-            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+            position: relative;
+            font-size: 0.95rem;
+        }
+        
+        .tab-btn:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: var(--primary-color);
+            transition: var(--transition);
+        }
+        
+        .tab-btn:hover {
+            color: var(--primary-color);
         }
         
         .tab-btn.active {
-            color: #1565C0;
-            border-bottom: 3px solid #1976D2;
-            background: rgba(25, 118, 210, 0.05);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .tab-btn.active:after {
+            width: 100%;
         }
         
         /* Tab Content */
         .tab-content {
+            flex: 1;
             padding: 25px;
+            overflow-y: auto;
             display: none;
         }
         
         .tab-content.active {
             display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         /* Form Elements */
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-weight: 500;
-            color: #424242;
+            color: #495057;
         }
         
         input[type="text"],
@@ -99,108 +248,179 @@
         select,
         textarea {
             width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 20px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
+            padding: 14px 18px;
+            margin-bottom: 5px;
+            border: 1px solid #ced4da;
+            border-radius: 10px;
             font-size: 1rem;
-            transition: border 0.3s;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
         }
         
         input[type="text"]:focus,
         input[type="number"]:focus,
         select:focus,
         textarea:focus {
-            border-color: #1976D2;
+            border-color: var(--accent-color);
             outline: none;
-            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
         }
         
-        /* Buttons - Blue Theme */
+        /* Buttons - 3D Effect */
         .btn {
-            background-color: #1976D2;
+            position: relative;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
+            padding: 14px 24px;
+            border-radius: 10px;
             font-weight: 500;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: var(--transition);
             font-size: 1rem;
             margin-right: 10px;
+            box-shadow: 0 4px 0 var(--dark-color);
+            transform: translateY(0);
         }
         
         .btn:hover {
-            background-color: #1565C0;
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 var(--dark-color);
+        }
+        
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--dark-color);
         }
         
         .btn-secondary {
-            background-color: #e0e0e0;
-            color: #424242;
+            background-color: #e9ecef;
+            color: #495057;
+            box-shadow: 0 4px 0 #adb5bd;
         }
         
         .btn-secondary:hover {
-            background-color: #bdbdbd;
+            background-color: #dee2e6;
+            box-shadow: 0 6px 0 #adb5bd;
+        }
+        
+        .btn-secondary:active {
+            box-shadow: 0 2px 0 #adb5bd;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            box-shadow: 0 4px 0 #b5174e;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e5177e;
+            box-shadow: 0 6px 0 #b5174e;
+        }
+        
+        .btn-warning:active {
+            box-shadow: 0 2px 0 #b5174e;
         }
         
         /* LaTeX Toolbar */
         .latex-toolbar {
             display: flex;
             flex-wrap: wrap;
-            gap: 5px;
-            margin: 10px 0;
+            gap: 8px;
+            margin: 15px 0;
         }
         
         .latex-btn {
-            background-color: #E3F2FD;
-            color: #1565C0;
-            border: 1px solid #90CAF9;
-            padding: 5px 10px;
-            border-radius: 4px;
+            position: relative;
+            background-color: #e9ecef;
+            color: #495057;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 0.9rem;
+            transition: var(--transition);
+            box-shadow: 0 2px 0 #adb5bd;
+            transform: translateY(0);
         }
         
         .latex-btn:hover {
-            background-color: #BBDEFB;
+            background-color: #dee2e6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 0 #adb5bd;
         }
         
-        /* LaTeX Preview */
-        .latex-preview {
-            background-color: #E1F5FE;
-            padding: 15px;
-            border-radius: 8px;
+        .latex-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 0 #adb5bd;
+        }
+        
+        /* Preview Areas */
+        .preview-box {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px dashed #ced4da;
+        }
+        
+        .preview-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        /* Question List */
+        .question-list {
+            max-height: 300px;
+            overflow-y: auto;
             margin: 15px 0;
-            min-height: 50px;
-            border: 1px solid #B3E5FC;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 10px;
         }
         
-        /* Question Preview with LaTeX */
-        .question-preview {
-            background-color: #FAFAFA;
-            border: 1px dashed #BDBDBD;
+        .question-item {
+            padding: 12px;
             border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
+            margin-bottom: 8px;
+            background-color: white;
+            border: 1px solid #e9ecef;
+            transition: var(--transition);
         }
         
-        .question-preview .math {
-            font-style: italic;
+        .question-item:hover {
+            border-color: var(--accent-color);
+            box-shadow: var(--shadow);
+        }
+        
+        .question-item.selected {
+            background-color: #edf2fb;
+            border-color: var(--accent-color);
+        }
+        
+        .question-checkbox {
+            margin-right: 10px;
         }
         
         /* Processing State */
         .processing {
             display: none;
             text-align: center;
-            padding: 20px;
+            padding: 30px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            margin: 20px 0;
         }
         
         .processing .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #1976D2;
+            border: 4px solid rgba(67, 97, 238, 0.1);
+            border-top: 4px solid var(--primary-color);
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
             margin: 0 auto 15px;
         }
@@ -210,203 +430,366 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Badges */
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-left: 10px;
-            background-color: #303F9F;
-            color: white;
-        }
-        
-        /* Question List */
-        .question-list {
-            max-height: 200px;
-            overflow-y: auto;
-            margin: 15px 0;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            padding: 10px;
-        }
-        
-        .question-item {
-            padding: 8px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .question-item:last-child {
-            border-bottom: none;
-        }
-        
-        /* Rewrite Options */
-        .rewrite-options {
-            background-color: #E8F5E9;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
+        /* Response Area */
+        .response-area {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e9ecef;
             display: none;
         }
         
-        /* Download Button */
-        .btn-download {
-            background-color: #4CAF50;
+        .response-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-weight: 600;
         }
         
-        .btn-download:hover {
-            background-color: #388E3C;
+        /* Topic Tags */
+        .topic-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            background-color: #e9ecef;
+            color: #495057;
         }
         
-        /* Button Group */
-        .button-group {
+        .topic-tag.algebra {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .topic-tag.geometry {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .topic-tag.calculus {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .topic-tag.statistics {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+        
+        /* Action Buttons Container */
+        .action-buttons {
             display: flex;
             gap: 10px;
-            margin-top: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        /* Repository Connection */
+        .repository-connection {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .connection-status {
+            display: flex;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .status-connected {
+            background-color: #4caf50;
+        }
+        
+        .status-disconnected {
+            background-color: #f44336;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .ai-container {
+                height: auto;
+                min-height: 90vh;
+            }
+            
+            .ai-content {
+                flex-direction: column;
+            }
+            
+            .ai-sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+                max-height: 200px;
+            }
+            
+            .ai-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .tab-btn {
+                padding: 15px 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="ai-math-popup">
+    <div class="ai-container">
         <div class="ai-header">
             <div class="ai-title">
                 <div class="ai-icon"></div>
-                Math Quiz AI Assistant
-                <span class="badge">LaTeX Enabled</span>
+                Math Genius AI Assistant
+                <span class="badge">Premium</span>
             </div>
-            <button class="close-btn" id="close-popup">&times;</button>
         </div>
         
-        <div class="ai-tabs">
-            <button class="tab-btn active" data-tab="pdf">PDF Import</button>
-            <button class="tab-btn" data-tab="generate">Generate Questions</button>
-            <button class="tab-btn" data-tab="solve">Solve Problems</button>
-        </div>
-        
-        <!-- PDF Import Tab -->
-        <div class="tab-content active" id="pdf-tab">
-            <div class="curriculum-selector">
-                <label>GCSE Curriculum Focus:
-                    <select id="curriculum-focus">
-                        <option value="number">Number - Basic Operations</option>
-                        <option value="algebra">Algebra - Equations</option>
-                        <option value="geometry">Geometry - Shapes</option>
-                        <option value="statistics">Statistics</option>
-                    </select>
-                </label>
-            </div>
-            
-            <label>Upload PDF Worksheet:
-                <input type="file" id="pdf-upload" accept=".pdf">
-            </label>
-            
-            <div class="latex-toolbar">
-                <button class="latex-btn" data-insert="\frac{}{}">Fraction</button>
-                <button class="latex-btn" data-insert="\sqrt{}">Square Root</button>
-                <button class="latex-btn" data-insert="^{}">Exponent</button>
-                <button class="latex-btn" data-insert="\int_{}^{}">Integral</button>
-                <button class="latex-btn" data-insert="\sum_{}^{}">Summation</button>
-            </div>
-            
-            <div class="processing" id="pdf-processing">
-                <div class="spinner"></div>
-                <p>Processing PDF and extracting questions...</p>
-            </div>
-            
-            <div class="question-preview" id="pdf-preview" style="display: none;">
-                <h4>Extracted Questions:</h4>
-                <div class="question-list" id="question-list"></div>
-                <button class="btn" id="rewrite-questions">Rewrite Selected Questions</button>
+        <div class="ai-content">
+            <div class="ai-sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Topics</div>
+                    <ul class="topic-list" id="topic-list">
+                        <!-- Topics will be populated from repository -->
+                    </ul>
+                </div>
                 
-                <div class="rewrite-options" id="rewrite-options">
-                    <label>Difficulty:
-                        <select id="question-difficulty">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Recent Queries</div>
+                    <ul class="topic-list" id="recent-queries">
+                        <!-- Recent queries will be populated dynamically -->
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="ai-chat">
+                <div class="ai-tabs">
+                    <button class="tab-btn active" data-tab="solve">Solve Problems</button>
+                    <button class="tab-btn" data-tab="generate">Generate Questions</button>
+                    <button class="tab-btn" data-tab="pdf">PDF Import</button>
+                    <button class="tab-btn" data-tab="repository">Question Bank</button>
+                </div>
+                
+                <!-- Solve Problems Tab -->
+                <div class="tab-content active" id="solve-tab">
+                    <div class="repository-connection">
+                        <div class="connection-status">
+                            <div class="status-indicator status-connected"></div>
+                            <span>Connected to Math Repository</span>
+                        </div>
+                        <button class="btn btn-secondary" id="refresh-repo">Refresh</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="math-problem">Enter Math Problem:</label>
+                        <textarea id="math-problem" rows="4" placeholder="Type or paste your math problem here, using LaTeX for equations (e.g., Solve $\int x^2\,dx$)"></textarea>
+                    </div>
+                    
+                    <div class="latex-toolbar">
+                        <button class="latex-btn" data-insert="\frac{}{}">Fraction</button>
+                        <button class="latex-btn" data-insert="^{}">Exponent</button>
+                        <button class="latex-btn" data-insert="\sqrt{}">Square Root</button>
+                        <button class="latex-btn" data-insert="\int_{}^{}">Integral</button>
+                        <button class="latex-btn" data-insert="\sum_{}^{}">Summation</button>
+                        <button class="latex-btn" data-insert="\lim_{x \to }">Limit</button>
+                        <button class="latex-btn" data-insert="\begin{pmatrix} \end{pmatrix}">Matrix</button>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn" id="solve-problem">Solve Problem</button>
+                        <button class="btn btn-secondary" id="clear-problem">Clear</button>
+                        <button class="btn btn-secondary" id="similar-problems">Find Similar Problems</button>
+                    </div>
+                    
+                    <div class="processing" id="solve-processing">
+                        <div class="spinner"></div>
+                        <p>Analyzing problem and searching repository...</p>
+                    </div>
+                    
+                    <div class="response-area" id="solution-preview">
+                        <div class="preview-title">Solution</div>
+                        <div id="solution-output"></div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn" id="create-quiz-question">Create Quiz Question</button>
+                            <button class="btn btn-secondary" id="save-solution">Save to Repository</button>
+                            <button class="btn btn-secondary" id="show-steps">Show Detailed Steps</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Generate Questions Tab -->
+                <div class="tab-content" id="generate-tab">
+                    <div class="form-group">
+                        <label for="question-topic">Topic:</label>
+                        <input type="text" id="question-topic" placeholder="E.g. Quadratic Equations, Trigonometry, Calculus">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="generate-difficulty">Difficulty:</label>
+                        <select id="generate-difficulty">
                             <option value="basic">Basic</option>
                             <option value="intermediate">Intermediate</option>
                             <option value="advanced">Advanced</option>
                         </select>
-                    </label>
-                    <label>Question Type:
-                        <select id="question-type">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="question-count">Number of Questions:</label>
+                        <input type="number" id="question-count" min="1" max="20" value="5">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="question-style">Question Style:</label>
+                        <select id="question-style">
+                            <option value="mixed">Mixed</option>
                             <option value="multiple-choice">Multiple Choice</option>
                             <option value="short-answer">Short Answer</option>
                             <option value="word-problem">Word Problem</option>
+                            <option value="proof">Proof</option>
                         </select>
-                    </label>
-                    <button class="btn" id="apply-rewrite">Apply Changes</button>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn" id="generate-questions">Generate Questions</button>
+                        <button class="btn btn-secondary" id="generate-from-repo">From Repository Topics</button>
+                    </div>
+                    
+                    <div class="processing" id="generate-processing">
+                        <div class="spinner"></div>
+                        <p>Generating questions from repository...</p>
+                    </div>
+                    
+                    <div class="response-area" id="generated-questions">
+                        <div class="preview-title">Generated Questions</div>
+                        <div id="questions-output"></div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn" id="add-to-quiz">Add to Quiz</button>
+                            <button class="btn btn-secondary" id="regenerate-questions">Regenerate</button>
+                            <button class="btn btn-secondary" id="save-to-repo">Save to Repository</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            
-            <button class="btn" id="process-pdf" style="display: none;">Process PDF</button>
-        </div>
-        
-        <!-- Generate Questions Tab -->
-        <div class="tab-content" id="generate-tab">
-            <label>Topic:
-                <input type="text" id="question-topic" placeholder="E.g. Quadratic Equations">
-            </label>
-            
-            <label>Difficulty:
-                <select id="generate-difficulty">
-                    <option value="foundation">Foundation</option>
-                    <option value="higher">Higher</option>
-                </select>
-            </label>
-            
-            <label>Number of Questions:
-                <input type="number" id="question-count" min="1" max="10" value="5">
-            </label>
-            
-            <div class="latex-toolbar">
-                <button class="latex-btn" data-insert="\frac{}{}">Fraction</button>
-                <button class="latex-btn" data-insert="x^{}">Exponent</button>
-                <button class="latex-btn" data-insert="\sqrt{}">Root</button>
-                <button class="latex-btn" data-insert="\pi">Pi</button>
-            </div>
-            
-            <div class="processing" id="generate-processing">
-                <div class="spinner"></div>
-                <p>Generating questions...</p>
-            </div>
-            
-            <div class="latex-preview" id="generated-questions" style="display: none;">
-                <label>Generated Questions:</label>
-                <div id="questions-output"></div>
-                <div class="button-group">
-                    <button class="btn" id="add-to-quiz">Add to Quiz</button>
-                    <button class="btn btn-secondary" id="regenerate-questions">Regenerate</button>
-                    <button class="btn btn-download" id="download-questions">Download</button>
+                
+                <!-- PDF Import Tab -->
+                <div class="tab-content" id="pdf-tab">
+                    <div class="form-group">
+                        <label>Curriculum Focus:
+                            <select id="curriculum-focus">
+                                <option value="number">Number Theory</option>
+                                <option value="algebra">Algebra</option>
+                                <option value="geometry">Geometry</option>
+                                <option value="calculus">Calculus</option>
+                                <option value="statistics">Probability & Statistics</option>
+                            </select>
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Upload PDF Worksheet:
+                            <input type="file" id="pdf-upload" accept=".pdf">
+                        </label>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn" id="process-pdf">Process PDF</button>
+                        <button class="btn btn-secondary" id="connect-repo-pdf">Link to Repository</button>
+                    </div>
+                    
+                    <div class="processing" id="pdf-processing">
+                        <div class="spinner"></div>
+                        <p>Extracting questions from PDF...</p>
+                    </div>
+                    
+                    <div class="response-area" id="pdf-preview">
+                        <div class="preview-title">Extracted Questions</div>
+                        <div class="question-list" id="question-list"></div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn" id="rewrite-questions">Rewrite Selected</button>
+                            <button class="btn btn-secondary" id="categorize-questions">Categorize</button>
+                            <button class="btn btn-secondary" id="import-to-repo">Import to Repository</button>
+                        </div>
+                        
+                        <div class="preview-box" id="rewrite-options" style="display: none;">
+                            <div class="preview-title">Rewrite Options</div>
+                            <div class="form-group">
+                                <label>Difficulty:
+                                    <select id="question-difficulty">
+                                        <option value="basic">Basic</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>Question Type:
+                                    <select id="question-type">
+                                        <option value="multiple-choice">Multiple Choice</option>
+                                        <option value="short-answer">Short Answer</option>
+                                        <option value="word-problem">Word Problem</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <button class="btn" id="apply-rewrite">Apply Changes</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            
-            <button class="btn" id="generate-questions">Generate Questions</button>
-        </div>
-        
-        <!-- Solve Problems Tab -->
-        <div class="tab-content" id="solve-tab">
-            <label>Enter Math Problem:
-                <textarea id="math-problem" rows="3" placeholder="Type or paste your math problem here, using LaTeX for equations (e.g., Solve $\int x^2\,dx$)"></textarea>
-            </label>
-            
-            <div class="latex-toolbar">
-                <button class="latex-btn" data-insert="\frac{}{}">Fraction</button>
-                <button class="latex-btn" data-insert="\int_{}^{}">Integral</button>
-                <button class="latex-btn" data-insert="\sum_{}^{}">Sum</button>
-                <button class="latex-btn" data-insert="\lim_{x \to }">Limit</button>
-            </div>
-            
-            <div class="processing" id="solve-processing">
-                <div class="spinner"></div>
-                <p>Solving problem...</p>
-            </div>
-            
-            <button class="btn" id="solve-problem">Solve Problem</button>
-            
-            <div class="latex-preview" id="solution-preview" style="display: none;">
-                <label>Solution:</label>
-                <div id="solution-output"></div>
-                <button class="btn" id="create-quiz-question">Create Quiz Question</button>
+                
+                <!-- Question Bank Tab -->
+                <div class="tab-content" id="repository-tab">
+                    <div class="repository-connection">
+                        <div class="connection-status">
+                            <div class="status-indicator status-connected"></div>
+                            <span>Connected to Math Question Repository</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn" id="refresh-repo2">Refresh</button>
+                            <button class="btn btn-secondary" id="export-repo">Export</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="repo-search">Search Repository:</label>
+                        <input type="text" id="repo-search" placeholder="Search by topic, difficulty, or keywords">
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn" id="search-repo">Search</button>
+                        <button class="btn btn-secondary" id="clear-search">Clear</button>
+                        <button class="btn btn-secondary" id="filter-repo">Filter</button>
+                    </div>
+                    
+                    <div class="processing" id="repo-processing">
+                        <div class="spinner"></div>
+                        <p>Searching repository...</p>
+                    </div>
+                    
+                    <div class="response-area" id="repo-results">
+                        <div class="preview-title">Repository Questions</div>
+                        <div class="question-list" id="repo-questions"></div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn" id="create-quiz-from-repo">Create Quiz</button>
+                            <button class="btn btn-secondary" id="edit-repo-item">Edit</button>
+                            <button class="btn btn-warning" id="delete-repo-item">Delete</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -417,6 +800,136 @@
     
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Sample repository data (in a real app, this would come from an API)
+        const mathRepository = {
+            topics: [
+                { id: 'algebra', name: 'Algebra', icon: 'x²', subtopics: ['Linear Equations', 'Quadratic Equations', 'Polynomials', 'Inequalities'] },
+                { id: 'geometry', name: 'Geometry', icon: '△', subtopics: ['Triangles', 'Circles', 'Polygons', '3D Shapes'] },
+                { id: 'calculus', name: 'Calculus', icon: '∫', subtopics: ['Derivatives', 'Integrals', 'Limits', 'Series'] },
+                { id: 'number', name: 'Number Theory', icon: '1-9', subtopics: ['Primes', 'Fractions', 'Decimals', 'Ratios'] },
+                { id: 'stats', name: 'Statistics', icon: '📊', subtopics: ['Probability', 'Distributions', 'Regression', 'Hypothesis Testing'] }
+            ],
+            questions: [
+                {
+                    id: 1,
+                    question: "Solve for $x$: $2x + 5 = 15$",
+                    answer: "$x = 5$",
+                    topic: "algebra",
+                    subtopic: "Linear Equations",
+                    difficulty: "basic",
+                    tags: ["linear", "equation", "solve"]
+                },
+                {
+                    id: 2,
+                    question: "Find the roots of $x^2 - 5x + 6 = 0$",
+                    answer: "$x = 2$ or $x = 3$",
+                    topic: "algebra",
+                    subtopic: "Quadratic Equations",
+                    difficulty: "intermediate",
+                    tags: ["quadratic", "roots", "factor"]
+                },
+                {
+                    id: 3,
+                    question: "Calculate the area of a circle with radius 5cm",
+                    answer: "$25\\pi$ cm²",
+                    topic: "geometry",
+                    subtopic: "Circles",
+                    difficulty: "basic",
+                    tags: ["area", "circle", "radius"]
+                },
+                {
+                    id: 4,
+                    question: "Find the derivative of $f(x) = 3x^2 + 2x - 5$",
+                    answer: "$f'(x) = 6x + 2$",
+                    topic: "calculus",
+                    subtopic: "Derivatives",
+                    difficulty: "intermediate",
+                    tags: ["derivative", "polynomial", "power rule"]
+                },
+                {
+                    id: 5,
+                    question: "What is the probability of rolling a prime number on a 6-sided die?",
+                    answer: "$\\frac{1}{2}$",
+                    topic: "stats",
+                    subtopic: "Probability",
+                    difficulty: "basic",
+                    tags: ["probability", "dice", "prime"]
+                }
+            ],
+            recentQueries: [
+                "Quadratic formula",
+                "Circle area proof",
+                "Integration by parts",
+                "Probability tree diagram"
+            ]
+        };
+
+        // Initialize the UI with repository data
+        function initRepositoryUI() {
+            // Populate topics sidebar
+            const topicList = document.getElementById('topic-list');
+            mathRepository.topics.forEach(topic => {
+                const topicItem = document.createElement('li');
+                topicItem.className = 'topic-item';
+                topicItem.innerHTML = `
+                    <span class="topic-icon">${topic.icon}</span>
+                    ${topic.name}
+                `;
+                topicItem.addEventListener('click', () => loadTopicQuestions(topic.id));
+                topicList.appendChild(topicItem);
+            });
+
+            // Populate recent queries
+            const recentQueries = document.getElementById('recent-queries');
+            mathRepository.recentQueries.forEach(query => {
+                const queryItem = document.createElement('li');
+                queryItem.className = 'topic-item';
+                queryItem.textContent = query;
+                queryItem.addEventListener('click', () => {
+                    document.getElementById('math-problem').value = query;
+                    document.querySelector('.tab-btn[data-tab="solve"]').click();
+                });
+                recentQueries.appendChild(queryItem);
+            });
+
+            // Load first topic by default
+            if (mathRepository.topics.length > 0) {
+                loadTopicQuestions(mathRepository.topics[0].id);
+            }
+        }
+
+        // Load questions for a specific topic
+        function loadTopicQuestions(topicId) {
+            // Highlight selected topic
+            document.querySelectorAll('.topic-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filter questions by topic
+            const topicQuestions = mathRepository.questions.filter(q => q.topic === topicId);
+            
+            // Display questions (for repository tab)
+            const repoQuestions = document.getElementById('repo-questions');
+            repoQuestions.innerHTML = '';
+            
+            topicQuestions.forEach(question => {
+                const questionItem = document.createElement('div');
+                questionItem.className = 'question-item';
+                questionItem.innerHTML = `
+                    <input type="checkbox" class="question-checkbox" id="repo-q${question.id}">
+                    <label for="repo-q${question.id}">${question.question}</label>
+                    <div>
+                        <span class="topic-tag ${question.topic}">${question.subtopic}</span>
+                        <span class="topic-tag">${question.difficulty}</span>
+                    </div>
+                `;
+                repoQuestions.appendChild(questionItem);
+            });
+
+            MathJax.typesetPromise();
+        }
+
         // Tab switching functionality
         const tabButtons = document.querySelectorAll('.tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
@@ -432,11 +945,6 @@
                 const tabId = button.getAttribute('data-tab');
                 document.getElementById(tabId + '-tab').classList.add('active');
             });
-        });
-        
-        // Close popup button
-        document.getElementById('close-popup').addEventListener('click', () => {
-            document.querySelector('.ai-math-popup').style.display = 'none';
         });
         
         // LaTeX toolbar functionality
@@ -520,213 +1028,4 @@
                         "Find the volume of a cuboid with sides 3cm, 4cm, and 5cm",
                         "Calculate the missing angle in a triangle with angles 35° and 75°"
                     ];
-                } else {
-                    sampleQuestions = [
-                        "Calculate the mean of 5, 7, 9, 11",
-                        "What is the probability of rolling a 3 on a fair 6-sided die?",
-                        "Interpret the bar chart showing favorite subjects of students"
-                    ];
-                }
-                
-                sampleQuestions.forEach((question, index) => {
-                    const questionItem = document.createElement('div');
-                    questionItem.className = 'question-item';
-                    questionItem.innerHTML = `
-                        <input type="checkbox" id="q${index}" checked>
-                        <label for="q${index}">${question}</label>
-                    `;
-                    questionList.appendChild(questionItem);
-                });
-                
-                MathJax.typesetPromise();
-            }, 2000);
-        });
-        
-        // Rewrite questions
-        document.getElementById('rewrite-questions').addEventListener('click', function() {
-            document.getElementById('rewrite-options').style.display = 'block';
-        });
-        
-        document.getElementById('apply-rewrite').addEventListener('click', function() {
-            const difficulty = document.getElementById('question-difficulty').value;
-            const type = document.getElementById('question-type').value;
-            
-            // Simulate rewriting questions
-            document.getElementById('rewrite-options').style.display = 'none';
-            alert(`Questions will be rewritten as ${difficulty} level ${type} questions. In a real app, this would call your AI backend.`);
-        });
-        
-        // Generate Questions
-        document.getElementById('generate-questions').addEventListener('click', function() {
-            const topic = document.getElementById('question-topic').value;
-            const difficulty = document.getElementById('generate-difficulty').value;
-            const count = document.getElementById('question-count').value;
-            
-            if (!topic) {
-                alert('Please enter a topic');
-                return;
-            }
-            
-            document.getElementById('generate-processing').style.display = 'block';
-            document.getElementById('generate-questions').style.display = 'none';
-            
-            // Simulate AI generation
-            setTimeout(() => {
-                document.getElementById('generate-processing').style.display = 'none';
-                document.getElementById('generate-questions').style.display = 'inline-block';
-                document.getElementById('generated-questions').style.display = 'block';
-                
-                const questionsOutput = document.getElementById('questions-output');
-                questionsOutput.innerHTML = '';
-                
-                // Generate sample questions based on topic
-                let questions = [];
-                if (topic.toLowerCase().includes('quadratic')) {
-                    questions = [
-                        `Solve for $x$: $x^2 - 5x + 6 = 0$`,
-                        `Find the roots of $2x^2 + 3x - 2 = 0$ using the quadratic formula`,
-                        `A quadratic function has vertex at $(3, -4)$. Write its equation in vertex form`
-                    ];
-                } else if (topic.toLowerCase().includes('fraction')) {
-                    questions = [
-                        `Simplify $\\frac{12}{18}$ to its lowest terms`,
-                        `Calculate $\\frac{2}{3} + \\frac{1}{4}$`,
-                        `Multiply $\\frac{3}{5} \\times \\frac{10}{9}$ and simplify`
-                    ];
-                } else {
-                    questions = [
-                        `Solve for $x$: $3x + 7 = 22$`,
-                        `Calculate the area of a rectangle with length $5$cm and width $3.5$cm`,
-                        `Find the mean of $12, 15, 18, 21, 24$`
-                    ];
-                }
-                
-                // Limit to requested count
-                questions = questions.slice(0, count);
-                
-                questions.forEach((q, i) => {
-                    const questionElement = document.createElement('p');
-                    questionElement.innerHTML = `${i+1}. ${q}`;
-                    questionsOutput.appendChild(questionElement);
-                });
-                
-                MathJax.typesetPromise();
-            }, 1500);
-        });
-        
-        // Regenerate questions
-        document.getElementById('regenerate-questions').addEventListener('click', function() {
-            document.getElementById('generate-questions').click();
-        });
-        
-        // Add to quiz (simulated)
-        document.getElementById('add-to-quiz').addEventListener('click', function() {
-            alert('Questions added to quiz! In a real app, this would save to your database.');
-        });
-        
-        // Download questions
-        document.getElementById('download-questions').addEventListener('click', function() {
-            const questionsOutput = document.getElementById('questions-output');
-            if (!questionsOutput.textContent.trim()) {
-                alert('No questions to download. Please generate questions first.');
-                return;
-            }
-            
-            // Get the topic and current date for filename
-            const topic = document.getElementById('question-topic').value || 'math_questions';
-            const date = new Date().toISOString().split('T')[0];
-            const filename = `${topic.replace(/\s+/g, '_')}_${date}.txt`;
-            
-            // Create the content for download
-            let content = `Math Questions - ${topic}\nGenerated on ${date}\n\n`;
-            
-            // Add each question
-            const questions = questionsOutput.querySelectorAll('p');
-            questions.forEach((q, i) => {
-                // Remove MathJax processing spans and keep LaTeX
-                let questionText = q.innerHTML
-                    .replace(/<span class="mjx-chtml.*?<\/span>/g, '') // Remove MathJax spans
-                    .replace(/<.*?>/g, '') // Remove any remaining HTML tags
-                    .replace(/&nbsp;/g, ' ') // Replace non-breaking spaces
-                    .trim();
-                
-                content += `${i+1}. ${questionText}\n\n`;
-            });
-            
-            // Create download link
-            const blob = new Blob([content], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        });
-        
-        // Solve Problem
-        const mathProblemInput = document.getElementById('math-problem');
-        mathProblemInput.addEventListener('input', updateSolutionPreview);
-        
-        document.getElementById('solve-problem').addEventListener('click', function() {
-            const problem = mathProblemInput.value.trim();
-            if (!problem) {
-                alert('Please enter a math problem');
-                return;
-            }
-            
-            document.getElementById('solve-processing').style.display = 'block';
-            this.style.display = 'none';
-            
-            // Simulate problem solving
-            setTimeout(() => {
-                document.getElementById('solve-processing').style.display = 'none';
-                document.getElementById('solve-problem').style.display = 'inline-block';
-                
-                let solution = '';
-                if (problem.includes('x^2')) {
-                    solution = `
-                        <p><strong>Quadratic Equation Solution:</strong></p>
-                        <p>1. Problem: $${problem.replace('Solve', '').trim()}$</p>
-                        <p>2. Use quadratic formula: $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$</p>
-                        <p>3. Solution: $x = 2$ or $x = 3$</p>
-                    `;
-                } else if (problem.includes('int') || problem.includes('∫')) {
-                    solution = `
-                        <p><strong>Integration Solution:</strong></p>
-                        <p>1. Problem: $${problem.replace('Solve', '').trim()}$</p>
-                        <p>2. Apply power rule: $\\int x^n dx = \\frac{x^{n+1}}{n+1} + C$</p>
-                        <p>3. Solution: $\\frac{x^3}{3} + C$</p>
-                    `;
-                } else {
-                    solution = `
-                        <p><strong>Solution:</strong></p>
-                        <p>1. Problem: $${problem}$</p>
-                        <p>2. Working steps would appear here</p>
-                        <p>3. Final answer: $42$ (example)</p>
-                    `;
-                }
-                
-                document.getElementById('solution-output').innerHTML = solution;
-                document.getElementById('solution-preview').style.display = 'block';
-                MathJax.typesetPromise();
-            }, 1500);
-        });
-        
-        // Create quiz question from solution
-        document.getElementById('create-quiz-question').addEventListener('click', function() {
-            const problem = mathProblemInput.value.trim();
-            alert(`Quiz question created from: "${problem}". In a real app, this would format the solution as a question.`);
-        });
-        
-        function updateSolutionPreview() {
-            const problemText = mathProblemInput.value;
-            document.getElementById('solution-output').innerHTML = problemText;
-            document.getElementById('solution-preview').style.display = problemText ? 'block' : 'none';
-            MathJax.typesetPromise();
-        }
-    });
-    </script>
-</body>
-</html>
+                } else if (curriculum ===
