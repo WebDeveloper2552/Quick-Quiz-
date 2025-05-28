@@ -973,14 +973,6 @@
                 <img src="logo.png" alt="QuickQuiz Logo" class="footer-logo">
                 <span class="footer-title">QuickQuiz</span>
             </div>
-            <div class="footer-links">
-                <a href="index.html">Home</a>
-                <a href="create_quizes.html">Create Quizzes</a>
-                <a href="quiz_generator.html">Practice Quizzes</a>
-                <a href="aichatbot.html">AI Quiz Generator</a>
-                <a href="login.html">Login</a>
-                <a href="signup.html">Sign Up</a>
-            </div>
             <div class="footer-copy">
                 &copy; 2025 QuickQuiz. All rights reserved.
             </div>
@@ -990,9 +982,165 @@
     <!-- MathJax for LaTeX rendering -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <!-- Add Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Mathematics Keyboard Modal -->
+    <style>
+        .math-keyboard-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0; top: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.15);
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .math-keyboard-content {
+            background: #fff;
+            border-radius: 16px 16px 0 0;
+            box-shadow: 0 -2px 16px rgba(67,97,238,0.13);
+            padding: 18px 12px 10px 12px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 0;
+            animation: fadeInUp 0.2s;
+        }
+        .math-keyboard-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .math-key-btn {
+            min-width: 38px;
+            padding: 7px 10px;
+            border: none;
+            background: #e9ecef;
+            color: #222;
+            border-radius: 7px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .math-key-btn:hover {
+            background: #d0d8e6;
+        }
+        .math-keyboard-close {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: #888;
+            cursor: pointer;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+    </style>
+    <div class="math-keyboard-modal" id="math-keyboard-modal">
+        <div class="math-keyboard-content">
+            <button class="math-keyboard-close" id="close-math-keyboard" title="Close">&times;</button>
+            <div class="math-keyboard-row">
+                <button class="math-key-btn" data-insert="+">+</button>
+                <button class="math-key-btn" data-insert="-">-</button>
+                <button class="math-key-btn" data-insert="\\times">×</button>
+                <button class="math-key-btn" data-insert="\\div">÷</button>
+                <button class="math-key-btn" data-insert="=">=</button>
+                <button class="math-key-btn" data-insert="^{}">^</button>
+                <button class="math-key-btn" data-insert="\\sqrt{}">√</button>
+                <button class="math-key-btn" data-insert="\\frac{}{}">a⁄b</button>
+                <button class="math-key-btn" data-insert="\\pi">π</button>
+                <button class="math-key-btn" data-insert="\\infty">∞</button>
+                <button class="math-key-btn" data-insert="\\int_{}^{}">∫</button>
+                <button class="math-key-btn" data-insert="\\sum_{}^{}">∑</button>
+                <button class="math-key-btn" data-insert="\\lim_{x \\to }">lim</button>
+                <button class="math-key-btn" data-insert="\\sin">sin</button>
+                <button class="math-key-btn" data-insert="\\cos">cos</button>
+                <button class="math-key-btn" data-insert="\\tan">tan</button>
+                <button class="math-key-btn" data-insert="\\log">log</button>
+                <button class="math-key-btn" data-insert="\\ln">ln</button>
+                <button class="math-key-btn" data-insert="\\left(\\right)">()</button>
+                <button class="math-key-btn" data-insert="\\left[\\right]">[]</button>
+                <button class="math-key-btn" data-insert="\\left\\{\\right\\}">{}</button>
+            </div>
+        </div>
+    </div>
     <script>
+    // --- Math Keyboard Logic ---
+    let mathKeyboardTarget = null;
+    function showMathKeyboard(target) {
+        mathKeyboardTarget = target;
+        document.getElementById('math-keyboard-modal').style.display = 'flex';
+    }
+    function hideMathKeyboard() {
+        document.getElementById('math-keyboard-modal').style.display = 'none';
+        mathKeyboardTarget = null;
+    }
+    document.getElementById('close-math-keyboard').onclick = hideMathKeyboard;
+    document.querySelectorAll('.math-key-btn').forEach(btn => {
+        btn.onclick = function() {
+            if (!mathKeyboardTarget) return;
+            const insert = btn.getAttribute('data-insert');
+            const el = mathKeyboardTarget;
+            if (el.setRangeText) {
+                const start = el.selectionStart, end = el.selectionEnd;
+                el.setRangeText(insert, start, end, 'end');
+                el.focus();
+                el.selectionStart = el.selectionEnd = start + insert.length;
+            } else {
+                el.value += insert;
+                el.focus();
+            }
+            if (el.dispatchEvent) el.dispatchEvent(new Event('input'));
+        };
+    });
+    // Show keyboard for all textareas and text inputs
+    function attachMathKeyboardToInputs() {
+        document.querySelectorAll('textarea, input[type="text"]').forEach(el => {
+            if (!el.classList.contains('math-keyboard-attached')) {
+                el.classList.add('math-keyboard-attached');
+                el.addEventListener('focus', function() {
+                    showMathKeyboard(el);
+                });
+            }
+        });
+    }
+    attachMathKeyboardToInputs();
+    // If new inputs are added dynamically, call attachMathKeyboardToInputs() again
+
+    // --- Make all buttons functional (simulate where needed) ---
+    function showMessage(areaId, msg) {
+        const area = document.getElementById(areaId);
+        if (!area) return;
+        area.style.display = 'block';
+        let msgBox = area.querySelector('.ai-message');
+        if (!msgBox) {
+            msgBox = document.createElement('div');
+            msgBox.className = 'ai-message';
+            msgBox.style.margin = '10px 0';
+            msgBox.style.color = '#3f37c9';
+            area.appendChild(msgBox);
+        }
+        msgBox.innerHTML = msg;
+        setTimeout(() => { if(msgBox) msgBox.innerHTML = ''; }, 3000);
+    }
+
+    // Add event listeners for all buttons that were previously placeholders
+    document.querySelectorAll('button').forEach(btn => {
+        if (!btn.onclick) {
+            btn.onclick = function(e) {
+                if (btn.id && btn.id.startsWith('btn')) return; // skip if already handled
+                showMessage('solution-preview', `Button "${btn.textContent.trim()}" clicked! (Feature coming soon)`);
+            };
+        }
+    });
+
+    // Re-attach math keyboard if new inputs are added dynamically
+    const observer = new MutationObserver(attachMathKeyboardToInputs);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // --- Existing script code from your file (keep all your logic as before)...
     document.addEventListener('DOMContentLoaded', function() {
         // Sample repository data (in a real app, this would come from an API)
         const mathRepository = {
@@ -1835,4 +1983,5 @@
     });
     </script>
 
+</body>
 </html>
