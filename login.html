@@ -311,10 +311,9 @@
                 <button class="toggle-tab" id="tab-teacher" type="button">Teacher</button>
             </div>
             <div class="form-container active" id="student-login">
-                <form id="student-login-form">
-                    <input type="text" id="student-username" placeholder="Username" required>
-                    <input type="email" id="student-email" placeholder="Student Email" required>
-                    <input type="password" id="student-password" placeholder="Password" required>
+                <form id="student-login-form" autocomplete="on">
+                    <input type="email" id="student-email" name="email" placeholder="Student Email" required autocomplete="username">
+                    <input type="password" id="student-password" name="password" placeholder="Password" required autocomplete="current-password">
                     <button type="submit">Login</button>
                 </form>
                 <div class="info-item">
@@ -352,13 +351,27 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Example user database (replace with real backend in production)
-        const users = [
-            // Student example
-            { type: 'student', email: '1234567@students.a.ac.uk', password: 'studentpass' },
-            // Teacher example
-            { type: 'teacher', email: 'john.smith@a.ac.uk', password: 'teacherpass' }
-        ];
+        // IndexedDB setup
+        let db;
+        const request = indexedDB.open("QuickQuizDB", 1);
+
+        request.onupgradeneeded = function(event) {
+            db = event.target.result;
+            if (!db.objectStoreNames.contains('students')) {
+                db.createObjectStore('students', { keyPath: 'email' });
+            }
+            if (!db.objectStoreNames.contains('teachers')) {
+                db.createObjectStore('teachers', { keyPath: 'email' });
+            }
+        };
+
+        request.onsuccess = function(event) {
+            db = event.target.result;
+        };
+
+        request.onerror = function(event) {
+            alert("Database error: " + event.target.errorCode);
+        };
 
         // Tab switching logic
         $('#tab-student').click(function() {
@@ -378,26 +391,52 @@
             event.preventDefault();
             var email = $('#student-email').val();
             var password = $('#student-password').val();
-            var found = users.find(u => u.type === 'student' && u.email === email && u.password === password);
 
-            if (found) {
-                window.location.href = "index.html";
-            } else {
-                alert('Account details have not been found');
-            }
+            let transaction = db.transaction(['students'], 'readonly');
+            let store = transaction.objectStore('students');
+            let getRequest = store.get(email);
+
+            getRequest.onsuccess = function() {
+                let user = getRequest.result;
+                if (user && user.password === password) {
+                    // Store user's first name in localStorage
+                    const firstName = user.name.split(' ')[0];
+                    localStorage.setItem('quickquiz_loggedin', 'true');
+                    localStorage.setItem('quickquiz_firstname', firstName);
+                    window.location.href = "index.html";
+                } else {
+                    alert('Account details have not been found');
+                }
+            };
+            getRequest.onerror = function() {
+                alert('Database error.');
+            };
         });
 
         $('#teacher-login-form').on('submit', function (event) {
             event.preventDefault();
             var email = $('#teacher-email').val();
             var password = $('#teacher-password').val();
-            var found = users.find(u => u.type === 'teacher' && u.email === email && u.password === password);
 
-            if (found) {
-                window.location.href = "index.html";
-            } else {
-                alert('Account details have not been found');
-            }
+            let transaction = db.transaction(['teachers'], 'readonly');
+            let store = transaction.objectStore('teachers');
+            let getRequest = store.get(email);
+
+            getRequest.onsuccess = function() {
+                let user = getRequest.result;
+                if (user && user.password === password) {
+                    // Store user's first name in localStorage
+                    const firstName = user.name.split(' ')[0];
+                    localStorage.setItem('quickquiz_loggedin', 'true');
+                    localStorage.setItem('quickquiz_firstname', firstName);
+                    window.location.href = "index.html";
+                } else {
+                    alert('Account details have not been found');
+                }
+            };
+            getRequest.onerror = function() {
+                alert('Database error.');
+            };
         });
     </script>
 </body>
