@@ -228,6 +228,44 @@
         </div>
         <button id="create-quiz" class="btn btn-success mt-4">Create Quiz</button>
         <div id="quiz-code" class="quiz-code-box" style="display:none;"></div>
+
+        <!-- Add after the quiz-code-box -->
+        <div id="publish-section" style="display:none; margin-top:20px;">
+            <button class="btn btn-warning" id="publish-quiz-btn">Publish to Resources Page</button>
+        </div>
+
+        <!-- Modal for naming and category -->
+        <div class="modal fade" id="publishModal" tabindex="-1" aria-labelledby="publishModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <form class="modal-content" id="publish-form">
+              <div class="modal-header">
+                <h5 class="modal-title" id="publishModalLabel">Publish Quiz to Resource Bank</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                    <label for="quiz-title" class="form-label">Quiz Name</label>
+                    <input type="text" class="form-control" id="quiz-title" required>
+                </div>
+                <div class="mb-3">
+                    <label for="quiz-category" class="form-label">Category</label>
+                    <select class="form-select" id="quiz-category" required>
+                        <option value="">Choose...</option>
+                        <option value="Algebra">Algebra</option>
+                        <option value="Geometry">Geometry</option>
+                        <option value="Calculus">Calculus</option>
+                        <option value="Statistics">Statistics</option>
+                        <option value="Number Theory">Number Theory</option>
+                        <option value="General">General</option>
+                    </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Publish</button>
+              </div>
+            </form>
+          </div>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -250,6 +288,8 @@
         const form = document.getElementById('question-form');
         const list = document.getElementById('question-list');
         const codeBox = document.getElementById('quiz-code');
+        let lastQuizCode = null;
+        let lastQuizQuestions = [];
 
         form.onsubmit = function(e) {
             e.preventDefault();
@@ -285,6 +325,9 @@
             let quizzes = JSON.parse(localStorage.getItem('teacher_quizzes') || '[]');
             quizzes.push({ code, questions: [...questions] });
             localStorage.setItem('teacher_quizzes', JSON.stringify(quizzes));
+            // Save for publishing
+            lastQuizCode = code;
+            lastQuizQuestions = [...questions];
             questions.length = 0;
             renderQuestions();
         };
