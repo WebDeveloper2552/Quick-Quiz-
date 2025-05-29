@@ -5,11 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - QuickQuiz Classroom</title>
     <link href="https://fonts.googleapis.com/css?family=Oswald|Roboto" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-blue: #2c82c9;
-            --light-color: #f5f5f5;
-            --dark-color: #333;
+            --primary-blue: #2563eb;
+            --primary-blue-dark: #1e40af;
+            --accent-blue: #2196f3;
+            --background: #f1f5f9;
+            --input-bg: #f6faff;
+            --border-blue: #93c5fd;
+            --error-red: #dc2626;
+            --success-green: #16a34a;
+            --footer-bg: #1e40af;
+            --border-radius: 20px;
+            --box-shadow: 0 8px 32px rgba(44, 130, 201, 0.10);
         }
 
         * {
@@ -19,105 +29,183 @@
             font-family: 'Roboto', sans-serif;
         }
 
-        body {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        body::before {
-            content: "";
-            background: url('http://wallpaper-gallery.net/images/wallpapers-hd-pictures/wallpapers-hd-pictures-10.jpg') no-repeat center center;
-            background-size: cover;
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            right: 0;
-            left: 0;
-            width: 100%;
+        html, body {
             height: 100%;
-            z-index: -1;
+            min-height: 100%;
         }
 
-        .container {
-            width: 100%;
-            max-width: 400px;
-            position: relative;
+        body {
+            min-height: 100vh;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .navbar-custom {
+            background: var(--primary-blue) !important;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            box-shadow: none;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            color: #fff !important;
+            font-weight: 600;
+            font-size: 1.3rem;
+            letter-spacing: 0.5px;
+            margin-right: 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-nav {
+            margin-left: auto;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #fff !important;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: color 0.2s;
+            padding: 0;
+            background: none !important;
+        }
+
+        .nav-link.active, .nav-link:focus, .nav-link:hover {
+            color: #fff !important;
+            text-decoration: underline;
+            background: none !important;
+        }
+
+        .main-content {
+            flex: 1 0 auto;
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: auto;
+            justify-content: center;
+            min-height: 0;
+            background: transparent;
+        }
+
+        .container {
+            background: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 0;
+            max-width: 420px;
+            width: 100%;
+            margin: 2.5rem auto;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-blue));
+            color: #fff;
+            text-align: center;
+            padding: 2rem 1rem 1.2rem 1rem;
+            border-top-left-radius: var(--border-radius);
+            border-top-right-radius: var(--border-radius);
+            font-family: 'Roboto', sans-serif; /* Changed from 'Oswald' to 'Roboto' */
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 0;
+        }
+
+        .toggle-tabs {
+            display: flex;
+            background: #eaf1fb;
+            border-radius: 999px;
+            margin: 1.2rem auto 2rem auto;
+            width: 80%;
+            max-width: 320px;
+            overflow: hidden;
+        }
+
+        .toggle-tab {
+            flex: 1;
+            padding: 0.7rem 0;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary-blue);
+            background: transparent;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .toggle-tab.active {
+            background: var(--primary-blue);
+            color: #fff;
         }
 
         .form-container {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            transition: opacity 0.6s ease, transform 0.6s ease;
+            padding: 2rem 2rem 1.5rem 2rem;
+            background: #fff;
+            border-bottom-left-radius: var(--border-radius);
+            border-bottom-right-radius: var(--border-radius);
         }
 
         .form-container.hidden {
-            opacity: 0;
-            transform: translateX(100%);
+            display: none;
         }
 
         .form-container.active {
-            opacity: 1;
-            transform: translateX(0);
+            display: block;
         }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 1rem;
-            color: var(--primary-blue);
+        .form-container h2 {
+            display: none;
         }
 
+        input[type="text"],
         input[type="email"],
         input[type="password"] {
             width: 100%;
-            padding: 0.75rem;
-            margin-bottom: 1rem;
-            border: 2px solid var(--primary-blue);
-            border-radius: 4px;
+            padding: 0.9rem 1rem;
+            margin-bottom: 1.2rem;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 10px;
+            background: var(--input-bg);
+            font-size: 1rem;
+            transition: border 0.2s;
         }
 
-        button {
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            border: 1.5px solid var(--primary-blue);
+            outline: none;
+        }
+
+        button[type="submit"] {
             width: 100%;
-            background-color: var(--primary-blue);
+            background: var(--primary-blue);
             color: white;
             border: none;
-            padding: 0.75rem;
-            border-radius: 4px;
+            padding: 0.9rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 1px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            margin-bottom: 0.5rem;
+            transition: background 0.2s;
+            margin-top: 0.5rem;
         }
 
-        button:hover {
-            background-color: darkblue;
-        }
-
-        .home-button {
-            width: auto;
-            margin-top: 1rem;
-            padding: 0.5rem 1rem;
-            background-color: transparent;
-            border: 2px solid var(--primary-blue);
-            color: var(--primary-blue);
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .home-button:hover {
-            background-color: var(--primary-blue);
-            color: white;
+        button[type="submit"]:hover {
+            background: var(--primary-blue-dark);
         }
 
         .info-item {
@@ -129,52 +217,173 @@
             cursor: pointer;
             color: var(--primary-blue);
             text-decoration: underline;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            display: inline-block;
+            transition: color 0.2s;
+        }
+
+        .info-item .btn:hover {
+            color: var(--accent-blue);
+        }
+
+        footer {
+            background-color: var(--primary-blue);
+            color: #fff;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 2rem;
+            flex-shrink: 0;
+            width: 100%;
+        }
+
+        .footer-links {
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 1rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        .social-icons {
+            margin-bottom: 1rem;
+        }
+
+        .social-icons a {
+            color: #fff;
+            margin: 0 0.5rem;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+        }
+
+        .social-icons a:hover {
+            color: var(--accent-blue);
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding: 0;
+            }
+            .form-header {
+                font-size: 1.3rem;
+                padding: 1.2rem 0.5rem 0.8rem 0.5rem;
+            }
+            .form-container {
+                padding: 1.2rem 0.7rem 1rem 0.7rem;
+            }
+            .toggle-tabs {
+                width: 98%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container" id="login-container">
-        <div class="form-container active" id="student-login">
-            <h2>Student Login</h2>
-            <form id="student-login-form">
-                <input type="email" id="student-email" placeholder="Student Email" required>
-                <input type="password" id="student-password" placeholder="Password" required>
-                <button type="submit">Login</button>
-            </form>
-            <div class="info-item">
-                <p>Don't have an account?</p>
-                <div class="btn" id="toggle-to-teacher">Log in as Teacher</div>
-            </div>
+    <!-- Navbar -->
+    <nav class="navbar navbar-custom">
+        <div class="container-fluid" style="padding:0;">
+            <span class="navbar-brand mb-0 h1">Quick Quiz Website</span>
+            <ul class="navbar-nav flex-row">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="login.html">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="signup.html">Sign Up</a>
+                </li>
+            </ul>
         </div>
+    </nav>
 
-        <div class="form-container hidden" id="teacher-login">
-            <h2>Teacher Login</h2>
-            <form id="teacher-login-form">
-                <input type="email" id="teacher-email" placeholder="Teacher Email" required>
-                <input type="password" id="teacher-password" placeholder="Password" required>
-                <button type="submit">Login</button>
-            </form>
-            <div class="info-item">
-                <p>Have an account?</p>
-                <div class="btn" id="toggle-to-student">Log in as Student</div>
+    <div class="main-content">
+        <div class="container" id="login-container">
+            <div class="form-header">Login to Your Account</div>
+            <div class="toggle-tabs">
+                <button class="toggle-tab active" id="tab-student" type="button">Student</button>
+                <button class="toggle-tab" id="tab-teacher" type="button">Teacher</button>
+            </div>
+            <div class="form-container active" id="student-login">
+                <form id="student-login-form">
+                    <input type="text" id="student-username" placeholder="Username" required>
+                    <input type="email" id="student-email" placeholder="Student Email" required>
+                    <input type="password" id="student-password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                </form>
+                <div class="info-item">
+                    <p>Don't have an account?</p>
+                    <a href="signup.html" class="btn">Sign Up</a>
+                </div>
+            </div>
+            <div class="form-container hidden" id="teacher-login">
+                <form id="teacher-login-form">
+                    <input type="text" id="teacher-username" placeholder="Username" required>
+                    <input type="email" id="teacher-email" placeholder="Teacher Email" required>
+                    <input type="password" id="teacher-password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                </form>
+                <div class="info-item">
+                    <p>Don't have an account?</p>
+                    <a href="signup.html" class="btn">Sign Up</a>
+                </div>
             </div>
         </div>
     </div>
 
-    <button class="home-button" onclick="location.href='index.html'">Home</button>
+    <footer>
+        <div class="footer-links">
+            <a href="about.html">About Us</a>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+        </div>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+        </div>
+        <p>&copy; 2025 QuickQuiz Classroom. All rights reserved by the AoC.</p>
+    </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        // Example user database (replace with real backend in production)
+        const users = [
+            // Student example
+            { type: 'student', email: '1234567@students.a.ac.uk', password: 'studentpass' },
+            // Teacher example
+            { type: 'teacher', email: 'john.smith@a.ac.uk', password: 'teacherpass' }
+        ];
+
+        // Tab switching logic
+        $('#tab-student').click(function() {
+            $('#tab-student').addClass('active');
+            $('#tab-teacher').removeClass('active');
+            $('#student-login').addClass('active').removeClass('hidden');
+            $('#teacher-login').removeClass('active').addClass('hidden');
+        });
+        $('#tab-teacher').click(function() {
+            $('#tab-teacher').addClass('active');
+            $('#tab-student').removeClass('active');
+            $('#teacher-login').addClass('active').removeClass('hidden');
+            $('#student-login').removeClass('active').addClass('hidden');
+        });
+
         $('#student-login-form').on('submit', function (event) {
             event.preventDefault();
             var email = $('#student-email').val();
             var password = $('#student-password').val();
-            var studentRegex = /^\d{7}@students\.[a-z]\.ac\.uk$/;
+            var found = users.find(u => u.type === 'student' && u.email === email && u.password === password);
 
-            if (studentRegex.test(email)) {
-                alert('Student login successful!');
+            if (found) {
+                window.location.href = "index.html";
             } else {
-                alert('Invalid email format.');
+                alert('Account details have not been found');
             }
         });
 
@@ -182,23 +391,13 @@
             event.preventDefault();
             var email = $('#teacher-email').val();
             var password = $('#teacher-password').val();
-            var teacherRegex = /^[a-z]+\.[a-z]+@[a-z]\.ac\.uk$/;
+            var found = users.find(u => u.type === 'teacher' && u.email === email && u.password === password);
 
-            if (teacherRegex.test(email)) {
-                alert('Teacher login successful!');
+            if (found) {
+                window.location.href = "index.html";
             } else {
-                alert('Invalid email format.');
+                alert('Account details have not been found');
             }
-        });
-
-        $('#toggle-to-teacher').click(function() {
-            $('#student-login').removeClass('active').addClass('hidden');
-            $('#teacher-login').removeClass('hidden').addClass('active');
-        });
-
-        $('#toggle-to-student').click(function() {
-            $('#teacher-login').removeClass('active').addClass('hidden');
-            $('#student-login').removeClass('hidden').addClass('active');
         });
     </script>
 </body>
