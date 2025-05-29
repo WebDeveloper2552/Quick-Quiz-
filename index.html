@@ -453,6 +453,9 @@
                         <li class="nav-item">
                             <a class="nav-link" href="signup.html">Sign Up</a>
                         </li>
+                        <li class="nav-item" id="logout-nav-item" style="display:none;">
+                            <a class="nav-link" href="#" id="logout-btn">Logout</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -609,6 +612,42 @@
                 welcomeDiv.style.fontSize = '1.2rem';
                 welcomeDiv.innerText = `Welcome, ${firstName}!`;
                 document.body.insertBefore(welcomeDiv, document.body.firstChild);
+            }
+
+            // Hide "Get Started Free" and "Signup" buttons if logged in
+            if (isLoggedIn) {
+                // Hide the hero section button
+                const getStartedBtn = document.querySelector('.cta-button.primary-cta');
+                if (getStartedBtn) getStartedBtn.style.display = 'none';
+
+                // Hide the final CTA signup button
+                document.querySelectorAll('.cta-button').forEach(btn => {
+                    if (btn.textContent.includes('Signup') || btn.textContent.includes('Sign Up')) {
+                        btn.style.display = 'none';
+                    }
+                });
+
+                // Hide the navbar "Sign Up" link
+                document.querySelectorAll('a.nav-link').forEach(link => {
+                    if (link.textContent.trim().toLowerCase() === 'sign up') {
+                        link.style.display = 'none';
+                    }
+                });
+
+                // Show the logout button in the navbar
+                const logoutNavItem = document.getElementById('logout-nav-item');
+                if (logoutNavItem) logoutNavItem.style.display = '';
+            }
+
+            // Logout button logic
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('quickquiz_loggedin');
+                    localStorage.removeItem('quickquiz_firstname');
+                    location.reload();
+                });
             }
         });
     </script>
