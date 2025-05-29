@@ -447,7 +447,7 @@
 
         // Email regex patterns
         const studentRegex = /^\d{7}@students\.[a-zA-Z0-9.-]+\.ac\.uk$/;
-        const teacherRegex = /^[a-zA-Z]+\.[a-zA-Z]+@[a-zA-Z0-9.-]+\.ac\.uk$/;
+        const teacherRegex = /^[a-zA-Z]+(\.[a-zA-Z]+)?@[a-zA-Z0-9.-]+\.(ac\.uk|school|com|co\.uk|sch\.uk|org\.uk|academy|org|education|sslp\.uk|biz|uc|net|at)$/;
 
         // Student sign up
         $('#student-signup-form').on('submit', function (event) {
