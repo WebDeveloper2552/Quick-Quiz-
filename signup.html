@@ -37,7 +37,7 @@
             color: var(--dark-color);
             line-height: 1.6;
         }
- 
+
         .navbar-custom {
             background: linear-gradient(90deg, var(--primary-blue), var(--footer-bg));
             color: #fff !important;
@@ -71,17 +71,20 @@
             flex: 1 0 auto;
             min-height: 80vh;
             width: 100vw;
+            padding: 2vw 0;
         }
 
         .signup-container {
             background: #fff;
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(37,99,235,0.08), 0 1.5px 8px rgba(37,99,235,0.04);
-            max-width: 430px;
             width: 100%;
+            max-width: 430px;
+            min-width: 260px;
             margin: 32px auto;
             overflow: hidden;
             padding-bottom: 24px;
+            transition: max-width 0.3s, width 0.3s;
         }
 
         .signup-header {
@@ -216,6 +219,21 @@
             color: #dc2626;
         }
 
+        .info-item {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .info-item .btn {
+            color: #1976d2;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        .info-item .btn:hover {
+            color: #2196f3;
+        }
+
         footer {
             background: linear-gradient(90deg, var(--primary-blue), var(--footer-bg));
             color: #fff;
@@ -227,13 +245,40 @@
             width: 100%;
         }
 
+        /* Responsive styles */
+        @media (max-width: 900px) {
+            .signup-container {
+                max-width: 90vw;
+            }
+        }
         @media (max-width: 600px) {
             .signup-container {
                 max-width: 99vw;
                 border-radius: 0;
+                padding-bottom: 12px;
             }
             .form-container {
                 padding: 0 8px;
+            }
+            .signup-header {
+                font-size: 1.3rem;
+                padding: 18px 4px 12px 4px;
+            }
+            .toggle-container {
+                width: 98%;
+                height: 40px;
+            }
+            .toggle-option {
+                font-size: 1rem;
+            }
+        }
+        @media (max-width: 400px) {
+            .signup-header {
+                font-size: 1.05rem;
+                padding: 10px 2px 8px 2px;
+            }
+            .signup-container {
+                min-width: 0;
             }
         }
     </style>
@@ -299,6 +344,10 @@
                     </div>
                     <button type="submit" class="submit-btn">Sign Up</button>
                     <div class="status-message" id="student-status"></div>
+                    <div class="info-item" style="text-align:center; margin-top:10px;">
+                        <span>Already have an account? </span>
+                        <a href="login.html" class="btn" style="color:#1976d2;text-decoration:underline;font-weight:600;">Login</a>
+                    </div>
                 </form>
                 <!-- Teacher Form -->
                 <form class="form teacher" id="teacher-signup-form" autocomplete="off">
@@ -324,6 +373,10 @@
                     </div>
                     <button type="submit" class="submit-btn">Sign Up</button>
                     <div class="status-message" id="teacher-status"></div>
+                    <div class="info-item" style="text-align:center; margin-top:10px;">
+                        <span>Already have an account? </span>
+                        <a href="login.html" class="btn" style="color:#1976d2;text-decoration:underline;font-weight:600;">Login</a>
+                    </div>
                 </form>
             </div>
         </div>
@@ -358,9 +411,9 @@
         studentToggle.addEventListener('click', () => setActiveForm(true));
         teacherToggle.addEventListener('click', () => setActiveForm(false));
 
-        // Email regex patterns
-        const studentRegex = /^\d{7}@students\.[a-z]\.ac\.uk$/;
-        const teacherRegex = /^[a-z]+\.[a-z]+@[a-z]\.ac\.uk$/;
+        // Email regex patterns (updated)
+        const studentRegex = /^\d{7}@students\.[a-zA-Z0-9.-]+\.ac\.uk$/;
+        const teacherRegex = /^[a-zA-Z]+\.[a-zA-Z]+@[a-zA-Z0-9.-]+\.ac\.uk$/;
 
         // Student sign up validation and save to database
         $('#student-signup-form').on('submit', function (event) {
