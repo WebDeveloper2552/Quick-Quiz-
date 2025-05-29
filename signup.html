@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quick Quiz Website - Sign Up</title>
-    <link href="https://fonts.googleapis.com/css?family=Oswald:700|Roboto:400,500" rel="stylesheet">
-    <!-- Bootstrap CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
@@ -332,7 +329,7 @@
                     </div>
                     <div class="form-group">
                         <label for="teacher-code">Teacher Code</label>
-                        <input type="text" id="teacher-code" placeholder="Enter code provided by your teacher" required>
+                        <input type="text" id="teacher-code" required>
                     </div>
                     <div class="form-group">
                         <label for="student-password">Password</label>
@@ -347,20 +344,23 @@
                     <div class="info-item" style="text-align:center; margin-top:10px;">
                         <span>Already have an account? </span>
                         <a href="login.html" class="btn" style="color:#1976d2;text-decoration:underline;font-weight:600;">Login</a>
+                        <br>
+                        <span>Forgot your password? </span>
+                        <a href="reset_password.html" class="btn" style="color:#1976d2;text-decoration:underline;font-weight:600;">Reset your password</a>
                     </div>
                 </form>
                 <!-- Teacher Form -->
-                <form class="form teacher" id="teacher-signup-form" autocomplete="off">
+                <form class="form teacher" id="teacher-signup-form" autocomplete="off" style="display:none;">
                     <div class="form-group">
-                        <label for="teacher-name">Full Name</label>
+                        <label for="teacher-name">Name</label>
                         <input type="text" id="teacher-name" required>
                     </div>
                     <div class="form-group">
-                        <label for="teacher-email">Teacher Email</label>
+                        <label for="teacher-email">Email</label>
                         <input type="email" id="teacher-email" required>
                     </div>
                     <div class="form-group">
-                        <label for="teacher-school">School</label>
+                        <label for="teacher-school">Provider</label>
                         <input type="text" id="teacher-school" required>
                     </div>
                     <div class="form-group">
@@ -376,6 +376,9 @@
                     <div class="info-item" style="text-align:center; margin-top:10px;">
                         <span>Already have an account? </span>
                         <a href="login.html" class="btn" style="color:#1976d2;text-decoration:underline;font-weight:600;">Login</a>
+                        <br>
+                        <span>Forgot your password? </span>
+                        <a href="reset_password.html" class="btn" style="color:#1976d2;text-decoration:underline;font-weight:600;">Reset your password</a>
                     </div>
                 </form>
             </div>
@@ -384,38 +387,69 @@
     <footer>
         &copy; 2025 Quick Quiz Website. All rights reserved.
     </footer>
-    <!-- Bootstrap JS CDN (for navbar toggling) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <!-- Firebase Auth -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script>
-        // Toggle logic
-        const studentToggle = document.getElementById('student-toggle');
-        const teacherToggle = document.getElementById('teacher-toggle');
-        const studentForm = document.getElementById('student-signup-form');
-        const teacherForm = document.getElementById('teacher-signup-form');
+        // Replace with your Firebase config!
+        const firebaseConfig = {
+          apiKey: "YOUR_API_KEY",
+          authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+          projectId: "YOUR_PROJECT_ID",
+          storageBucket: "YOUR_PROJECT_ID.appspot.com",
+          messagingSenderId: "YOUR_SENDER_ID",
+          appId: "YOUR_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        function setActiveForm(isStudent) {
-            if (isStudent) {
-                studentToggle.classList.add('active');
-                teacherToggle.classList.remove('active');
-                studentForm.classList.add('active');
-                teacherForm.classList.remove('active');
-            } else {
-                studentToggle.classList.remove('active');
-                teacherToggle.classList.add('active');
-                studentForm.classList.remove('active');
-                teacherForm.classList.add('active');
+        // IndexedDB setup
+        let idb;
+        const request = indexedDB.open("QuickQuizDB", 1);
+
+        request.onupgradeneeded = function(event) {
+            idb = event.target.result;
+            if (!idb.objectStoreNames.contains('students')) {
+                idb.createObjectStore('students', { keyPath: 'email' });
             }
-        }
+            if (!idb.objectStoreNames.contains('teachers')) {
+                idb.createObjectStore('teachers', { keyPath: 'email' });
+            }
+        };
 
-        studentToggle.addEventListener('click', () => setActiveForm(true));
-        teacherToggle.addEventListener('click', () => setActiveForm(false));
+        request.onsuccess = function(event) {
+            idb = event.target.result;
+        };
 
-        // Email regex patterns (updated)
+        request.onerror = function(event) {
+            alert("Database error: " + event.target.errorCode);
+        };
+
+        // Toggle logic
+        $('#student-toggle').on('click', function() {
+            $('#student-toggle').addClass('active');
+            $('#teacher-toggle').removeClass('active');
+            $('#student-signup-form').show();
+            $('#teacher-signup-form').hide();
+        });
+        $('#teacher-toggle').on('click', function() {
+            $('#teacher-toggle').addClass('active');
+            $('#student-toggle').removeClass('active');
+            $('#teacher-signup-form').show();
+            $('#student-signup-form').hide();
+        });
+
+        // Email regex patterns
         const studentRegex = /^\d{7}@students\.[a-zA-Z0-9.-]+\.ac\.uk$/;
         const teacherRegex = /^[a-zA-Z]+\.[a-zA-Z]+@[a-zA-Z0-9.-]+\.ac\.uk$/;
 
-        // Student sign up validation and save to database
+        // Student sign up
         $('#student-signup-form').on('submit', function (event) {
             event.preventDefault();
             let name = $('#student-name').val().trim();
@@ -438,33 +472,33 @@
             if (error) {
                 $('#student-status').removeClass('success').addClass('error').text(error);
             } else {
-                // AJAX call to save student to database
-                $.ajax({
-                    url: '/api/signup/student/',
-                    method: 'POST',
-                    data: {
-                        name: name,
-                        email: email,
-                        password: password,
-                        teacher_code: code,
-                        csrfmiddlewaretoken: '{{ csrf_token }}'
-                    },
-                    success: function(response) {
-                        $('#student-status').removeClass('error').addClass('success').text('Account created successfully! Please check your email for verification.');
-                        $('#student-signup-form')[0].reset();
-                    },
-                    error: function(xhr) {
-                        let msg = "An error occurred. Please try again.";
-                        if (xhr.responseJSON && xhr.responseJSON.error) {
-                            msg = xhr.responseJSON.error;
-                        }
-                        $('#student-status').removeClass('success').addClass('error').text(msg);
+                // IndexedDB logic
+                let transaction = idb.transaction(['students'], 'readwrite');
+                let store = transaction.objectStore('students');
+                let getRequest = store.get(email);
+                getRequest.onsuccess = function() {
+                    if (getRequest.result) {
+                        $('#student-status').removeClass('success').addClass('error').text('Email already exists.');
+                    } else {
+                        let addRequest = store.add({
+                            name: name,
+                            email: email,
+                            password: password,
+                            teacher_code: code
+                        });
+                        addRequest.onsuccess = function() {
+                            $('#student-status').removeClass('error').addClass('success').text('Account created successfully!');
+                            $('#student-signup-form')[0].reset();
+                        };
+                        addRequest.onerror = function() {
+                            $('#student-status').removeClass('success').addClass('error').text('Error saving account.');
+                        };
                     }
-                });
+                };
             }
         });
 
-        // Teacher sign up validation and save to database
+        // Teacher sign up
         $('#teacher-signup-form').on('submit', function (event) {
             event.preventDefault();
             let name = $('#teacher-name').val().trim();
@@ -487,34 +521,31 @@
             if (error) {
                 $('#teacher-status').removeClass('success').addClass('error').text(error);
             } else {
-                // AJAX call to save teacher to database
-                $.ajax({
-                    url: '/api/signup/teacher/',
-                    method: 'POST',
-                    data: {
-                        name: name,
-                        email: email,
-                        school: school,
-                        password: password,
-                        csrfmiddlewaretoken: '{{ csrf_token }}'
-                    },
-                    success: function(response) {
-                        $('#teacher-status').removeClass('error').addClass('success').text('Account created successfully! Please check your email for verification.');
-                        $('#teacher-signup-form')[0].reset();
-                    },
-                    error: function(xhr) {
-                        let msg = "An error occurred. Please try again.";
-                        if (xhr.responseJSON && xhr.responseJSON.error) {
-                            msg = xhr.responseJSON.error;
-                        }
-                        $('#teacher-status').removeClass('success').addClass('error').text(msg);
+                // IndexedDB logic
+                let transaction = idb.transaction(['teachers'], 'readwrite');
+                let store = transaction.objectStore('teachers');
+                let getRequest = store.get(email);
+                getRequest.onsuccess = function() {
+                    if (getRequest.result) {
+                        $('#teacher-status').removeClass('success').addClass('error').text('Email already exists.');
+                    } else {
+                        let addRequest = store.add({
+                            name: name,
+                            email: email,
+                            school: school,
+                            password: password
+                        });
+                        addRequest.onsuccess = function() {
+                            $('#teacher-status').removeClass('error').addClass('success').text('Account created successfully!');
+                            $('#teacher-signup-form')[0].reset();
+                        };
+                        addRequest.onerror = function() {
+                            $('#teacher-status').removeClass('success').addClass('error').text('Error saving account.');
+                        };
                     }
-                });
+                };
             }
         });
-
-        // Set initial slider position
-        setActiveForm(true);
     </script>
 </body>
 </html>
