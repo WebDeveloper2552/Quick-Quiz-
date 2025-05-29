@@ -47,12 +47,18 @@
             font-size: 1.8rem;
             color: white !important;
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+            position: static;
+            text-align: left;
+            z-index: 2;
         }
 
         .navbar-custom .navbar-brand img {
             height: 40px;
-            margin-right: 10px;
+            width: auto;
+            margin-bottom: 2px;
         }
 
         .navbar-custom .nav-link {
@@ -352,6 +358,48 @@
             
             .navbar-custom .navbar-brand {
                 font-size: 1.5rem;
+                right: 0.;
+                top: 0;
+            }
+            
+            .navbar-logo-img {
+                height: 32px;
+            }
+            
+            .navbar-nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* Add or update in your style block */
+        .navbar-custom .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: white !important;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+            position: static;
+            text-align: left;
+            z-index: 2;
+        }
+        .navbar-logo-img {
+            height: 40px;
+            width: auto;
+            margin-bottom: 2px;
+        }
+        @media (max-width: 768px) {
+            .navbar-custom .navbar-brand {
+                font-size: 1.3rem;
+            }
+            .navbar-logo-img {
+                height: 32px;
+            }
+            .navbar-nav {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
     </style>
@@ -359,49 +407,54 @@
 <body>
     <!-- Custom Navbar -->
     <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
-        <div class="container">
-            <a class="navbar-brand" href="index.html">
-                <img src="logo.png" alt="QuickQuiz Logo">
-                QuickQuiz
+        <div class="container d-flex flex-row justify-content-between align-items-center">
+            <!-- Logo and title on the far left -->
+            <a class="navbar-brand d-flex flex-row align-items-center" href="index.html" style="text-align:left; gap:10px;">
+                <img src="logo.png" alt="QuickQuiz Logo" class="navbar-logo-img" style="height:40px;">
+                <span style="font-weight:700; font-size:1.8rem; color:white;">QuickQuiz</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="index.html">Home</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            For Teachers
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="create_quizes.html">Create Quizzes</a></li>
-                            <li><a class="dropdown-item" href="manage_quizes.html">Manage Quizzes</a></li>
-                            <li><a class="dropdown-item" href="teacher_student_result_tracker.html">Results Tracker</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            For Students
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="student_dashboard.html">Student Dashboard</a></li>
-                            <li><a class="dropdown-item" href="quiz_generator.html">Practice Quizzes</a></li>
-                            <li><a class="dropdown-item" href="class_tracker.html">Progress Tracker</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="aichatbot.html">AI Quiz Generator</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="login.html">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="signup.html">Sign Up</a>
-                    </li>
-                </ul>
+            <!-- Nav links on the far right -->
+            <div class="d-flex align-items-center">
+                <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse show" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="index.html">Home</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTeachers" role="button" data-bs-toggle="dropdown">
+                                For Teachers
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="create_quizes.html">Create Quizzes</a></li>
+                                <li><a class="dropdown-item" href="manage_quizes.html">Manage Quizzes</a></li>
+                                <li><a class="dropdown-item" href="class_tracker.html">Class Results Tracker</a></li>
+                                <li><a class="dropdown-item" href="results_bank.html">Resource Bank</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownStudents" role="button" data-bs-toggle="dropdown">
+                                For Students
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="student_dashboard.html">Student Dashboard</a></li>
+                                <li><a class="dropdown-item" href="quiz_portal.html">Practice Quizzes</a></li>
+                                <li><a class="dropdown-item" href="class_tracker.html">Progress Tracker</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="aichatbot.html">AI Quiz Generator</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="login.html">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="signup.html">Sign Up</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>
@@ -541,6 +594,22 @@
                     });
                 });
             });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLoggedIn = localStorage.getItem('quickquiz_loggedin') === 'true';
+            const firstName = localStorage.getItem('quickquiz_firstname');
+            if (isLoggedIn && firstName) {
+                const welcomeDiv = document.createElement('div');
+                welcomeDiv.style.background = 'linear-gradient(90deg, #2196f3 0%, #1976d2 100%)';
+                welcomeDiv.style.color = '#fff';
+                welcomeDiv.style.padding = '1rem';
+                welcomeDiv.style.textAlign = 'center';
+                welcomeDiv.style.fontWeight = 'bold';
+                welcomeDiv.style.fontSize = '1.2rem';
+                welcomeDiv.innerText = `Welcome, ${firstName}!`;
+                document.body.insertBefore(welcomeDiv, document.body.firstChild);
+            }
         });
     </script>
 </body>
