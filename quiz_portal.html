@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --primary-blue-dark: #1e40af;
+            --accent-blue: #2196f3;
+            --light-green: #006780;
+            --dark-green: #00818A;
+            --light-color: #f5f5f5;
+            --dark-color: #333;
+            --success-color: #16a34a;
+            --warning-color: #ff9800;
+            --error-red: #dc2626;
+        }
+        body {
+            background-color: #f8f9fa;
+            color: var(--dark-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-green));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0.8rem 1rem;
+        }
+        .navbar-custom .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: white !important;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+        }
+        .navbar-logo-img {
+            height: 40px;
+            width: auto;
+            margin-bottom: 2px;
+        }
+        .navbar-custom .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            margin: 0 0.2rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .navbar-custom .nav-link:hover,
+        .navbar-custom .nav-link.active {
+            background-color: rgba(255,255,255,0.15);
+            color: white !important;
+        }
+        .navbar-custom .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .navbar-custom .dropdown-item {
+            padding: 0.5rem 1.5rem;
+        }
+        .navbar-custom .dropdown-item:hover {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+        .container {
+            max-width: 700px;
+            margin: 40px auto 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px #0001;
+            padding: 32px;
+        }
+        .footer {
+            background: linear-gradient(135deg, var(--dark-green), var(--primary-blue));
+            color: #fff;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+        .footer-links a:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .social-icons a {
+            color: white;
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+        .social-icons a:hover {
+            transform: translateY(-3px);
+        }
+        .quiz-question {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e7ef;
+        }
+        .quiz-title {
+            color: var(--primary-blue-dark);
+            margin-bottom: 1.5rem;
+        }
+        .btn-submit-quiz {
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 768px) {
+            .navbar-custom .navbar-brand {
+                font-size: 1.3rem;
+            }
+            .navbar-logo-img {
+                height: 32px;
+            }
+            .navbar-nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .container {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container-fluid d-flex flex-row justify-content-between align-items-center">
+            <a class="navbar-brand" href="index.html">
+                <img src="logo.png" alt="QuickQuiz Logo" class="navbar-logo-img">
+                <span>QuickQuiz</span>
+            </a>
+            <div class="d-flex align-items-center">
+                <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse show" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">Home</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTeachers" role="button" data-bs-toggle="dropdown">
+                                For Teachers
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="create_quizes.html">Create Quizzes</a></li>
+                                <li><a class="dropdown-item" href="manage_quizes.html">Manage Quizzes</a></li>
+                                <li><a class="dropdown-item" href="class_tracker.html">Class Results Tracker</a></li>
+                                <li><a class="dropdown-item" href="resource_bank.html">Resource Bank</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownStudents" role="button" data-bs-toggle="dropdown">
+                                For Students
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="student_dashboard.html">Student Dashboard</a></li>
+                                <li><a class="dropdown-item active" href="quiz_portal.html">Practice Quizzes</a></li>
+                                <li><a class="dropdown-item" href="class_tracker.html">Progress Tracker</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="aichatbot.html">AI Quiz Generator</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="login.html">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="signup.html">Sign Up</a>
+                        </li>
+                        <li class="nav-item" id="logout-nav-item" style="display:none;">
+                            <a class="nav-link" href="#" id="logout-btn">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2 class="mb-4 text-center">Enter Quiz Code</h2>
+        <form id="quiz-code-form" class="mb-4">
+            <div class="input-group">
+                <input type="text" id="student-quiz-code" class="form-control" placeholder="Enter quiz code (e.g. QZ-ABC123)" required>
+                <button type="submit" class="btn btn-primary">Access Quiz</button>
+            </div>
+        </form>
+        <div id="quiz-area"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="about.html">About Us</a>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+        </div>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+        </div>
+        <p>&copy; 2025 QuickQuiz Classroom. All rights reserved by the AoC.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- idb for IndexedDB access -->
+    <script src="https://cdn.jsdelivr.net/npm/idb@7/build/umd.js"></script>
+    <script>
+    // Try to get quiz from localStorage or IndexedDB (resource bank)
+    async function findQuizByCode(code) {
+        // 1. Check teacher_quizzes in localStorage
+        let quizzes = JSON.parse(localStorage.getItem('teacher_quizzes') || '[]');
+        let quiz = quizzes.find(q => q.code.toUpperCase() === code.toUpperCase());
+        if (quiz) return quiz;
+        // 2. Check resource bank (IndexedDB)
+        const db = await idb.openDB('quickquiz-db', 1, {
+            upgrade(db) {
+                if (!db.objectStoreNames.contains('shared_quizzes')) {
+                    const store = db.createObjectStore('shared_quizzes', { keyPath: 'code' });
+                    store.createIndex('isPublic', 'isPublic');
+                }
+            }
+        });
+        quiz = await db.get('shared_quizzes', code.toUpperCase());
+        return quiz && quiz.isPublic ? quiz : null;
+    }
+
+    function renderQuiz(quiz) {
+        if (!quiz || !quiz.questions || !quiz.questions.length) {
+            return `<div class="alert alert-danger">Quiz not found or has no questions.</div>`;
+        }
+        let html = `<h3 class="quiz-title">${quiz.title ? quiz.title : 'Quiz'}</h3>`;
+        html += `<form id="student-quiz-form">`;
+        quiz.questions.forEach((q, i) => {
+            html += `<div class="quiz-question">
+                <b>Q${i+1} (${q.type}):</b> ${q.text}<br>`;
+            if (q.type === "multiple") {
+                // Try to extract options from question text (e.g. (a) ... (b) ...)
+                const options = [];
+                const regex = /\(([a-z])\)\s*([^)]+)/gi;
+                let match;
+                while ((match = regex.exec(q.text)) !== null) {
+                    options.push({ key: match[1], text: match[2].trim() });
+                }
+                if (options.length) {
+                    options.forEach(opt => {
+                        html += `<div class="form-check">
+                            <input class="form-check-input" type="radio" name="q${i}" id="q${i}_${opt.key}" value="${opt.key}" required>
+                            <label class="form-check-label" for="q${i}_${opt.key}">${opt.key}) ${opt.text}</label>
+                        </div>`;
+                    });
+                } else {
+                    html += `<input type="text" class="form-control mt-2" name="q${i}" required>`;
+                }
+            } else if (q.type === "truefalse") {
+                html += `
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q${i}" id="q${i}_true" value="True" required>
+                        <label class="form-check-label" for="q${i}_true">True</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q${i}" id="q${i}_false" value="False" required>
+                        <label class="form-check-label" for="q${i}_false">False</label>
+                    </div>
+                `;
+            } else {
+                html += `<input type="text" class="form-control mt-2" name="q${i}" required>`;
+            }
+            html += `</div>`;
+        });
+        html += `<button type="submit" class="btn btn-success btn-submit-quiz">Submit Quiz</button></form>`;
+        return html;
+    }
+
+    document.getElementById('quiz-code-form').onsubmit = async function(e) {
+        e.preventDefault();
+        const code = document.getElementById('student-quiz-code').value.trim();
+        const quizArea = document.getElementById('quiz-area');
+        quizArea.innerHTML = `<div class="text-center my-4"><div class="spinner-border text-primary"></div><div>Loading quiz...</div></div>`;
+        const quiz = await findQuizByCode(code);
+        if (!quiz) {
+            quizArea.innerHTML = `<div class="alert alert-danger">Quiz not found. Please check the code and try again.</div>`;
+            return;
+        }
+        quizArea.innerHTML = renderQuiz(quiz);
+
+        // Handle quiz submission
+        document.getElementById('student-quiz-form').onsubmit = function(ev) {
+            ev.preventDefault();
+            let correct = 0;
+            let total = quiz.questions.length;
+            quiz.questions.forEach((q, i) => {
+                let userAns = (this.elements["q"+i] && this.elements["q"+i].value) ? this.elements["q"+i].value.trim() : "";
+                let correctAns = (q.answer || "").trim();
+                if (q.type === "multiple" || q.type === "truefalse") {
+                    if (userAns.toLowerCase() === correctAns.toLowerCase()) correct++;
+                } else {
+                    if (userAns.toLowerCase() === correctAns.toLowerCase()) correct++;
+                }
+            });
+            quizArea.innerHTML = `<div class="alert alert-info text-center">
+                <h4>Quiz Complete!</h4>
+                <p>Your Score: <b>${correct} / ${total}</b></p>
+            </div>`;
+        };
+    };
+
+    // Navbar login/logout logic (optional, matches index.html)
+    document.addEventListener('DOMContentLoaded', function() {
+        const isLoggedIn = localStorage.getItem('quickquiz_loggedin') === 'true';
+        const firstName = localStorage.getItem('quickquiz_firstname');
+        if (isLoggedIn && firstName) {
+            const welcomeDiv = document.createElement('div');
+            welcomeDiv.style.background = 'linear-gradient(90deg, #2196f3 0%, #1976d2 100%)';
+            welcomeDiv.style.color = '#fff';
+            welcomeDiv.style.padding = '1rem';
+            welcomeDiv.style.textAlign = 'center';
+            welcomeDiv.style.fontWeight = 'bold';
+            welcomeDiv.style.fontSize = '1.2rem';
+            welcomeDiv.innerText = `Welcome, ${firstName}!`;
+            document.body.insertBefore(welcomeDiv, document.body.firstChild);
+        }
+        if (isLoggedIn) {
+            document.querySelectorAll('a.nav-link').forEach(link => {
+                if (link.textContent.trim().toLowerCase() === 'sign up') {
+                    link.style.display = 'none';
+                }
+            });
+            const logoutNavItem = document.getElementById('logout-nav-item');
+            if (logoutNavItem) logoutNavItem.style.display = '';
+        }
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('quickquiz_loggedin');
+                localStorage.removeItem('quickquiz_firstname');
+                location.reload();
+            });
+        }
+    });
+    </script>
+</body>
+</html>
