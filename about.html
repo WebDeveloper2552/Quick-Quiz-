@@ -28,7 +28,8 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         body {
-            background-color: #f8f9fa;
+            background: url('plain_background.png') center center fixed repeat;
+            background-size: cover;
             color: var(--dark-color);
             line-height: 1.6;
         }
@@ -114,7 +115,10 @@
         z-index: 1;         /* Place above background */
     }
     body {
-        background: url('images/background1.jpg') ;
+        background: url('plain_background.png') center center fixed repeat;
+        background-size: cover;
+        color: var(--dark-color);
+        line-height: 1.6;
     }
     
     .footer-links {
@@ -162,7 +166,7 @@
     <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
         <div class="container">
             <a class="navbar-brand" href="index.html">
-                <img src="images/logo.png" alt="QuickQuiz Logo">
+                <img src="logo.png" alt="QuickQuiz Logo">
                 QuickQuiz
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -267,7 +271,12 @@
             </li>
         </ol>
         <p>These resources will help you explore effective strategies and tools for enhancing math learning.</p>
-        <p>Find out more about the creators</p>
+        <p>
+            Find out more about the creators
+            <a href="creators.html" class="btn btn-primary btn-sm" style="margin-left: 0.5rem; vertical-align: middle;">
+                Meet the Creators
+            </a>
+        </p>
     </div>
 </div>
 
