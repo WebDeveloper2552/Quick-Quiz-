@@ -1,54 +1,302 @@
-{% extends 'base.html' %}
-
-{% block title %}Student Dashboard - Quick Quiz{% endblock %}
-
-{% block content %}
-<div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title">Join Quiz</h5>
-                <p class="card-text">Enter a quiz code to join a live quiz</p>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Quiz Code">
-                    <button class="btn btn-primary" type="button">Join</button>
-                </div>
-                <a href="{% url 'join_quiz' %}" class="btn btn-outline-primary">More options</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title">My Progress</h5>
-                <p class="card-text">View your quiz results and progress</p>
-                <a href="{% url 'student_results' %}" class="btn btn-primary">View Progress</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="card mt-4">
-    <div class="card-body">
-        <h5 class="card-title">Recent Quizzes</h5>
-        <div class="list-group">
-            <a href="#" class="list-group-item list-group-item-action">
-                <div class="d-flex w-100 justify-content-between">
-                    <h6 class="mb-1">Algebra Basics</h6>
-                    <small class="text-success">Completed</small>
-                </div>
-                <p class="mb-1">Score: 85%</p>
-                <small>Completed 2 days ago</small>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/idb@7/build/umd.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .dashboard-container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            padding: 32px;
+        }
+        .dashboard-header {
+            font-size: 2rem;
+            margin-bottom: 24px;
+            color: #2563eb;
+            font-weight: 700;
+        }
+        .quiz-list, .deadlines-list {
+            margin-bottom: 32px;
+        }
+        .quiz-item, .deadline-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .quiz-item:last-child, .deadline-item:last-child {
+            border-bottom: none;
+        }
+        .visualization-section {
+            margin-top: 32px;
+        }
+        .code-form {
+            margin-bottom: 24px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .code-form label {
+            margin-bottom: 0;
+            font-weight: 500;
+        }
+        .code-form input {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #bbb;
+            flex: 1 1 200px;
+        }
+        .code-form button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            margin-left: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .navbar-custom {
+            background: linear-gradient(135deg, #2563eb, #00818A);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0.8rem 1rem;
+        }
+        .navbar-custom .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: white !important;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+        }
+        .navbar-logo-img {
+            height: 40px;
+            width: auto;
+            margin-bottom: 2px;
+        }
+        .navbar-custom .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            margin: 0 0.2rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .navbar-custom .nav-link:hover,
+        .navbar-custom .nav-link.active {
+            background-color: rgba(255,255,255,0.15);
+            color: white !important;
+        }
+        .empty-message {
+            color: #888;
+            font-style: italic;
+            padding: 10px 0 0 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container-fluid d-flex flex-row justify-content-between align-items-center">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <img src="logo.png" alt="Logo" class="navbar-logo-img" style="height:40px;width:auto;margin-right:10px;">
+                Quick Quiz
             </a>
-            <a href="#" class="list-group-item list-group-item-action">
-                <div class="d-flex w-100 justify-content-between">
-                    <h6 class="mb-1">Geometry Quiz</h6>
-                    <small class="text-warning">Pending</small>
-                </div>
-                <p class="mb-1">Due: Tomorrow</p>
-                <small>Not started</small>
-            </a>
+            <ul class="navbar-nav flex-row">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html"><i class="fas fa-home"></i> Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="student_dashboard.html"><i class="fas fa-chart-bar"></i> Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="logout.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">Student Dashboard</div>
+        
+        <form class="code-form" id="codeForm" autocomplete="off">
+            <label for="quizCode">Enter Quiz Code:</label>
+            <input type="text" id="quizCode" placeholder="e.g. MATH-2025" required>
+            <button type="submit">Add Quiz</button>
+        </form>
+
+        <div class="deadlines-list" id="deadlinesList">
+            <h3>Your Quiz Deadlines</h3>
+            <!-- Deadlines will be injected here -->
+        </div>
+
+        <div class="quiz-list" id="quizList">
+            <h3>Your Quiz Results</h3>
+            <!-- Quiz results will be injected here -->
+        </div>
+
+        <div class="visualization-section">
+            <h3>Your Quiz Performance</h3>
+            <canvas id="quizChart" width="400" height="200"></canvas>
         </div>
     </div>
-</div>
-{% endblock %}
+
+    <script>
+        // Check if student is logged in
+        function isStudentLoggedIn() {
+            return localStorage.getItem('userRole') === 'student' && localStorage.getItem('isLoggedIn') === 'true';
+        }
+
+        // IndexedDB setup
+        const DB_NAME = 'quickquiz-db';
+        const STORE_NAME = 'student_results';
+
+        let quizzes = [];
+
+        window.onload = async function() {
+            if (!isStudentLoggedIn()) {
+                alert("You need to create an account and log in as a student to access this page.");
+                window.location.href = "login.html";
+                return;
+            }
+            await loadDashboard();
+        };
+
+        // Load quizzes from IndexedDB
+        async function loadDashboard() {
+            const db = await window.idb.openDB(DB_NAME, 1, {
+                upgrade(db) {
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME, { keyPath: 'code' });
+                    }
+                }
+            });
+            quizzes = await db.getAll(STORE_NAME);
+            renderDeadlines();
+            renderQuizResults();
+            renderChart();
+        }
+
+        // Handle quiz code submission
+        document.getElementById('codeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const code = document.getElementById('quizCode').value.trim();
+            if (!code) return;
+            if (quizzes.find(q => q.code === code)) {
+                alert("You have already added this quiz.");
+                document.getElementById('quizCode').value = '';
+                return;
+            }
+            // Simulate fetching quiz info from backend (replace with real fetch in production)
+            const newQuiz = {
+                code: code,
+                title: "Quiz " + code.toUpperCase(),
+                deadline: randomDeadline(),
+                score: null // Not taken yet
+            };
+            // Save to IndexedDB
+            const db = await window.idb.openDB(DB_NAME, 1);
+            await db.put(STORE_NAME, newQuiz);
+            quizzes.push(newQuiz);
+            document.getElementById('quizCode').value = '';
+            renderDeadlines();
+            renderQuizResults();
+            renderChart();
+        });
+
+        // Render deadlines
+        function renderDeadlines() {
+            const container = document.getElementById('deadlinesList');
+            container.innerHTML = "<h3>Your Quiz Deadlines</h3>";
+            const upcoming = quizzes.filter(q => q.deadline && (q.score === null || q.score === undefined));
+            if (upcoming.length === 0) {
+                container.innerHTML += `<div class="empty-message">No upcoming quiz deadlines.</div>`;
+                return;
+            }
+            upcoming.forEach(q => {
+                container.innerHTML += `<div class="deadline-item">
+                    <span><strong>${q.title}</strong> (Code: ${q.code})</span>
+                    <span class="text-danger"><i class="fas fa-clock"></i> ${q.deadline}</span>
+                </div>`;
+            });
+        }
+
+        // Render quiz results
+        function renderQuizResults() {
+            const container = document.getElementById('quizList');
+            container.innerHTML = "<h3>Your Quiz Results</h3>";
+            const taken = quizzes.filter(q => q.score !== null && q.score !== undefined);
+            if (taken.length === 0) {
+                container.innerHTML += `<div class="empty-message">No quiz results to show yet.</div>`;
+                return;
+            }
+            taken.forEach(q => {
+                container.innerHTML += `<div class="quiz-item">
+                    <span><strong>${q.title}</strong> (Code: ${q.code})</span>
+                    <span class="text-success"><i class="fas fa-check-circle"></i> Score: ${q.score}%</span>
+                </div>`;
+            });
+        }
+
+        // Render chart
+        function renderChart() {
+            const ctx = document.getElementById('quizChart').getContext('2d');
+            if (window.quizChart) window.quizChart.destroy();
+            const taken = quizzes.filter(q => q.score !== null && q.score !== undefined);
+            window.quizChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: taken.map(q => q.title),
+                    datasets: [{
+                        label: 'Score (%)',
+                        data: taken.map(q => q.score),
+                        backgroundColor: '#2563eb'
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: { beginAtZero: true, max: 100 }
+                    }
+                }
+            });
+        }
+
+        // Helper: Generate a random deadline (for demo)
+        function randomDeadline() {
+            const today = new Date();
+            const days = Math.floor(Math.random() * 10) + 1;
+            const deadline = new Date(today.getTime() + days * 24 * 60 * 60 * 1000);
+            return deadline.toISOString().split('T')[0];
+        }
+
+        // Listen for changes in IndexedDB from other tabs/windows (optional, for real-time updates)
+        window.addEventListener('storage', async function(e) {
+            if (e.key === 'quizResultUpdated') {
+                await loadDashboard();
+            }
+        });
+    </script>
+    <footer class="footer mt-5 py-3" style="background: linear-gradient(135deg, #2563eb, #00818A); color: #fff;">
+        <div class="container text-center">
+            <span>&copy; 2025 Quick Quiz. All rights reserved.</span>
+            <span class="mx-2">|</span>
+            <a href="index.html" style="color:#e0eaff;text-decoration:underline;">Home</a>
+            <span class="mx-2">|</span>
+            <a href="mailto:support@quickquiz.com" style="color:#e0eaff;text-decoration:underline;">Contact Support</a>
+        </div>
+    </footer>
+</body>
+</html>
