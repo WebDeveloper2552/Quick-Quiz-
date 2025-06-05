@@ -9,57 +9,96 @@
             --primary-blue: #2563eb;
             --primary-blue-dark: #1e40af;
             --accent-blue: #2196f3;
-            --background: #f1f5f9;
-            --input-bg: #fff;
-            --border-blue: #93c5fd;
+            --light-green: #006780;
+            --dark-green: #00818A;
+            --light-color: #f5f5f5;
+            --dark-color: #333;
+            --success-color: #16a34a;
+            --warning-color: #ff9800;
             --error-red: #dc2626;
-            --success-green: #16a34a;
             --footer-bg: #1e40af;
+            --border-radius: 20px;
+            --box-shadow: 0 8px 32px rgba(44, 130, 201, 0.10);
         }
-
-        html, body, input, button, select, textarea, label, .navbar, .navbar * {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-        }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+        html, body {
+            height: 100%;
+            min-height: 100%;
+        }
         body {
-            background-color: var(--light-color);
-            background-image: url('registration_login.png'); 
-            background-position: top center;
+            min-height: 100vh;
+            background: #f8f9fa;
             color: var(--dark-color);
-            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        /* Custom Navbar */
         .navbar-custom {
-            background: linear-gradient(90deg, var(--primary-blue), var(--footer-bg));
-            color: #fff !important;
-            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-green));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0.8rem 1rem;
+            border-radius: 0 !important;
+            width: 100%;
         }
-        .navbar-custom .navbar-brand,
+        .navbar-custom .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: white !important;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            position: static;
+            text-align: left;
+            z-index: 2;
+        }
+        .navbar-logo-img {
+            height: 40px;
+            width: auto;
+            margin-bottom: 0;
+        }
         .navbar-custom .nav-link {
-            color: #fff !important;
-            font-weight: 600;
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 0.5rem 1rem;
+            margin: 0 0.2rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
             font-size: 1.1rem;
         }
+        .navbar-custom .nav-link:hover,
         .navbar-custom .nav-link.active,
-        .navbar-custom .nav-link:focus,
-        .navbar-custom .nav-link:hover {
-            color: #e3f0fc !important;
-            text-decoration: underline;
+        .navbar-custom .nav-link:focus {
+            background-color: rgba(255,255,255,0.15) !important;
+            color: white !important;
+            text-decoration: none;
         }
-        .navbar-logo {
-            height: 36px;
-            width: 36px;
-            margin-right: 10px;
-            object-fit: contain;
-            vertical-align: middle;
+        .navbar-nav {
+            margin-left: auto;
+            gap: 1.5rem;
+            align-items: center;
         }
-
+        @media (max-width: 768px) {
+            .navbar-custom .navbar-brand {
+                font-size: 1.3rem;
+                flex-direction: row;
+                gap: 8px;
+            }
+            .navbar-logo-img {
+                height: 32px;
+            }
+            .navbar-nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
         .signup-outer {
             display: flex;
             flex-direction: column;
@@ -70,7 +109,6 @@
             width: 100vw;
             padding: 2vw 0;
         }
-
         .signup-container {
             background: #fff;
             border-radius: 16px;
@@ -83,7 +121,6 @@
             padding-bottom: 24px;
             transition: max-width 0.3s, width 0.3s;
         }
-
         .signup-header {
             background: linear-gradient(90deg, #2196f3 0%, #1976d2 100%);
             color: #fff;
@@ -95,7 +132,6 @@
             letter-spacing: 1px;
             border-radius: 16px 16px 0 0;
         }
-
         .toggle-container {
             display: flex;
             margin: 24px auto 16px auto;
@@ -107,7 +143,6 @@
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
         }
-
         .toggle-option {
             flex: 1;
             display: flex;
@@ -124,30 +159,24 @@
             user-select: none;
             height: 100%;
         }
-
         .toggle-option.active {
             background: linear-gradient(90deg, #2196f3 0%, #1976d2 100%);
             color: #fff;
             box-shadow: 0 2px 8px rgba(37, 99, 235, 0.13);
         }
-
         .form-container {
             padding: 0 24px;
         }
-
         .form {
             display: none;
             width: 100%;
         }
-
         .form.active {
             display: block;
         }
-
         .form-group {
             margin-bottom: 20px;
         }
-
         .form-group label {
             display: block;
             margin-bottom: 7px;
@@ -155,7 +184,6 @@
             color: #1976d2;
             font-size: 1.08rem;
         }
-
         .form-group input {
             width: 100%;
             padding: 12px;
@@ -166,17 +194,14 @@
             color: #222;
             transition: border 0.3s, box-shadow 0.3s;
         }
-
         .form-group input:focus {
             outline: none;
             border-color: #2196f3;
             box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.13);
         }
-
         .form-group input.error {
             border-color: #dc2626;
         }
-
         .submit-btn {
             width: 100%;
             padding: 13px;
@@ -192,13 +217,11 @@
             box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
             letter-spacing: 1px;
         }
-
         .submit-btn:hover {
             opacity: 0.97;
             transform: translateY(-2px) scale(1.01);
             box-shadow: 0 4px 16px rgba(37, 99, 235, 0.13);
         }
-
         .status-message {
             text-align: center;
             margin-top: 15px;
@@ -207,30 +230,24 @@
             font-size: 1rem;
             transition: color 0.3s;
         }
-
         .success {
             color: #16a34a;
         }
-
         .error {
             color: #dc2626;
         }
-
         .info-item {
             text-align: center;
             margin-top: 10px;
         }
-
         .info-item .btn {
             color: #1976d2;
             text-decoration: underline;
             font-weight: 600;
         }
-
         .info-item .btn:hover {
             color: #2196f3;
         }
-
         footer {
             background: linear-gradient(90deg, var(--primary-blue), var(--footer-bg));
             color: #fff;
@@ -241,7 +258,6 @@
             margin-top: auto;
             width: 100%;
         }
-
         /* Responsive styles */
         @media (max-width: 900px) {
             .signup-container {
@@ -282,18 +298,18 @@
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-custom">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <!-- Replace src with your logo path if you have one -->
-                <img src="logo.png" alt="Logo" class="navbar-logo" onerror="this.style.display='none'">
-                Quick Quiz Website
+    <nav class="navbar navbar-expand-lg navbar-custom w-100" style="border-radius:0;max-width:none;box-shadow:0 2px 10px rgba(0,0,0,0.1);margin-top:0;">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center gap-2 flex-row" href="index.html">
+                <img src="logo.png" alt="Logo" class="navbar-logo-img" style="height:40px;width:auto;margin-bottom:0;">
+                <span style="font-size:1.2rem;">QuickQuiz</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto gap-3">
                     <li class="nav-item">
                         <a class="nav-link" href="index.html">Home</a>
                     </li>
@@ -339,14 +355,14 @@
                         <label for="student-confirm-password">Confirm Password</label>
                         <input type="password" id="student-confirm-password" required>
                     </div>
+                    <div class="form-group" style="margin-bottom:18px;">
+                        <div class="h-captcha" data-sitekey="1f7227a8-ee0e-4f00-8506-0a4aba260e58"></div>
+                    </div>
                     <button type="submit" class="submit-btn">Sign Up</button>
                     <div class="status-message" id="student-status"></div>
                     <div class="info-item" style="text-align:center; margin-top:10px;">
                         <span>Already have an account? </span>
                         <a href="login.html" class="btn" style="color:#1976d2;text-decoration:underline;font-weight:600;">Login</a>
-                        <br>
-                        <span>Forgot your password? </span>
-                        <a href="reset_password.html" class="btn" style="color:#1976d2;text-decoration:underline;font-weight:600;">Reset your password</a>
                     </div>
                 </form>
                 <!-- Teacher Form -->
@@ -371,15 +387,14 @@
                         <label for="teacher-confirm-password">Confirm Password</label>
                         <input type="password" id="teacher-confirm-password" required>
                     </div>
+                    <div class="form-group" style="margin-bottom:18px;">
+                        <div class="h-captcha" data-sitekey="YOUR_HCAPTCHA_SITE_KEY"></div>
+                    </div>
                     <button type="submit" class="submit-btn">Sign Up</button>
                     <div class="status-message" id="teacher-status"></div>
                     <div class="info-item" style="text-align:center; margin-top:10px;">
                         <span>Already have an account? </span>
                         <a href="login.html" class="btn" style="color:#1976d2;text-decoration:underline;font-weight:600;">Login</a>
-                        <br>
-                        <span>Forgot your password? </span>
-                        <a href="reset_password.html" class="btn" style="color:#1976d2;text-decoration:underline;font-weight:600;">Reset your password</a>
-                    </div>
                 </form>
             </div>
         </div>
@@ -446,8 +461,8 @@
         });
 
         // Email regex patterns
-        const studentRegex = /^\d{7}@students\.[a-zA-Z0-9.-]+\.ac\.uk$/;
-        const teacherRegex = /^[a-zA-Z]+(\.[a-zA-Z]+)?@[a-zA-Z0-9.-]+\.(ac\.uk|school|com|co\.uk|sch\.uk|org\.uk|academy|org|education|sslp\.uk|biz|uc|net|at)$/;
+        const studentRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-].[a-zA-Z0-9.-]+\.ac\.uk$/;
+        const teacherRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(ac\.uk|school|com|co\.uk|sch\.uk|org\.uk|academy|org|education|sslp\.uk|biz|uc|net|at)$/i;
 
         // Student sign up
         $('#student-signup-form').on('submit', function (event) {
@@ -521,6 +536,15 @@
             if (error) {
                 $('#teacher-status').removeClass('success').addClass('error').text(error);
             } else {
+                // For Teacher
+                if (hcaptcha.getResponse() === "") {
+                    $('#teacher-status').removeClass('success').addClass('error').text('Please verify that you are not a robot.');
+                    return;
+                }
+
+                // Generate a teacher code (e.g., first part of email + random 4 digits)
+                let teacherCode = email.split('@')[0].toUpperCase() + '-' + Math.floor(1000 + Math.random() * 9000);
+
                 // IndexedDB logic
                 let transaction = idb.transaction(['teachers'], 'readwrite');
                 let store = transaction.objectStore('teachers');
@@ -533,11 +557,17 @@
                             name: name,
                             email: email,
                             school: school,
-                            password: password
+                            password: password,
+                            teacher_code: teacherCode
                         });
                         addRequest.onsuccess = function() {
                             $('#teacher-status').removeClass('error').addClass('success').text('Account created successfully!');
                             $('#teacher-signup-form')[0].reset();
+                            // Show alert with teacher code and redirect
+                            setTimeout(function() {
+                                alert("Your teacher code is: " + teacherCode + "\nGive this code to your students so they can create an account.");
+                                window.location.href = "index.html";
+                            }, 500);
                         };
                         addRequest.onerror = function() {
                             $('#teacher-status').removeClass('success').addClass('error').text('Error saving account.');
@@ -547,5 +577,6 @@
             }
         });
     </script>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 </body>
 </html>
