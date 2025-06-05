@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -330,6 +329,27 @@
                 <h4>Quiz Complete!</h4>
                 <p>Your Score: <b>${correct} / ${total}</b></p>
             </div>`;
+
+            // --- Store result in IndexedDB for student dashboard ---
+            if (localStorage.getItem('userRole') === 'student') {
+                (async () => {
+                    const db = await idb.openDB('quickquiz-db', 1, {
+                        upgrade(db) {
+                            if (!db.objectStoreNames.contains('student_results')) {
+                                db.createObjectStore('student_results', { keyPath: 'code' });
+                            }
+                        }
+                    });
+                    await db.put('student_results', {
+                        code: quiz.code,
+                        title: quiz.title || 'Quiz',
+                        deadline: quiz.deadline || '',
+                        score: Math.round((correct / total) * 100),
+                        date: new Date().toISOString()
+                    });
+                })();
+            }
+            // ------------------------------------------------------
         };
     };
 
