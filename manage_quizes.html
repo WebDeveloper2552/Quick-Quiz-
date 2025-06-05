@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <title>Manage Quizzes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -71,13 +69,29 @@
             background-color: var(--primary-blue);
             color: white;
         }
-        .container {
-            max-width: 900px;
-            margin: 40px auto 0 auto;
+        .manage-container {
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 4px 16px #0001;
             padding: 32px;
+            max-width: 800px;
+            margin: 40px auto 0 auto;
+        }
+        .quiz-list { margin-top: 24px; }
+        .quiz-card {
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #0001;
+            margin-bottom: 18px;
+            padding: 18px 22px;
+            background: #f7faff;
+            border: 1px solid #e3e8f0;
+        }
+        .quiz-card .badge {
+            font-size: 1rem;
+            margin-right: 8px;
+        }
+        .quiz-actions button {
+            margin-right: 8px;
         }
         .footer {
             background: linear-gradient(135deg, var(--dark-green), var(--primary-blue));
@@ -116,7 +130,6 @@
         .social-icons a:hover {
             transform: translateY(-3px);
         }
-        .question-edit { margin-bottom: 12px; }
         @media (max-width: 768px) {
             .navbar-custom .navbar-brand {
                 font-size: 1.3rem;
@@ -128,7 +141,7 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
-            .container {
+            .manage-container {
                 padding: 16px;
             }
         }
@@ -169,7 +182,6 @@
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="student_dashboard.html">Student Dashboard</a></li>
                                 <li><a class="dropdown-item" href="quiz_portal.html">Practice Quizzes</a></li>
-                                <li><a class="dropdown-item" href="class_tracker.html">Progress Tracker</a></li>
                             </ul>
                         </li>
                         <li class="nav-item">
@@ -191,9 +203,9 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="container">
-        <h2 class="mb-4">Your Quizzes</h2>
-        <div id="quizzes-list"></div>
+    <div class="manage-container">
+        <h2>Manage Your Quizzes</h2>
+        <div id="quiz-list" class="quiz-list"></div>
     </div>
 
     <!-- Footer -->
@@ -212,159 +224,91 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Demo: quizzes stored in localStorage as 'teacher_quizzes'
-        // Each quiz: { code: 'QZ-XXXXXX', questions: [{type, text, answer}] }
-        function getQuizzes() {
-            return JSON.parse(localStorage.getItem('teacher_quizzes') || '[]');
+    // Load quizzes from localStorage and render them
+    function renderQuizzes() {
+        const quizListDiv = document.getElementById('quiz-list');
+        quizListDiv.innerHTML = '';
+        let quizzes = JSON.parse(localStorage.getItem('teacher_quizzes') || '[]');
+        if (quizzes.length === 0) {
+            quizListDiv.innerHTML = '<div class="alert alert-info">No quizzes found. Create one in <a href="create_quizes.html">Create Quizzes</a>.</div>';
+            return;
         }
-        function saveQuizzes(quizzes) {
-            localStorage.setItem('teacher_quizzes', JSON.stringify(quizzes));
-        }
-
-        function renderQuizzes() {
-            const quizzes = getQuizzes();
-            const container = document.getElementById('quizzes-list');
-            container.innerHTML = '';
-            if (quizzes.length === 0) {
-                container.innerHTML = '<div class="alert alert-info">No quizzes created yet.</div>';
-                return;
-            }
-            quizzes.forEach((quiz, idx) => {
-                const div = document.createElement('div');
-                div.className = 'mb-4 p-3 border rounded';
-                div.innerHTML = `
-                    <h5>Quiz Code: <span class="text-primary">${quiz.code}</span></h5>
-                    <ul class="list-group mb-3" id="quiz-${idx}-questions">
-                        ${quiz.questions.map((q, i) => `
-                            <li class="list-group-item question-edit">
-                                <b>Q${i+1} (${q.type}):</b>
-                                <input type="text" class="form-control mb-1" value="${q.text}" data-idx="${i}" data-qz="${idx}" data-field="text">
-                                <b>Answer:</b>
-                                <input type="text" class="form-control" value="${q.answer}" data-idx="${i}" data-qz="${idx}" data-field="answer">
-                                <button class="btn btn-danger btn-sm mt-2 delete-q-btn" data-idx="${i}" data-qz="${idx}">Delete</button>
-                            </li>
-                        `).join('')}
-                    </ul>
-                    <form class="row g-2 mb-2 add-question-form" data-qz="${idx}">
-                        <div class="col-md-3">
-                            <select class="form-select" required>
-                                <option value="short">Short Answer</option>
-                                <option value="multiple">Multiple Choice</option>
-                                <option value="truefalse">True/False</option>
-                            </select>
+        quizzes.forEach((quiz, idx) => {
+            const expired = new Date(quiz.deadline) < new Date();
+            quizListDiv.innerHTML += `
+                <div class="quiz-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-${quiz.private ? 'secondary' : 'success'}">${quiz.private ? 'Private' : 'Public'}</span>
+                            <span class="badge bg-info">${quiz.code}</span>
+                            <strong>${quiz.title}</strong>
                         </div>
-                        <div class="col-md-5">
-                            <input type="text" class="form-control" placeholder="Question" required>
+                        <div class="quiz-actions">
+                            <button class="btn btn-outline-primary btn-sm" onclick="viewQuiz(${idx})"><i class="fas fa-eye"></i> View</button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="deleteQuiz(${idx})"><i class="fas fa-trash"></i> Delete</button>
                         </div>
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" placeholder="Answer" required>
-                        </div>
-                        <div class="col-md-1 d-grid">
-                            <button type="submit" class="btn btn-success">Add</button>
-                        </div>
-                    </form>
-                    <button class="btn btn-outline-danger btn-sm delete-quiz-btn" data-qz="${idx}">Delete Quiz</button>
-                `;
-                container.appendChild(div);
-            });
-
-            // Attach event listeners for editing, deleting, and adding
-            document.querySelectorAll('.delete-q-btn').forEach(btn => {
-                btn.onclick = function() {
-                    const qz = +btn.getAttribute('data-qz');
-                    const idx = +btn.getAttribute('data-idx');
-                    const quizzes = getQuizzes();
-                    quizzes[qz].questions.splice(idx, 1);
-                    saveQuizzes(quizzes);
-                    renderQuizzes();
-                };
-            });
-            document.querySelectorAll('.delete-quiz-btn').forEach(btn => {
-                btn.onclick = function() {
-                    const qz = +btn.getAttribute('data-qz');
-                    if (confirm('Delete this quiz?')) {
-                        const quizzes = getQuizzes();
-                        quizzes.splice(qz, 1);
-                        saveQuizzes(quizzes);
-                        renderQuizzes();
-                    }
-                };
-            });
-            document.querySelectorAll('.add-question-form').forEach(form => {
-                form.onsubmit = function(e) {
-                    e.preventDefault();
-                    const qz = +form.getAttribute('data-qz');
-                    const type = form.querySelector('select').value;
-                    const text = form.querySelector('input[placeholder="Question"]').value.trim();
-                    const answer = form.querySelector('input[placeholder="Answer"]').value.trim();
-                    if (!text || !answer) return;
-                    const quizzes = getQuizzes();
-                    quizzes[qz].questions.push({ type, text, answer });
-                    saveQuizzes(quizzes);
-                    renderQuizzes();
-                };
-            });
-            document.querySelectorAll('input[data-field]').forEach(input => {
-                input.onchange = function() {
-                    const qz = +input.getAttribute('data-qz');
-                    const idx = +input.getAttribute('data-idx');
-                    const field = input.getAttribute('data-field');
-                    const quizzes = getQuizzes();
-                    quizzes[qz].questions[idx][field] = input.value;
-                    saveQuizzes(quizzes);
-                };
-            });
-        }
-
-        // Demo: If no quizzes, add a sample one for first use
-        if (!localStorage.getItem('teacher_quizzes')) {
-            saveQuizzes([
-                {
-                    code: 'QZ-ABC123',
-                    questions: [
-                        { type: 'short', text: 'What is 2+2?', answer: '4' },
-                        { type: 'multiple', text: 'Which is a prime? (a) 4 (b) 5 (c) 6', answer: 'b' }
-                    ]
-                }
-            ]);
-        }
-
-        renderQuizzes();
-
-        // Navbar login/logout logic (optional, matches index.html)
-        document.addEventListener('DOMContentLoaded', function() {
-            const isLoggedIn = localStorage.getItem('quickquiz_loggedin') === 'true';
-            const firstName = localStorage.getItem('quickquiz_firstname');
-            if (isLoggedIn && firstName) {
-                const welcomeDiv = document.createElement('div');
-                welcomeDiv.style.background = 'linear-gradient(90deg, #2196f3 0%, #1976d2 100%)';
-                welcomeDiv.style.color = '#fff';
-                welcomeDiv.style.padding = '1rem';
-                welcomeDiv.style.textAlign = 'center';
-                welcomeDiv.style.fontWeight = 'bold';
-                welcomeDiv.style.fontSize = '1.2rem';
-                welcomeDiv.innerText = `Welcome, ${firstName}!`;
-                document.body.insertBefore(welcomeDiv, document.body.firstChild);
-            }
-            if (isLoggedIn) {
-                document.querySelectorAll('a.nav-link').forEach(link => {
-                    if (link.textContent.trim().toLowerCase() === 'sign up') {
-                        link.style.display = 'none';
-                    }
-                });
-                const logoutNavItem = document.getElementById('logout-nav-item');
-                if (logoutNavItem) logoutNavItem.style.display = '';
-            }
-            const logoutBtn = document.getElementById('logout-btn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    localStorage.removeItem('quickquiz_loggedin');
-                    localStorage.removeItem('quickquiz_firstname');
-                    location.reload();
-                });
-            }
+                    </div>
+                    <div class="mt-2">
+                        <span><strong>Deadline:</strong> ${quiz.deadline} ${expired ? '<span class="badge bg-warning text-dark">Expired</span>' : ''}</span><br>
+                        <span><strong>Questions:</strong> ${quiz.questions.length}</span>
+                        ${!quiz.private ? `<br><span><strong>Category:</strong> ${quiz.tlevel || '-'} | <strong>Foundation:</strong> ${quiz.foundation || '-'} | <strong>Route:</strong> ${quiz.route || '-'}</span>` : ''}
+                    </div>
+                </div>
+            `;
         });
+    }
+
+    function viewQuiz(idx) {
+        let quizzes = JSON.parse(localStorage.getItem('teacher_quizzes') || '[]');
+        const quiz = quizzes[idx];
+        alert(
+            `Quiz: ${quiz.title}\nCode: ${quiz.code}\nDeadline: ${quiz.deadline}\nQuestions: ${quiz.questions.length}\n${quiz.private ? 'Private' : 'Public'}`
+        );
+    }
+
+    function deleteQuiz(idx) {
+        if (!confirm('Are you sure you want to delete this quiz?')) return;
+        let quizzes = JSON.parse(localStorage.getItem('teacher_quizzes') || '[]');
+        quizzes.splice(idx, 1);
+        localStorage.setItem('teacher_quizzes', JSON.stringify(quizzes));
+        renderQuizzes();
+    }
+
+    // Navbar login/logout logic (optional, matches create_quizes.html)
+    document.addEventListener('DOMContentLoaded', function() {
+        renderQuizzes();
+        const isLoggedIn = localStorage.getItem('quickquiz_loggedin') === 'true';
+        const firstName = localStorage.getItem('quickquiz_firstname');
+        if (isLoggedIn && firstName) {
+            const welcomeDiv = document.createElement('div');
+            welcomeDiv.style.background = 'linear-gradient(90deg, #2196f3 0%, #1976d2 100%)';
+            welcomeDiv.style.color = '#fff';
+            welcomeDiv.style.padding = '1rem';
+            welcomeDiv.style.textAlign = 'center';
+            welcomeDiv.style.fontWeight = 'bold';
+            welcomeDiv.style.fontSize = '1.2rem';
+            welcomeDiv.innerText = `Welcome, ${firstName}!`;
+            document.body.insertBefore(welcomeDiv, document.body.firstChild);
+        }
+        if (isLoggedIn) {
+            document.querySelectorAll('a.nav-link').forEach(link => {
+                if (link.textContent.trim().toLowerCase() === 'sign up') {
+                    link.style.display = 'none';
+                }
+            });
+            const logoutNavItem = document.getElementById('logout-nav-item');
+            if (logoutNavItem) logoutNavItem.style.display = '';
+        }
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('quickquiz_loggedin');
+                localStorage.removeItem('quickquiz_firstname');
+                location.reload();
+            });
+        }
+    });
     </script>
 </body>
 </html>
