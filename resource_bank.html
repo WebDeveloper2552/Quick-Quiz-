@@ -79,6 +79,82 @@
             box-shadow: 0 4px 16px #0001;
             padding: 32px;
         }
+        .folder {
+            border: 1.5px solid #e0e7ef;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            background: #f7faff;
+            box-shadow: 0 2px 8px #0001;
+            padding: 18px 22px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .folder:hover {
+            background: #e3f0fc;
+        }
+        .folder-header {
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-blue-dark);
+        }
+        .folder-header .fa-folder {
+            color: #fbbf24;
+            margin-right: 12px;
+            font-size: 1.5rem;
+        }
+        .folder-header .fa-caret-down,
+        .folder-header .fa-caret-right {
+            margin-right: 10px;
+            color: #1976d2;
+            font-size: 1.2rem;
+        }
+        .folder-content {
+            margin-top: 18px;
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        .folder.open .folder-content {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .quiz-card {
+            border: 1px solid #e0e7ef;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px #0001;
+            padding: 18px 22px;
+            background: #f8fafc;
+        }
+        .quiz-card h5 {
+            color: var(--primary-blue-dark);
+            margin-bottom: 10px;
+        }
+        .quiz-meta {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .question-list {
+            margin-bottom: 0;
+        }
+        .question-list li {
+            margin-bottom: 8px;
+        }
+        .badge-public {
+            background: var(--success-color);
+            color: #fff;
+            font-size: 0.9em;
+        }
+        .badge-private {
+            background: var(--warning-color);
+            color: #fff;
+            font-size: 0.9em;
+        }
         .footer {
             background: linear-gradient(135deg, var(--dark-green), var(--primary-blue));
             color: #fff;
@@ -115,39 +191,6 @@
         }
         .social-icons a:hover {
             transform: translateY(-3px);
-        }
-        .quiz-card {
-            border: 1px solid #e0e7ef;
-            border-radius: 10px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px #0001;
-            padding: 24px;
-            background: #f8fafc;
-        }
-        .quiz-card h5 {
-            color: var(--primary-blue-dark);
-            margin-bottom: 10px;
-        }
-        .quiz-meta {
-            font-size: 0.95rem;
-            color: #666;
-            margin-bottom: 10px;
-        }
-        .question-list {
-            margin-bottom: 0;
-        }
-        .question-list li {
-            margin-bottom: 8px;
-        }
-        .badge-public {
-            background: var(--success-color);
-            color: #fff;
-            font-size: 0.9em;
-        }
-        .badge-private {
-            background: var(--warning-color);
-            color: #fff;
-            font-size: 0.9em;
         }
         @media (max-width: 768px) {
             .navbar-custom .navbar-brand {
@@ -225,7 +268,7 @@
     <!-- Main Content -->
     <div class="container">
         <h2 class="mb-4">Resource Bank: Shared Quizzes</h2>
-        <div id="shared-quizzes-list">
+        <div id="folders-list">
             <div class="text-center text-secondary my-5">
                 <div class="spinner-border text-primary" role="status"></div>
                 <div>Loading shared quizzes...</div>
@@ -251,22 +294,45 @@
     <!-- idb library for IndexedDB -->
     <script src="https://cdn.jsdelivr.net/npm/idb@7/build/umd.js"></script>
     <script>
+    // T Level routes (folders)
+    const tLevelRoutes = [
+        { key: "digital", label: "Digital" },
+        { key: "health", label: "Health" },
+        { key: "construction", label: "Construction" },
+        { key: "education", label: "Education & Early Years" },
+        { key: "engineering", label: "Engineering & Manufacturing" },
+        { key: "finance", label: "Finance & Accounting" },
+        { key: "legal", label: "Legal, Protective Services & Security" },
+        { key: "science", label: "Science" },
+        { key: "agriculture", label: "Agriculture, Environment & Animal Care" },
+        { key: "business", label: "Business & Administration" }
+    ];
+
     // IndexedDB setup using idb
     const dbPromise = idb.openDB('quickquiz-db', 1, {
         upgrade(db) {
             if (!db.objectStoreNames.contains('shared_quizzes')) {
                 const store = db.createObjectStore('shared_quizzes', { keyPath: 'code' });
                 store.createIndex('isPublic', 'isPublic');
+                store.createIndex('route', 'route');
             }
         }
     });
 
-    // Example: To post a quiz, another page should add {code, title, author, questions, isPublic:true, postedAt}
-    // This page only shows quizzes where isPublic === true
-
-    async function getPublicQuizzes() {
+    // Get all public quizzes, grouped by route
+    async function getPublicQuizzesByRoute() {
         const db = await dbPromise;
-        return await db.getAllFromIndex('shared_quizzes', 'isPublic', true);
+        const all = await db.getAll('shared_quizzes');
+        // Only public quizzes, grouped by route (case-insensitive)
+        const grouped = {};
+        all.forEach(q => {
+            if (q.isPublic) {
+                let route = (q.route || "other").toLowerCase();
+                if (!grouped[route]) grouped[route] = [];
+                grouped[route].push(q);
+            }
+        });
+        return grouped;
     }
 
     function renderQuizCard(quiz) {
@@ -295,17 +361,66 @@
         `;
     }
 
-    async function showSharedQuizzes() {
-        const container = document.getElementById('shared-quizzes-list');
-        const quizzes = await getPublicQuizzes();
-        if (!quizzes.length) {
-            container.innerHTML = `<div class="alert alert-info text-center">No shared quizzes available yet.</div>`;
-            return;
-        }
-        container.innerHTML = quizzes.map(renderQuizCard).join('');
+    function renderFolder(routeKey, routeLabel, quizzes) {
+        const folderId = `folder-${routeKey}`;
+        return `
+        <div class="folder" data-folder="${routeKey}">
+            <div class="folder-header" onclick="toggleFolder('${folderId}')">
+                <i class="fa fa-caret-right" id="${folderId}-icon"></i>
+                <i class="fa fa-folder"></i>
+                ${routeLabel} <span class="badge bg-primary ms-2">${quizzes.length}</span>
+            </div>
+            <div class="folder-content" id="${folderId}">
+                ${quizzes.map(renderQuizCard).join('')}
+            </div>
+        </div>
+        `;
     }
 
-    showSharedQuizzes();
+    function renderFolders(groupedQuizzes) {
+        let html = '';
+        let hasAny = false;
+        tLevelRoutes.forEach(route => {
+            const quizzes = groupedQuizzes[route.key] || [];
+            if (quizzes.length) {
+                html += renderFolder(route.key, route.label, quizzes);
+                hasAny = true;
+            }
+        });
+        // Add "Other" folder for quizzes with unknown route
+        const otherQuizzes = groupedQuizzes['other'] || [];
+        if (otherQuizzes.length) {
+            html += renderFolder('other', 'Other', otherQuizzes);
+            hasAny = true;
+        }
+        if (!hasAny) {
+            html = `<div class="alert alert-info text-center">No shared quizzes available yet.</div>`;
+        }
+        document.getElementById('folders-list').innerHTML = html;
+    }
+
+    // Folder open/close logic
+    window.toggleFolder = function(folderId) {
+        const folderContent = document.getElementById(folderId);
+        const folderDiv = folderContent.closest('.folder');
+        const icon = document.getElementById(folderId + '-icon');
+        if (folderDiv.classList.contains('open')) {
+            folderDiv.classList.remove('open');
+            icon.classList.remove('fa-caret-down');
+            icon.classList.add('fa-caret-right');
+        } else {
+            folderDiv.classList.add('open');
+            icon.classList.remove('fa-caret-right');
+            icon.classList.add('fa-caret-down');
+        }
+    };
+
+    // Show folders and quizzes
+    async function showFolders() {
+        const grouped = await getPublicQuizzesByRoute();
+        renderFolders(grouped);
+    }
+    showFolders();
 
     // Navbar login/logout logic (optional, matches index.html)
     document.addEventListener('DOMContentLoaded', function() {
