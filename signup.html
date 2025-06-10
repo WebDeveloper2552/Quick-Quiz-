@@ -33,6 +33,7 @@
             padding: 0;
         }
         body {
+            background:#f8f9fa;
             min-height: 100vh;
             min-height: 100dvh;
             display: flex;
@@ -108,9 +109,10 @@
             min-height: 0;
             width: 100vw;
             padding: 2vw 0;
+            background: none !important; /* Remove any hue or background from the container */
         }
         .signup-container {
-            background: #fff;
+            background: #fff !important; /* Ensure the form container is pure white */
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(37,99,235,0.08), 0 1.5px 8px rgba(37,99,235,0.04);
             width: 100%;
