@@ -1,61 +1,345 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f3f2f1;
+            color: #323130;
+        }
+        .navbar-custom {
+            background: linear-gradient(90deg, #1e62e6 0%, #1e90b8 100%);
+            border-radius: 10px 10px 0 0;
+            min-height: 70px;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 2.2rem;
+            color: #fff !important;
+            gap: 18px;
+            padding: 0;
+            margin-right: 2rem;
+            line-height: 1;
+        }
+        .navbar-logo-img {
+            height: 56px;
+            width: auto;
+            margin-bottom: 0;
+            background: none;
+            padding: 0;
+        }
+        .navbar-nav .nav-link {
+            color: #fff !important;
+            font-weight: 600;
+            font-size: 1.08rem;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            background: rgba(255,255,255,0.12);
+            color: #fff !important;
+        }
+        .navbar-nav .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.10);
+            min-width: 200px;
+        }
+        .navbar-nav .dropdown-item {
+            font-weight: 500;
+            color: #1e62e6;
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .navbar-nav .dropdown-item:hover,
+        .navbar-nav .dropdown-item:focus {
+            background: #1e62e6;
+            color: #fff;
+        }
+        .dashboard-container {
+            max-width: 1100px;
+            margin: 40px auto 0 auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            padding: 32px;
+        }
+        .dashboard-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #323130;
+            margin-bottom: 24px;
+        }
+        .dashboard-section {
+            margin-bottom: 32px;
+        }
+        .dashboard-section h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0078d4;
+            margin-bottom: 16px;
+        }
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            border: 1px solid #edebe9;
+            margin-bottom: 20px;
+        }
+        .btn-primary {
+            background: #0078d4;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .btn-primary:hover {
+            background: #005a9e;
+        }
+        .btn-success {
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .footer {
+            background: #1e62e6;
+            color: #fff;
+            border-radius: 0 0 10px 10px;
+            margin-top: 60px;
+            padding: 24px 0 12px 0;
+            text-align: center;
+        }
+        .footer-links {
+            margin-bottom: 10px;
+        }
+        .footer-links a {
+            color: #fff;
+            font-weight: 500;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+            opacity: 0.8;
+        }
+        .social-icons a {
+            color: #fff;
+            font-size: 1.5rem;
+            margin: 0 0.5rem;
+        }
+        .social-icons a:hover {
+            opacity: 0.8;
+        }
+        @media (max-width: 991px) {
+            .navbar-brand {
+                font-size: 1.5rem;
+                gap: 10px;
+            }
+            .navbar-logo-img {
+                height: 40px;
+            }
+        }
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1rem;
+            }
+            .navbar-brand {
+                font-size: 1.1rem;
+                gap: 6px;
+            }
+            .navbar-logo-img {
+                height: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container-fluid d-flex flex-row justify-content-between align-items-center">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <img src="logo.png" alt="QuickQuiz Logo" class="navbar-logo-img">
+                <span style="font-weight:700; font-size:2.2rem; color:white; margin-left:14px;">QuickQuiz</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTeachers" role="button" data-bs-toggle="dropdown">
+                            For Teachers
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="create_quizes.html">Create Quizzes</a></li>
+                            <li><a class="dropdown-item" href="manage_quizes.html">Manage Quizzes</a></li>
+                            <li><a class="dropdown-item" href="class_tracker.html">Class Results Tracker</a></li>
+                            <li><a class="dropdown-item" href="resource_bank.html">Resource Bank</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownStudents" role="button" data-bs-toggle="dropdown">
+                            For Students
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="student_dashboard.html">Student Dashboard</a></li>
+                            <li><a class="dropdown-item" href="quiz_portal.html">Practice Quizzes</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="aichatbot.html">AI Quiz Generator</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="signup.html">Sign Up</a>
+                    </li>
+                    <li class="nav-item" id="logout-nav-item" style="display:none;">
+                        <a class="nav-link" href="#" id="logout-btn">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-{% block title %}Teacher Dashboard - Quick Quiz{% endblock %}
-
-{% block content %}
-<div class="row">
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title">My Classes</h5>
-                <p class="card-text">View and manage your classes</p>
-                <a href="{% url 'class_tracker' %}" class="btn btn-primary">Go to Classes</a>
+    <!-- Main Dashboard Content -->
+    <div class="dashboard-container">
+        <div class="dashboard-title">Teacher Dashboard</div>
+        <div class="dashboard-section">
+            <h3><i class="fa-solid fa-list-check"></i> Your Quizzes</h3>
+            <div class="row" id="quiz-list">
+                <!-- Quizzes will be loaded here -->
+            </div>
+            <a href="create_quizes.html" class="btn btn-success mt-2"><i class="fa fa-plus"></i> Create New Quiz</a>
+        </div>
+        <div class="dashboard-section">
+            <h3><i class="fa-solid fa-chart-line"></i> Class Results</h3>
+            <div class="card p-3 mb-3">
+                <p>Track your students' progress and quiz results.</p>
+                <a href="class_tracker.html" class="btn btn-primary btn-sm">View Class Tracker</a>
+            </div>
+        </div>
+        <div class="dashboard-section">
+            <h3><i class="fa-solid fa-book"></i> Resource Bank</h3>
+            <div class="card p-3 mb-3">
+                <p>Access teaching resources and materials.</p>
+                <a href="resource_bank.html" class="btn btn-primary btn-sm">Go to Resource Bank</a>
             </div>
         </div>
     </div>
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title">Create Quiz</h5>
-                <p class="card-text">Create a new quiz for your students</p>
-                <a href="{% url 'create_quiz' %}" class="btn btn-primary">Create Quiz</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title">Manage Quizzes</h5>
-                <p class="card-text">View and edit existing quizzes</p>
-                <a href="{% url 'manage_quizzes' %}" class="btn btn-primary">Manage Quizzes</a>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Recent Activity</h5>
-                <div class="list-group">
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1">Class 10A completed Algebra Quiz</h6>
-                            <small>2 hours ago</small>
-                        </div>
-                        <p class="mb-1">Average score: 78%</p>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1">You created a new quiz</h6>
-                            <small>1 day ago</small>
-                        </div>
-                        <p class="mb-1">Geometry Basics Quiz</p>
-                    </a>
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="footer-links">
+            <a href="index.html">Home</a> |
+            <a href="create_quizes.html">Create Quizzes</a> |
+            <a href="manage_quizes.html">Manage Quizzes</a> |
+            <a href="class_tracker.html">Class Tracker</a> |
+            <a href="resource_bank.html">Resource Bank</a>
+        </div>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-twitter" aria-label="Twitter"></i></a>
+            <a href="#"><i class="fab fa-facebook" aria-label="Facebook"></i></a>
+            <a href="#"><i class="fab fa-linkedin" aria-label="LinkedIn"></i></a>
+        </div>
+        <p>&copy; 2025 QuickQuiz Classroom. All rights reserved by the AoC.</p>
+    </footer>
+
+    <!-- Bootstrap JS & IndexedDB logic -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/idb@7/build/umd.js"></script>
+    <script>
+    // IndexedDB setup for quizzes
+    let db;
+    async function initDB() {
+        db = await idb.openDB('quickquiz-db', 1, {
+            upgrade(db) {
+                if (!db.objectStoreNames.contains('quizzes')) {
+                    db.createObjectStore('quizzes', { keyPath: 'id', autoIncrement: true });
+                }
+            }
+        });
+    }
+
+    // Load quizzes from IndexedDB
+    async function loadQuizzes() {
+        const quizList = document.getElementById('quiz-list');
+        quizList.innerHTML = '';
+        let quizzes = [];
+        if (db) {
+            quizzes = await db.getAll('quizzes');
+        }
+        if (!quizzes || quizzes.length === 0) {
+            // Demo quizzes if none exist
+            quizzes = [
+                {
+                    id: 1,
+                    title: "Algebra Basics",
+                    questions: 10,
+                    lastEdited: "2025-06-10"
+                },
+                {
+                    id: 2,
+                    title: "Geometry Challenge",
+                    questions: 8,
+                    lastEdited: "2025-06-12"
+                }
+            ];
+        }
+        quizzes.forEach(quiz => {
+            const col = document.createElement('div');
+            col.className = "col-md-6";
+            col.innerHTML = `
+                <div class="card p-3 mb-3">
+                    <h5>${quiz.title}</h5>
+                    <p>${quiz.questions} Questions &middot; Last edited: ${quiz.lastEdited}</p>
+                    <a href="manage_quizes.html?quizId=${quiz.id}" class="btn btn-primary btn-sm">Manage</a>
+                    <button class="btn btn-danger btn-sm ms-2" onclick="deleteQuiz(${quiz.id})"><i class="fa fa-trash"></i></button>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
+            `;
+            quizList.appendChild(col);
+        });
+    }
+
+    // Delete quiz from IndexedDB
+    async function deleteQuiz(id) {
+        if (db) {
+            await db.delete('quizzes', id);
+            loadQuizzes();
+        }
+    }
+
+    // Navbar logout logic (demo)
+    document.addEventListener('DOMContentLoaded', function() {
+        // Simulate login state
+        const loggedIn = localStorage.getItem('loggedIn') === 'true';
+        const logoutNavItem = document.getElementById('logout-nav-item');
+        if (loggedIn) {
+            logoutNavItem.style.display = '';
+            document.querySelectorAll('.nav-link[href="login.html"], .nav-link[href="signup.html"]').forEach(el => el.style.display = 'none');
+        }
+        document.getElementById('logout-btn').onclick = function() {
+            localStorage.setItem('loggedIn', 'false');
+            window.location.href = 'login.html';
+        };
+    });
+
+    // Initialize DB and load quizzes
+    window.onload = async function() {
+        await initDB();
+        await loadQuizzes();
+    };
+    </script>
+</body>
+</html>
