@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel - QuickQuiz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS & Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f8f9fa; color: #333; min-height: 100vh; }
+        .navbar-custom {
+            background: linear-gradient(135deg, #2563eb, #00818A);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0.8rem 1rem;
+        }
+        .navbar-custom .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: white !important;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+        }
+        .navbar-logo-img { height: 40px; width: auto; margin-bottom: 2px; }
+        .admin-sidebar {
+            background: #fff;
+            border-right: 1px solid #e5e7eb;
+            min-height: 80vh;
+            padding-top: 2rem;
+        }
+        .admin-sidebar .nav-link.active {
+            background: #e3f0ff;
+            color: #1976d2 !important;
+            font-weight: bold;
+        }
+        .admin-content {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px #0002;
+            padding: 32px 28px;
+            margin-bottom: 32px;
+            margin-top: 24px;
+        }
+        .admin-table th, .admin-table td { vertical-align: middle; }
+        .status-badge { font-size: 0.95em; }
+        .footer {
+            background: #fff;
+            border-top: 1px solid #e5e7eb;
+            padding: 1.2rem 0 0.5rem 0;
+            margin-top: 2rem;
+            text-align: center;
+        }
+        .footer-links a { margin: 0 10px; color: #1976d2; text-decoration: none; }
+        .footer-links a:hover { text-decoration: underline; }
+        .social-icons a { color: #1976d2; margin: 0 5px; }
+        .admin-section-title { font-size: 1.3rem; font-weight: 600; margin-bottom: 1rem; }
+        .table-responsive { margin-bottom: 2rem; }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container-fluid d-flex flex-row justify-content-between align-items-center">
+            <a class="navbar-brand" href="index.html">
+                <img src="logo.png" alt="QuickQuiz Logo" class="navbar-logo-img">
+                <span>QuickQuiz</span>
+            </a>
+            <div class="d-flex align-items-center">
+                <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse show" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTeachers" role="button" data-bs-toggle="dropdown">
+                                For Teachers
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="create_quizes.html">Create Quizzes</a></li>
+                                <li><a class="dropdown-item" href="manage_quizes.html">Manage Quizzes</a></li>
+                                <li><a class="dropdown-item" href="class_tracker.html">Class Results Tracker</a></li>
+                                <li><a class="dropdown-item" href="resource_bank.html">Resource Bank</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownStudents" role="button" data-bs-toggle="dropdown">
+                                For Students
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="student_dashboard.html">Student Dashboard</a></li>
+                                <li><a class="dropdown-item" href="quiz_portal.html">Practice Quizzes</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="aichatbot.html">AI Quiz Generator</a></li>
+                        <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" href="signup.html">Sign Up</a></li>
+                        <li class="nav-item" id="logout-nav-item" style="display:none;">
+                            <a class="nav-link" href="#" id="logout-btn">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SharePoint-like Layout -->
+    <div class="container-fluid" style="margin-top:30px;">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-none d-md-block admin-sidebar">
+                <ul class="nav flex-column">
+                    <li class="nav-item mb-2">
+                        <a class="nav-link active" href="#"><i class="fas fa-user-shield me-2"></i>Admin Dashboard</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link" href="#" onclick="showSection('quizzes')"><i class="fas fa-tasks me-2"></i>Approve Quizzes</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link" href="#" onclick="showSection('users')"><i class="fas fa-users me-2"></i>Approve Users</a>
+                    </li>
+                </ul>
+            </nav>
+            <!-- Main Content -->
+            <main class="col-md-8 mx-auto">
+                <div class="admin-content" id="admin-section-quizzes">
+                    <div class="admin-section-title"><i class="fas fa-tasks me-2"></i>Approve &amp; Manage Quizzes</div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered admin-table align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Quiz Code</th>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Status</th>
+                                    <th>Approved</th>
+                                    <th>Enabled</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-quizzes-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="admin-content" id="admin-section-users" style="display:none;">
+                    <div class="admin-section-title"><i class="fas fa-users me-2"></i>Approve &amp; Manage Users</div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered admin-table align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Organisation</th>
+                                    <th>Approved</th>
+                                    <th>Enabled</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-users-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+            <!-- Right Panel: Help & Quick Links -->
+            <aside class="col-md-2 d-none d-md-block">
+                <div class="bg-white rounded shadow-sm p-3 mb-4">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-info-circle me-2"></i>Admin Help</h6>
+                    <ul class="list-unstyled small">
+                        <li><i class="fas fa-lightbulb me-1"></i> Approve or disable quizzes and users.</li>
+                        <li><i class="fas fa-lightbulb me-1"></i> Only admins can access this page.</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded shadow-sm p-3">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-link me-2"></i>Quick Links</h6>
+                    <ul class="list-unstyled small">
+                        <li><a href="resource_bank.html"><i class="fas fa-folder-open me-1"></i>Resource Bank</a></li>
+                        <li><a href="manage_quizes.html"><i class="fas fa-tasks me-1"></i>Manage Quizzes</a></li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="about.html">About Us</a>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+        </div>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+        </div>
+        <p>&copy; 2025 QuickQuiz Classroom. All rights reserved by the AoC.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // --- CONFIG ---
+    const ADMIN_EMAIL = "admin@aoc.co.uk"; // Change to your admin email
+
+    // --- ACCESS CONTROL ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const loggedIn = localStorage.getItem('quickquiz_loggedin') === 'true';
+        const userEmail = localStorage.getItem('quickquiz_email');
+        if (!loggedIn || userEmail !== ADMIN_EMAIL) {
+            alert("Access denied. Admins only.");
+            window.location.href = "index.html";
+        }
+        renderAdminQuizzes();
+        renderAdminUsers();
+    });
+
+    // --- SECTION SWITCHING ---
+    function showSection(section) {
+        document.getElementById('admin-section-quizzes').style.display = section === 'quizzes' ? '' : 'none';
+        document.getElementById('admin-section-users').style.display = section === 'users' ? '' : 'none';
+    }
+
+    // --- QUIZ APPROVAL/ENABLE/DISABLE ---
+    function renderAdminQuizzes() {
+        // Simulate quizzes from IndexedDB/localStorage for demo
+        let quizzes = JSON.parse(localStorage.getItem('teacher_quizzes') || '[]');
+        // Add admin fields if missing
+        quizzes.forEach(q => {
+            if (typeof q.approved === "undefined") q.approved = false;
+            if (typeof q.enabled === "undefined") q.enabled = true;
+        });
+        localStorage.setItem('teacher_quizzes', JSON.stringify(quizzes));
+        const tbody = document.getElementById('admin-quizzes-tbody');
+        tbody.innerHTML = '';
+        quizzes.forEach((quiz, idx) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${quiz.code || '-'}</td>
+                    <td>${quiz.title || '-'}</td>
+                    <td>${quiz.author || '-'}</td>
+                    <td>
+                        <span class="badge bg-${quiz.enabled ? 'success' : 'secondary'} status-badge">${quiz.enabled ? 'Enabled' : 'Disabled'}</span>
+                    </td>
+                    <td>
+                        <input type="checkbox" ${quiz.approved ? 'checked' : ''} onchange="toggleQuizApproval(${idx})">
+                    </td>
+                    <td>
+                        <input type="checkbox" ${quiz.enabled ? 'checked' : ''} onchange="toggleQuizEnabled(${idx})">
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-primary btn-sm" onclick="viewQuizDetails(${idx})"><i class="fas fa-eye"></i> View</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+    function toggleQuizApproval(idx) {
+        let quizzes = JSON.parse(localStorage.getItem('teacher_quizzes') || '[]');
+        quizzes[idx].approved = !quizzes[idx].approved;
+        localStorage.setItem('teacher_quizzes', JSON.stringify(quizzes));
+        renderAdminQuizzes();
+    }
+    function toggleQuizEnabled(idx) {
+        let quizzes = JSON.parse(localStorage.getItem('teacher_quizzes') || '[]');
+        quizzes[idx].enabled = !quizzes[idx].enabled;
+        localStorage.setItem('teacher_quizzes', JSON.stringify(quizzes));
+        renderAdminQuizzes();
+    }
+    function viewQuizDetails(idx) {
+        let quizzes = JSON.parse(localStorage.getItem('teacher_quizzes') || '[]');
+        const quiz = quizzes[idx];
+        let html = `
+            <div class="modal fade" id="viewQuizModal" tabindex="-1" aria-labelledby="viewQuizModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="viewQuizModalLabel">${quiz.title}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p><strong>Quiz Code:</strong> ${quiz.code || '-'}</p>
+                    <p><strong>Deadline:</strong> ${quiz.deadline || '-'}</p>
+                    <p><strong>Category:</strong> ${quiz.tlevel || '-'}</p>
+                    <p><strong>Foundation:</strong> ${quiz.foundation || '-'}</p>
+                    <p><strong>Route:</strong> ${quiz.route || '-'}</p>
+                    <p><strong>Permissions:</strong> ${quiz.private ? 'Private' : 'Public'}</p>
+                    <hr>
+                    <h6>Questions:</h6>
+                    <ol>
+                        ${quiz.questions.map(q => `<li><strong>Q:</strong> ${q.question}<br><strong>A:</strong> ${q.answer}</li>`).join('')}
+                    </ol>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        `;
+        let oldModal = document.getElementById('viewQuizModal');
+        if (oldModal) oldModal.remove();
+        document.body.insertAdjacentHTML('beforeend', html);
+        let modal = new bootstrap.Modal(document.getElementById('viewQuizModal'));
+        modal.show();
+    }
+
+    // --- USER APPROVAL/ENABLE/DISABLE ---
+    function renderAdminUsers() {
+        // Simulate users from localStorage for demo
+        let users = JSON.parse(localStorage.getItem('teacher_users') || '[]');
+        // Add admin fields if missing
+        users.forEach(u => {
+            if (typeof u.approved === "undefined") u.approved = false;
+            if (typeof u.enabled === "undefined") u.enabled = true;
+        });
+        localStorage.setItem('teacher_users', JSON.stringify(users));
+        const tbody = document.getElementById('admin-users-tbody');
+        tbody.innerHTML = '';
+        users.forEach((user, idx) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${user.name || '-'}</td>
+                    <td>${user.email || '-'}</td>
+                    <td>${user.organisation || '-'}</td>
+                    <td>
+                        <input type="checkbox" ${user.approved ? 'checked' : ''} onchange="toggleUserApproval(${idx})">
+                    </td>
+                    <td>
+                        <input type="checkbox" ${user.enabled ? 'checked' : ''} onchange="toggleUserEnabled(${idx})">
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-primary btn-sm" onclick="viewUserDetails(${idx})"><i class="fas fa-eye"></i> View</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+    function toggleUserApproval(idx) {
+        let users = JSON.parse(localStorage.getItem('teacher_users') || '[]');
+        users[idx].approved = !users[idx].approved;
+        localStorage.setItem('teacher_users', JSON.stringify(users));
+        renderAdminUsers();
+    }
+    function toggleUserEnabled(idx) {
+        let users = JSON.parse(localStorage.getItem('teacher_users') || '[]');
+        users[idx].enabled = !users[idx].enabled;
+        localStorage.setItem('teacher_users', JSON.stringify(users));
+        renderAdminUsers();
+    }
+    function viewUserDetails(idx) {
+        let users = JSON.parse(localStorage.getItem('teacher_users') || '[]');
+        const user = users[idx];
+        let html = `
+            <div class="modal fade" id="viewUserModal" tabindex="-1" aria-labelledby="viewUserModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="viewUserModalLabel">${user.name}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p><strong>Email:</strong> ${user.email || '-'}</p>
+                    <p><strong>Organisation:</strong> ${user.organisation || '-'}</p>
+                    <p><strong>Status:</strong> <span class="badge bg-${user.enabled ? 'success' : 'secondary'}">${user.enabled ? 'Enabled' : 'Disabled'}</span></p>
+                    <p><strong>Approved:</strong> <span class="badge bg-${user.approved ? 'success' : 'secondary'}">${user.approved ? 'Yes' : 'No'}</span></p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        `;
+        let oldModal = document.getElementById('viewUserModal');
+        if (oldModal) oldModal.remove();
+        document.body.insertAdjacentHTML('beforeend', html);
+        let modal = new bootstrap.Modal(document.getElementById('viewUserModal'));
+        modal.show();
+    }
+    </script>
+</body>
+</html>
