@@ -79,12 +79,18 @@
         }
         .quiz-list { margin-top: 24px; }
         .quiz-card {
-            border-radius: 10px;
-            box-shadow: 0 2px 8px #0001;
-            margin-bottom: 18px;
-            padding: 18px 22px;
-            background: #f7faff;
-            border: 1px solid #e3e8f0;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px #0002;
+            margin-bottom: 24px;
+            padding: 22px 28px;
+            background: linear-gradient(120deg, #f5faff 80%, #e3f0ff 100%);
+            border: 1.5px solid #dbeafe;
+            transition: box-shadow 0.2s, border 0.2s;
+            position: relative;
+        }
+        .quiz-card:hover {
+            box-shadow: 0 8px 32px #1976d230;
+            border-color: #1976d2;
         }
         .quiz-card .badge {
             font-size: 1rem;
@@ -92,6 +98,66 @@
         }
         .quiz-actions button {
             margin-right: 8px;
+            min-width: 90px;
+        }
+        .quiz-actions .btn-edit {
+            background: #fffbe6;
+            color: #b45309;
+            border: 1px solid #fde68a;
+        }
+        .quiz-actions .btn-edit:hover {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .quiz-actions .btn-save {
+            background: #e0f7fa;
+            color: #00796b;
+            border: 1px solid #4dd0e1;
+        }
+        .quiz-actions .btn-save:hover {
+            background: #b2ebf2;
+            color: #004d40;
+        }
+        .quiz-actions .btn-cancel {
+            background: #ffe4e6;
+            color: #be123c;
+            border: 1px solid #fca5a5;
+        }
+        .quiz-actions .btn-cancel:hover {
+            background: #fecdd3;
+            color: #881337;
+        }
+        .quiz-edit-section {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+            margin-bottom: 8px;
+            border: 1px solid #cbd5e1;
+        }
+        .quiz-edit-section label {
+            font-weight: 500;
+            color: #1976d2;
+        }
+        .quiz-edit-section input,
+        .quiz-edit-section select,
+        .quiz-edit-section textarea {
+            margin-bottom: 10px;
+        }
+        .quiz-edit-section .question-edit {
+            background: #fff;
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            border: 1px solid #e5e7eb;
+        }
+        .quiz-edit-section .question-edit input,
+        .quiz-edit-section .question-edit textarea {
+            width: 100%;
+            margin-bottom: 6px;
+        }
+        .quiz-edit-section .question-edit .btn {
+            margin-right: 6px;
         }
         .footer {
             background: linear-gradient(135deg, var(--dark-green), var(--primary-blue));
@@ -161,9 +227,7 @@
                 </button>
                 <div class="collapse navbar-collapse show" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="index.html">Home</a>
-                        </li>
+                        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTeachers" role="button" data-bs-toggle="dropdown">
                                 For Teachers
@@ -184,15 +248,9 @@
                                 <li><a class="dropdown-item" href="quiz_portal.html">Practice Quizzes</a></li>
                             </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="aichatbot.html">AI Quiz Generator</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="login.html">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="signup.html">Sign Up</a>
-                        </li>
+                        <li class="nav-item"><a class="nav-link" href="aichatbot.html">AI Quiz Generator</a></li>
+                        <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" href="signup.html">Sign Up</a></li>
                         <li class="nav-item" id="logout-nav-item" style="display:none;">
                             <a class="nav-link" href="#" id="logout-btn">Logout</a>
                         </li>
@@ -202,10 +260,60 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="manage-container">
-        <h2>Manage Your Quizzes</h2>
-        <div id="quiz-list" class="quiz-list"></div>
+    <!-- SharePoint-like Layout -->
+    <div class="container-fluid" style="margin-top:30px;">
+        <div class="row">
+            <!-- Left Navigation Panel -->
+            <nav class="col-md-2 d-none d-md-block bg-white border-end" style="min-height:80vh;">
+                <div class="sidebar-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="create_quizes.html"><i class="fas fa-plus-circle me-2"></i>Create Quiz</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link active" href="manage_quizes.html"><i class="fas fa-tasks me-2"></i>Manage Quizzes</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="resource_bank.html"><i class="fas fa-folder-open me-2"></i>Resource Bank</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="class_tracker.html"><i class="fas fa-users me-2"></i>Class Tracker</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="results_bank.html"><i class="fas fa-chart-bar me-2"></i>Results Bank</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="col-md-8 mx-auto">
+                <div class="manage-container">
+                    <h2 class="mb-4"><i class="fas fa-tasks me-2"></i>Manage Your Quizzes</h2>
+                    <div id="quiz-list" class="quiz-list"></div>
+                </div>
+            </main>
+
+            <!-- Right Panel: Help & Quick Links -->
+            <aside class="col-md-2 d-none d-md-block">
+                <div class="bg-white rounded shadow-sm p-3 mb-4">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-info-circle me-2"></i>Help & Tips</h6>
+                    <ul class="list-unstyled small">
+                        <li><i class="fas fa-lightbulb me-1"></i> Edit quiz details and questions.</li>
+                        <li><i class="fas fa-lightbulb me-1"></i> Change privacy or topics anytime.</li>
+                        <li><i class="fas fa-lightbulb me-1"></i> Use the "View" button to preview your quiz.</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded shadow-sm p-3">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-link me-2"></i>Quick Links</h6>
+                    <ul class="list-unstyled small">
+                        <li><a href="create_quizes.html"><i class="fas fa-plus-circle me-1"></i>Create Quiz</a></li>
+                        <li><a href="resource_bank.html"><i class="fas fa-folder-open me-1"></i>Resource Bank</a></li>
+                        <li><a href="results_bank.html"><i class="fas fa-chart-bar me-1"></i>Results Bank</a></li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -236,34 +344,168 @@
         quizzes.forEach((quiz, idx) => {
             const expired = new Date(quiz.deadline) < new Date();
             quizListDiv.innerHTML += `
-                <div class="quiz-card">
+                <div class="quiz-card" id="quiz-card-${idx}">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <span class="badge bg-${quiz.private ? 'secondary' : 'success'}">${quiz.private ? 'Private' : 'Public'}</span>
-                            <span class="badge bg-info">${quiz.code}</span>
+                            <span class="badge bg-info">${quiz.code || '-'}</span>
                             <strong>${quiz.title}</strong>
                         </div>
                         <div class="quiz-actions">
+                            <button class="btn btn-edit btn-sm" onclick="editQuiz(${idx})"><i class="fas fa-pen"></i> Edit</button>
                             <button class="btn btn-outline-primary btn-sm" onclick="viewQuiz(${idx})"><i class="fas fa-eye"></i> View</button>
                             <button class="btn btn-outline-danger btn-sm" onclick="deleteQuiz(${idx})"><i class="fas fa-trash"></i> Delete</button>
                         </div>
                     </div>
                     <div class="mt-2">
-                        <span><strong>Deadline:</strong> ${quiz.deadline} ${expired ? '<span class="badge bg-warning text-dark">Expired</span>' : ''}</span><br>
+                        <span><strong>Deadline:</strong> ${quiz.deadline || '-'} ${expired ? '<span class="badge bg-warning text-dark">Expired</span>' : ''}</span><br>
                         <span><strong>Questions:</strong> ${quiz.questions.length}</span>
                         ${!quiz.private ? `<br><span><strong>Category:</strong> ${quiz.tlevel || '-'} | <strong>Foundation:</strong> ${quiz.foundation || '-'} | <strong>Route:</strong> ${quiz.route || '-'}</span>` : ''}
                     </div>
+                    <div id="edit-section-${idx}" style="display:none;"></div>
                 </div>
             `;
         });
     }
 
+    function editQuiz(idx) {
+        let quizzes = JSON.parse(localStorage.getItem('teacher_quizzes') || '[]');
+        const quiz = quizzes[idx];
+        const editDiv = document.getElementById(`edit-section-${idx}`);
+        // Hide all other edit sections
+        document.querySelectorAll('.quiz-edit-section').forEach(e => e.style.display = 'none');
+        editDiv.style.display = 'block';
+        editDiv.innerHTML = `
+            <form class="quiz-edit-section" id="quiz-edit-form-${idx}" onsubmit="event.preventDefault(); saveQuiz(${idx});">
+                <div class="mb-2">
+                    <label>Quiz Title</label>
+                    <input type="text" class="form-control" id="edit-title-${idx}" value="${quiz.title || ''}" required>
+                </div>
+                <div class="mb-2">
+                    <label>Deadline</label>
+                    <input type="date" class="form-control" id="edit-deadline-${idx}" value="${quiz.deadline ? quiz.deadline.split('T')[0] : ''}">
+                </div>
+                <div class="mb-2">
+                    <label>Category (T Level)</label>
+                    <input type="text" class="form-control" id="edit-tlevel-${idx}" value="${quiz.tlevel || ''}">
+                </div>
+                <div class="mb-2">
+                    <label>Foundation</label>
+                    <input type="text" class="form-control" id="edit-foundation-${idx}" value="${quiz.foundation || ''}">
+                </div>
+                <div class="mb-2">
+                    <label>Route</label>
+                    <input type="text" class="form-control" id="edit-route-${idx}" value="${quiz.route || ''}">
+                </div>
+                <div class="mb-2">
+                    <label>Permissions</label>
+                    <select class="form-select" id="edit-permissions-${idx}">
+                        <option value="public" ${!quiz.private ? 'selected' : ''}>Public</option>
+                        <option value="private" ${quiz.private ? 'selected' : ''}>Private</option>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label>Questions</label>
+                    <div id="edit-questions-list-${idx}">
+                        ${quiz.questions.map((q, qidx) => `
+                            <div class="question-edit" id="question-edit-${idx}-${qidx}">
+                                <input type="text" class="form-control mb-1" value="${q.question.replace(/"/g, '&quot;')}" id="edit-question-${idx}-${qidx}">
+                                <textarea class="form-control mb-1" rows="2" id="edit-answer-${idx}-${qidx}">${q.answer || ''}</textarea>
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteQuestion(${idx},${qidx})"><i class="fas fa-trash"></i> Delete</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button type="button" class="btn btn-outline-success btn-sm mt-2" onclick="addQuestion(${idx})"><i class="fas fa-plus"></i> Add Question</button>
+                </div>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-save btn-sm"><i class="fas fa-save"></i> Save</button>
+                    <button type="button" class="btn btn-cancel btn-sm" onclick="cancelEdit(${idx})"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            </form>
+        `;
+        setTimeout(() => { editDiv.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
+    }
+
+    function cancelEdit(idx) {
+        document.getElementById(`edit-section-${idx}`).style.display = 'none';
+    }
+
+    function saveQuiz(idx) {
+        let quizzes = JSON.parse(localStorage.getItem('teacher_quizzes') || '[]');
+        const quiz = quizzes[idx];
+        quiz.title = document.getElementById(`edit-title-${idx}`).value.trim();
+        quiz.deadline = document.getElementById(`edit-deadline-${idx}`).value;
+        quiz.tlevel = document.getElementById(`edit-tlevel-${idx}`).value.trim();
+        quiz.foundation = document.getElementById(`edit-foundation-${idx}`).value.trim();
+        quiz.route = document.getElementById(`edit-route-${idx}`).value.trim();
+        quiz.private = document.getElementById(`edit-permissions-${idx}`).value === 'private';
+        // Update questions
+        quiz.questions = [];
+        let qidx = 0;
+        while (document.getElementById(`edit-question-${idx}-${qidx}`)) {
+            const qText = document.getElementById(`edit-question-${idx}-${qidx}`).value.trim();
+            const aText = document.getElementById(`edit-answer-${idx}-${qidx}`).value.trim();
+            if (qText) quiz.questions.push({ question: qText, answer: aText });
+            qidx++;
+        }
+        quizzes[idx] = quiz;
+        localStorage.setItem('teacher_quizzes', JSON.stringify(quizzes));
+        renderQuizzes();
+    }
+
+    function addQuestion(idx) {
+        let quizzes = JSON.parse(localStorage.getItem('teacher_quizzes') || '[]');
+        const quiz = quizzes[idx];
+        quiz.questions.push({ question: '', answer: '' });
+        localStorage.setItem('teacher_quizzes', JSON.stringify(quizzes));
+        editQuiz(idx);
+    }
+
+    function deleteQuestion(idx, qidx) {
+        let quizzes = JSON.parse(localStorage.getItem('teacher_quizzes') || '[]');
+        const quiz = quizzes[idx];
+        quiz.questions.splice(qidx, 1);
+        localStorage.setItem('teacher_quizzes', JSON.stringify(quizzes));
+        editQuiz(idx);
+    }
+
     function viewQuiz(idx) {
         let quizzes = JSON.parse(localStorage.getItem('teacher_quizzes') || '[]');
         const quiz = quizzes[idx];
-        alert(
-            `Quiz: ${quiz.title}\nCode: ${quiz.code}\nDeadline: ${quiz.deadline}\nQuestions: ${quiz.questions.length}\n${quiz.private ? 'Private' : 'Public'}`
-        );
+        let html = `
+            <div class="modal fade" id="viewQuizModal" tabindex="-1" aria-labelledby="viewQuizModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="viewQuizModalLabel">${quiz.title}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p><strong>Quiz Code:</strong> ${quiz.code || '-'}</p>
+                    <p><strong>Deadline:</strong> ${quiz.deadline || '-'}</p>
+                    <p><strong>Category:</strong> ${quiz.tlevel || '-'}</p>
+                    <p><strong>Foundation:</strong> ${quiz.foundation || '-'}</p>
+                    <p><strong>Route:</strong> ${quiz.route || '-'}</p>
+                    <p><strong>Permissions:</strong> ${quiz.private ? 'Private' : 'Public'}</p>
+                    <hr>
+                    <h6>Questions:</h6>
+                    <ol>
+                        ${quiz.questions.map(q => `<li><strong>Q:</strong> ${q.question}<br><strong>A:</strong> ${q.answer}</li>`).join('')}
+                    </ol>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        `;
+        // Remove any existing modal
+        let oldModal = document.getElementById('viewQuizModal');
+        if (oldModal) oldModal.remove();
+        document.body.insertAdjacentHTML('beforeend', html);
+        let modal = new bootstrap.Modal(document.getElementById('viewQuizModal'));
+        modal.show();
     }
 
     function deleteQuiz(idx) {
