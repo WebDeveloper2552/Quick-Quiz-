@@ -142,7 +142,7 @@
         }
     </style>
 </head>
-<body>
+<body style="background-color:#f8f9fa;">
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
         <div class="container-fluid d-flex flex-row justify-content-between align-items-center">
@@ -156,9 +156,7 @@
                 </button>
                 <div class="collapse navbar-collapse show" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="index.html">Home</a>
-                        </li>
+                        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTeachers" role="button" data-bs-toggle="dropdown">
                                 For Teachers
@@ -167,7 +165,7 @@
                                 <li><a class="dropdown-item active" href="create_quizes.html">Create Quizzes</a></li>
                                 <li><a class="dropdown-item" href="manage_quizes.html">Manage Quizzes</a></li>
                                 <li><a class="dropdown-item" href="class_tracker.html">Class Results Tracker</a></li>
-                                <li><a class="dropdown-item" href="results_bank.html">Resource Bank</a></li>
+                                <li><a class="dropdown-item" href="resource_bank.html">Resource Bank</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
@@ -179,15 +177,9 @@
                                 <li><a class="dropdown-item" href="quiz_portal.html">Practice Quizzes</a></li>
                             </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="aichatbot.html">AI Quiz Generator</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="login.html">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="signup.html">Sign Up</a>
-                        </li>
+                        <li class="nav-item"><a class="nav-link" href="aichatbot.html">AI Quiz Generator</a></li>
+                        <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" href="signup.html">Sign Up</a></li>
                         <li class="nav-item" id="logout-nav-item" style="display:none;">
                             <a class="nav-link" href="#" id="logout-btn">Logout</a>
                         </li>
@@ -197,112 +189,173 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="quiz-container">
-        <h2>Create a Quiz</h2>
-        <form id="quiz-meta-form" class="row g-3 mb-4">
-            <div class="col-md-6">
-                <label for="quiz-title" class="form-label">Quiz Title</label>
-                <input type="text" id="quiz-title" class="form-control" required>
-            </div>
-            <div class="col-md-3">
-                <label for="quiz-deadline" class="form-label">Deadline</label>
-                <input type="date" id="quiz-deadline" class="form-control" required>
-            </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <button type="button" class="btn btn-secondary" id="regenerate-code-btn">Regenerate Code</button>
-            </div>
-            <div class="col-md-6" id="public-options" style="display:none;">
-                <label class="form-label">T Level / Foundation / Year / Route</label>
-                <div class="row">
-                    <div class="col">
-                        <select id="quiz-tlevel" class="form-select">
-                            <option value="">Category</option>
-                            <option value="Health">Health</option>
-                            <option value="Digital">Digital</option>
-                            <option value="Construction">Construction</option>
-                            <option value="Science">Science</option>
-                            <option value="Education">Education</option>
-                            <option value="Business">Business</option>
-                            <option value="Engineering">Engineering</option>
-                            <option value="Agriculture">Agriculture</option>
-                            <option value="Legal">Legal</option>
-                            <option value="Finance">Finance</option>
-                            <!-- Add more as needed -->
-                        </select>
+    <!-- SharePoint-like Main Layout -->
+    <div class="container-fluid" style="margin-top:30px;">
+        <div class="row">
+            <!-- Left Navigation Panel -->
+            <nav class="col-md-2 d-none d-md-block bg-white border-end" style="min-height:80vh;">
+                <div class="sidebar-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="create_quizes.html"><i class="fas fa-plus-circle me-2"></i>Create Quiz</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="manage_quizes.html"><i class="fas fa-tasks me-2"></i>Manage Quizzes</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="resource_bank.html"><i class="fas fa-folder-open me-2"></i>Resource Bank</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="class_tracker.html"><i class="fas fa-users me-2"></i>Class Tracker</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="results_bank.html"><i class="fas fa-chart-bar me-2"></i>Results Bank</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="col-md-8 mx-auto">
+                <div class="bg-white rounded shadow-sm p-4 mb-4">
+                    <h2 class="mb-4"><i class="fas fa-plus-circle me-2"></i>Create a Quiz</h2>
+                    <form id="quiz-meta-form" class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="quiz-title" class="form-label">Quiz Title</label>
+                            <input type="text" id="quiz-title" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="quiz-deadline" class="form-label">Deadline</label>
+                            <input type="date" id="quiz-deadline" class="form-control" required>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="button" class="btn btn-secondary" id="regenerate-code-btn">Regenerate Code</button>
+                        </div>
+                        <div class="col-md-6" id="public-options">
+                            <label class="form-label">T Level Route &amp; Level</label>
+                            <div class="row">
+                                <div class="col-12 mb-2">
+                                    <select id="quiz-tlevel-route" class="form-select" required>
+                                        <option value="">Select T Level Route</option>
+                                        <option value="Accounting">Accounting</option>
+                                        <option value="Business">Business & Administration</option>
+                                        <option value="Digital">Digital</option>
+                                        <option value="Healthcare">Healthcare Science</option>
+                                        <option value="Health">Health</option>
+                                        <option value="Construction">Construction</option>
+                                        <option value="Science">Science</option>
+                                        <option value="Education">Education & Early Years</option>
+                                        <option value="Engineering">Engineering & Manufacturing</option>
+                                        <option value="Agriculture">Agriculture, Environment & Animal Care</option>
+                                        <option value="Legal">Legal, Protective Services & Security</option>
+                                        <option value="Finance">Finance</option>
+                                        <!-- Add more T Level routes as needed -->
+                                    </select>
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <select id="quiz-level" class="form-select" required>
+                                        <option value="">Select Level</option>
+                                        <option value="GCSE Foundation">GCSE Foundation</option>
+                                        <option value="GCSE Higher">GCSE Higher</option>
+                                        <option value="A Level">A Level</option>
+                                        <option value="Functional Maths">Functional Maths</option>
+                                        <!-- Add more levels as needed -->
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <select id="quiz-foundation" class="form-select">
+                                        <option value="">Foundation Year</option>
+                                        <option value="Year 1">Year 1</option>
+                                        <option value="Year 2">Year 2</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <select id="quiz-route" class="form-select">
+                                        <option value="">Route Type</option>
+                                        <option value="Core">Core</option>
+                                        <option value="Occupational Specialism">Occupational Specialism</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <form id="question-form" class="row g-3 mb-4">
+                        <div class="col-md-2">
+                            <label for="qtype" class="form-label">Type</label>
+                            <select id="qtype" class="form-select" required>
+                                <option value="short">Short Answer</option>
+                                <option value="multiple">Multiple Choice</option>
+                                <option value="truefalse">True/False</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="qtext" class="form-label">Question</label>
+                            <input type="text" id="qtext" class="form-control" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="qmarks" class="form-label">Marks</label>
+                            <select id="qmarks" class="form-select" required>
+                                <option value="">Marks</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4" id="mark-answers-container">
+                            <!-- Mark answers will be dynamically inserted here -->
+                        </div>
+                        <div class="col-md-12 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">Add Question</button>
+                        </div>
+                    </form>
+                    <div>
+                        <h5>Questions Added:</h5>
+                        <ul id="question-list" class="list-group question-list"></ul>
                     </div>
-                    <div class="col">
-                        <select id="quiz-foundation" class="form-select">
-                            <option value="">Foundation</option>
-                            <option value="Year 1">Year 1</option>
-                            <option value="Year 2">Year 2</option>
-                            <!-- Add more as needed -->
-                        </select>
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" id="private-quiz">
+                        <label class="form-check-label" for="private-quiz">Make this quiz private (only you and your classes can access)</label>
                     </div>
-                    <div class="col">
-                        <select id="quiz-route" class="form-select">
-                            <option value="">Route</option>
-                            <option value="Core">Core</option>
-                            <option value="Occupational Specialism">Occupational Specialism</option>
-                            <!-- Add more as needed -->
-                        </select>
+                    <button id="create-quiz" class="btn btn-success mt-4">Create Quiz</button>
+                    <div id="quiz-code" class="quiz-code-box" style="display:none;"></div>
+                    <div id="deadline-warning" class="alert alert-warning mt-3" style="display:none;">
+                        <i class="fas fa-exclamation-triangle"></i> The deadline is in the past. The quiz code will be expired!
                     </div>
                 </div>
-            </div>
-        </form>
-        <form id="question-form" class="row g-3 mb-4">
-            <div class="col-md-2">
-                <label for="qtype" class="form-label">Type</label>
-                <select id="qtype" class="form-select" required>
-                    <option value="short">Short Answer</option>
-                    <option value="multiple">Multiple Choice</option>
-                    <option value="truefalse">True/False</option>
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label for="qtext" class="form-label">Question</label>
-                <input type="text" id="qtext" class="form-control" required>
-            </div>
-            <div class="col-md-2">
-                <label for="qmarks" class="form-label">Marks</label>
-                <select id="qmarks" class="form-select" required>
-                    <option value="">Marks</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                </select>
-            </div>
-            <div class="col-md-4" id="mark-answers-container">
-                <!-- Mark answers will be dynamically inserted here -->
-            </div>
-            <div class="col-md-12 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100">Add Question</button>
-            </div>
-        </form>
-        <div>
-            <h5>Questions Added:</h5>
-            <ul id="question-list" class="list-group question-list"></ul>
-        </div>
-        <div class="form-check mt-3">
-            <input class="form-check-input" type="checkbox" id="private-quiz">
-            <label class="form-check-label" for="private-quiz">Make this quiz private (only you and your classes can access)</label>
-        </div>
-        <button id="create-quiz" class="btn btn-success mt-4">Create Quiz</button>
-        <div id="quiz-code" class="quiz-code-box" style="display:none;"></div>
-        <div id="deadline-warning" class="alert alert-warning mt-3" style="display:none;">
-            <i class="fas fa-exclamation-triangle"></i> The deadline is in the past. The quiz code will be expired!
+            </main>
+
+            <!-- Right Panel: Quick Links or Help -->
+            <aside class="col-md-2 d-none d-md-block">
+                <div class="bg-white rounded shadow-sm p-3 mb-4">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-info-circle me-2"></i>Help & Tips</h6>
+                    <ul class="list-unstyled small">
+                        <li><i class="fas fa-lightbulb me-1"></i> Use clear quiz titles.</li>
+                        <li><i class="fas fa-lightbulb me-1"></i> Add a variety of question types.</li>
+                        <li><i class="fas fa-lightbulb me-1"></i> Set deadlines for timely completion.</li>
+                        <li><i class="fas fa-lightbulb me-1"></i> Share public quizzes to the Resource Bank.</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded shadow-sm p-3">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-link me-2"></i>Quick Links</h6>
+                    <ul class="list-unstyled small">
+                        <li><a href="resource_bank.html"><i class="fas fa-folder-open me-1"></i>Resource Bank</a></li>
+                        <li><a href="manage_quizes.html"><i class="fas fa-tasks me-1"></i>Manage Quizzes</a></li>
+                        <li><a href="results_bank.html"><i class="fas fa-chart-bar me-1"></i>Results Bank</a></li>
+                    </ul>
+                </div>
+            </aside>
         </div>
     </div>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="footer mt-5">
         <div class="footer-links">
             <a href="about.html">About Us</a>
             <a href="privacy.html">Privacy Policy</a>
@@ -316,7 +369,18 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/idb@7/build/umd.js"></script>
     <script>
+        const dbPromise = idb.openDB('quickquiz-db', 1, {
+            upgrade(db) {
+                if (!db.objectStoreNames.contains('shared_quizzes')) {
+                    const store = db.createObjectStore('shared_quizzes', { keyPath: 'code' });
+                    store.createIndex('isPublic', 'isPublic');
+                    store.createIndex('route', 'route');
+                }
+            }
+        });
+
         const questions = [];
         const form = document.getElementById('question-form');
         const list = document.getElementById('question-list');
@@ -385,6 +449,9 @@
             publicOptions.style.display = this.checked ? 'none' : '';
         });
 
+        // On page load, ensure correct visibility
+        publicOptions.style.display = privateQuizCheckbox.checked ? 'none' : '';
+
         // Deadline warning
         document.getElementById('quiz-deadline').addEventListener('change', function() {
             const deadline = new Date(this.value);
@@ -392,9 +459,13 @@
             deadlineWarning.style.display = deadline < now ? '' : 'none';
         });
 
-        document.getElementById('create-quiz').onclick = function() {
+        document.getElementById('create-quiz').onclick = async function() {
             const title = document.getElementById('quiz-title').value.trim();
             const deadline = document.getElementById('quiz-deadline').value;
+            const isPrivate = privateQuizCheckbox.checked;
+            const tlevelRoute = document.getElementById('quiz-tlevel-route').value;
+            const level = document.getElementById('quiz-level').value;
+
             if (!title || !deadline) {
                 alert('Please enter a quiz title and deadline.');
                 return;
@@ -403,22 +474,38 @@
                 alert('Add at least one question.');
                 return;
             }
+            // If public, require route and level
+            if (!isPrivate) {
+                if (!tlevelRoute) {
+                    alert('Please select a T Level Route.');
+                    document.getElementById('quiz-tlevel-route').focus();
+                    return;
+                }
+                if (!level) {
+                    alert('Please select a Level.');
+                    document.getElementById('quiz-level').focus();
+                    return;
+                }
+            }
             // Deadline check
             const deadlineDate = new Date(deadline);
             const now = new Date();
             if (deadlineDate < now) {
                 alert('Warning: The deadline is in the past. The quiz code will be expired!');
             }
-            // Quiz object
             const quiz = {
                 code: quizCode,
                 title,
                 deadline,
                 questions: [...questions],
-                private: privateQuizCheckbox.checked,
-                tlevel: document.getElementById('quiz-tlevel').value,
+                private: isPrivate,
+                tlevelRoute,
+                level,
                 foundation: document.getElementById('quiz-foundation').value,
-                route: document.getElementById('quiz-route').value
+                route: document.getElementById('quiz-route').value,
+                isPublic: !isPrivate,
+                author: localStorage.getItem('quickquiz_firstname') || 'Anonymous',
+                postedAt: new Date().toISOString()
             };
             // Save to localStorage for manage_quizes.html
             let quizzes = JSON.parse(localStorage.getItem('teacher_quizzes') || '[]');
@@ -429,14 +516,15 @@
             questions.length = 0;
             renderQuestions();
 
-            // If public, also save to resource_bank (simulate foldering)
+            // If public, also save to IndexedDB for resource_bank.html
             if (!quiz.private) {
-                let folder = [quiz.tlevel, quiz.foundation, quiz.route].filter(Boolean).join('/');
-                let resourceBank = JSON.parse(localStorage.getItem('resource_bank') || '{}');
-                if (!resourceBank[folder]) resourceBank[folder] = [];
-                resourceBank[folder].push(quiz);
-                localStorage.setItem('resource_bank', JSON.stringify(resourceBank));
-                alert('Quiz published to Resource Bank under: ' + folder);
+                try {
+                    const db = await dbPromise;
+                    await db.put('shared_quizzes', quiz);
+                    alert('Quiz published to Resource Bank under: ' + (quiz.tlevelRoute || 'Other'));
+                } catch (e) {
+                    alert('Failed to publish quiz to Resource Bank.');
+                }
             } else {
                 alert('Quiz created as private.');
             }
