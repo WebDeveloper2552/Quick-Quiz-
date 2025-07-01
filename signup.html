@@ -109,10 +109,10 @@
             min-height: 0;
             width: 100vw;
             padding: 2vw 0;
-            background: none !important; /* Remove any hue or background from the container */
+            background: none !important;
         }
         .signup-container {
-            background: #fff !important; /* Ensure the form container is pure white */
+            background: #fff !important;
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(37,99,235,0.08), 0 1.5px 8px rgba(37,99,235,0.04);
             width: 100%;
@@ -203,6 +203,21 @@
         }
         .form-group input.error {
             border-color: #dc2626;
+        }
+        .status-message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .status-message.success {
+            background-color: #e6ffed;
+            color: #16a34a;
+        }
+        .status-message.error {
+            background-color: #ffebee;
+            color: #dc2626;
         }
 
         /* Footer styles */
@@ -322,7 +337,9 @@
                     <div class="form-group" style="margin-bottom:18px;">
                         <div class="h-captcha" data-sitekey="1f7227a8-ee0e-4f00-8506-0a4aba260e58"></div>
                     </div>
-                    <a href="#" id="student-signup-link" style="display:block;text-align:center;color:#1976d2;font-weight:600;text-decoration:underline;margin-bottom:10px;">Sign Up</a>
+                    <button type="submit" class="btn btn-primary w-100" style="background: linear-gradient(90deg, #2196f3 0%, #1976d2 100%); border: none; padding: 12px; border-radius: 8px; font-weight: 600; margin-bottom: 16px;">
+                        Sign Up
+                    </button>
                     <div class="status-message" id="student-status"></div>
                     <div class="info-item" style="text-align:center; margin-top:10px;">
                         <span>Already have an account? </span>
@@ -330,7 +347,7 @@
                     </div>
                 </form>
                 <!-- Teacher Form -->
-                <form class="form teacher" id="teacher-signup-form" autocomplete="off" style="display:none;">
+                <form class="form teacher" id="teacher-signup-form" autocomplete="off">
                     <div class="form-group">
                         <label for="teacher-name">Name</label>
                         <input type="text" id="teacher-name" required>
@@ -352,13 +369,16 @@
                         <input type="password" id="teacher-confirm-password" required>
                     </div>
                     <div class="form-group" style="margin-bottom:18px;">
-                        <div class="h-captcha" data-sitekey="YOUR_HCAPTCHA_SITE_KEY"></div>
+                        <div class="h-captcha" data-sitekey="1f7227a8-ee0e-4f00-8506-0a4aba260e58"></div>
                     </div>
-                    <a href="#" id="teacher-signup-link" style="display:block;text-align:center;color:#1976d2;font-weight:600;text-decoration:underline;margin-bottom:10px;">Sign Up</a>
+                    <button type="submit" class="btn btn-primary w-100" style="background: linear-gradient(90deg, #2196f3 0%, #1976d2 100%); border: none; padding: 12px; border-radius: 8px; font-weight: 600; margin-bottom: 16px;">
+                        Sign Up
+                    </button>
                     <div class="status-message" id="teacher-status"></div>
                     <div class="info-item" style="text-align:center; margin-top:10px;">
                         <span>Already have an account? </span>
                         <a href="login.html" class="btn" style="color:#1976d2;text-decoration:underline;font-weight:600;">Login</a>
+                    </div>
                 </form>
             </div>
         </div>
@@ -374,6 +394,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <!-- Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     <script>
         // Replace with your Firebase config!
         const firebaseConfig = {
@@ -414,18 +435,22 @@
         $('#student-toggle').on('click', function() {
             $('#student-toggle').addClass('active');
             $('#teacher-toggle').removeClass('active');
-            $('#student-signup-form').show();
-            $('#teacher-signup-form').hide();
+            $('#student-signup-form').addClass('active').show();
+            $('#teacher-signup-form').removeClass('active').hide();
+            // Reset hCaptcha when switching forms
+            hcaptcha.reset();
         });
         $('#teacher-toggle').on('click', function() {
             $('#teacher-toggle').addClass('active');
             $('#student-toggle').removeClass('active');
-            $('#teacher-signup-form').show();
-            $('#student-signup-form').hide();
+            $('#teacher-signup-form').addClass('active').show();
+            $('#student-signup-form').removeClass('active').hide();
+            // Reset hCaptcha when switching forms
+            hcaptcha.reset();
         });
 
         // Email regex patterns
-        const studentRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-].[a-zA-Z0-9.-]+\.ac\.uk$/;
+        const studentRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9.-]+\.ac\.uk$/;
         const teacherRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(ac\.uk|school|com|co\.uk|sch\.uk|org\.uk|academy|org|education|sslp\.uk|biz|uc|net|at)$/i;
 
         // Student sign up
@@ -448,6 +473,11 @@
                 error = "Teacher code is required.";
             }
 
+            // Check hCaptcha
+            if (hcaptcha.getResponse() === "") {
+                error = "Please complete the captcha verification.";
+            }
+
             if (error) {
                 $('#student-status').removeClass('success').addClass('error').text(error);
             } else {
@@ -455,6 +485,7 @@
                 let transaction = idb.transaction(['students'], 'readwrite');
                 let store = transaction.objectStore('students');
                 let getRequest = store.get(email);
+                
                 getRequest.onsuccess = function() {
                     if (getRequest.result) {
                         $('#student-status').removeClass('success').addClass('error').text('Email already exists.');
@@ -465,10 +496,13 @@
                             password: password,
                             teacher_code: code
                         });
+                        
                         addRequest.onsuccess = function() {
                             $('#student-status').removeClass('error').addClass('success').text('Account created successfully!');
                             $('#student-signup-form')[0].reset();
+                            hcaptcha.reset();
                         };
+                        
                         addRequest.onerror = function() {
                             $('#student-status').removeClass('success').addClass('error').text('Error saving account.');
                         };
@@ -497,15 +531,14 @@
                 error = "Passwords do not match.";
             }
 
+            // Check hCaptcha
+            if (hcaptcha.getResponse() === "") {
+                error = "Please complete the captcha verification.";
+            }
+
             if (error) {
                 $('#teacher-status').removeClass('success').addClass('error').text(error);
             } else {
-                // For Teacher
-                if (hcaptcha.getResponse() === "") {
-                    $('#teacher-status').removeClass('success').addClass('error').text('Please verify that you are not a robot.');
-                    return;
-                }
-
                 // Generate a teacher code (e.g., first part of email + random 4 digits)
                 let teacherCode = email.split('@')[0].toUpperCase() + '-' + Math.floor(1000 + Math.random() * 9000);
 
@@ -513,6 +546,7 @@
                 let transaction = idb.transaction(['teachers'], 'readwrite');
                 let store = transaction.objectStore('teachers');
                 let getRequest = store.get(email);
+                
                 getRequest.onsuccess = function() {
                     if (getRequest.result) {
                         $('#teacher-status').removeClass('success').addClass('error').text('Email already exists.');
@@ -524,15 +558,19 @@
                             password: password,
                             teacher_code: teacherCode
                         });
+                        
                         addRequest.onsuccess = function() {
                             $('#teacher-status').removeClass('error').addClass('success').text('Account created successfully!');
                             $('#teacher-signup-form')[0].reset();
+                            hcaptcha.reset();
+                            
                             // Show alert with teacher code and redirect
                             setTimeout(function() {
                                 alert("Your teacher code is: " + teacherCode + "\nGive this code to your students so they can create an account.");
                                 window.location.href = "index.html";
                             }, 500);
                         };
+                        
                         addRequest.onerror = function() {
                             $('#teacher-status').removeClass('success').addClass('error').text('Error saving account.');
                         };
@@ -541,6 +579,5 @@
             }
         });
     </script>
-    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 </body>
 </html>
