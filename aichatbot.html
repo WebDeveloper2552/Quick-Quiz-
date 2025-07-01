@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1164,48 +1163,8 @@
             50% { width: 100%; left: 0; }
             100% { width: 0; left: 100%; }
         }
-    
-    /* --- New Styles --- */
-    .btn,
-    .btn-secondary,
-    .btn-warning,
-    .latex-btn,
-    .math-key-btn {
-        white-space: normal !important;
-        word-break: break-word !important;
-        overflow-wrap: break-word !important;
-        text-overflow: unset !important;
-        line-height: 1.3 !important;
-        font-size: 1rem !important;
-        min-width: 0 !important;
-        max-width: 100% !important;
-        padding-left: 16px;
-        padding-right: 16px;
-        padding-top: 12px;
-        padding-bottom: 12px;
-        text-align: center;
-        display: inline-block;
-    }
+    </style>
 
-    /* Make all .action-buttons stack on small screens for clarity */
-    @media (max-width: 700px) {
-        .action-buttons {
-            flex-direction: column !important;
-            gap: 12px !important;
-            align-items: stretch !important;
-        }
-        .btn,
-        .btn-secondary,
-        .btn-warning,
-        .latex-btn,
-        .math-key-btn {
-            width: 100% !important;
-            min-width: 0 !important;
-            max-width: 100% !important;
-            font-size: 1.05rem !important;
-        }
-    }
-</style>
 </head>
 <body>
     <!-- NAVBAR -->
@@ -2054,7 +2013,6 @@
             showToast('No problem to save.', 'error');
             return;
         }
- 
         
         // In a real app, this would prompt for more details
         const topic = prompt("Enter topic for this problem:", selectedTopic || currentRoute || "general");
@@ -2453,6 +2411,30 @@
         const questions = questionsOutput.querySelectorAll('li');
         
         if (questions.length === 0) {
+            showToast('No questions to add to quiz.', 'error');
+            return;
+        }
+        
+        questions.forEach(q => {
+            addQuestionToQuiz(q.textContent.replace(/ \w+$/, ''));
+        });
+        
+        showToast(`${questions.length} questions added to quiz!`, 'success');
+    });
+
+    document.getElementById('regenerate-questions').addEventListener('click', function() {
+        document.getElementById('generate-questions').click();
+    });
+
+    document.getElementById('save-to-repo').addEventListener('click', function() {
+        const questionsOutput = document.getElementById('questions-output');
+        const questions = questionsOutput.querySelectorAll('li');
+        
+        if (questions.length === 0) {
+            showToast('No questions to save.', 'error');
+            return;
+        }
+        
         let topic = document.getElementById('question-topic').value.trim() || currentRoute || 'general';
         const difficulty = document.getElementById('generate-difficulty').value;
         questions.forEach(q => {
